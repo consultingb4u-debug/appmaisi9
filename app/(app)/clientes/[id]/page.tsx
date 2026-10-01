@@ -1,4 +1,6 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
+import { STATUS_PROJETO, TOM_STATUS_PROJETO } from "@/lib/domain/rotulos";
 import { db } from "@/lib/db";
 import { usuarioAtual } from "@/lib/auth/sessao";
 import { pode } from "@/lib/auth/permissoes";
@@ -12,7 +14,10 @@ const FUNCOES = { SPONSOR: "Sponsor", GP_CLIENTE: "GP Cliente", KEY_USER: "Key U
 export default async function PaginaCliente({ params }: PageProps<"/clientes/[id]">) {
   const { id } = await params;
   const usuario = await usuarioAtual();
-  const cliente = await db.cliente.findUnique({ where: { id }, include: { contatos: { orderBy: { nome: "asc" } } } });
+  const cliente = await db.cliente.findUnique({
+    where: { id },
+    include: { contatos: { orderBy: { nome: "asc" } }, projetos: { orderBy: { nome: "asc" }, select: { id: true, codigo: true, nome: true, status: true } }, apelidos: true },
+  });
   if (!cliente) notFound();
   const editavel = pode(usuario.perfil, "editar", "CLIENTES");
 
@@ -43,6 +48,24 @@ export default async function PaginaCliente({ params }: PageProps<"/clientes/[id
         </Cartao>
 
         <div className="space-y-6">
+          <Cartao titulo={`Projetos (${cliente.projetos.length})`}>
+            {cliente.projetos.length === 0 ? (
+              <Vazio>Nenhum projeto.</Vazio>
+            ) : (
+              <ul className="divide-y divide-ardosia-100 text-sm">
+                {cliente.projetos.map((p) => (
+                  <li key={p.id} className="flex items-center justify-between py-2">
+                    <Link href={`/projetos/${p.id}`} className="hover:underline">
+                      <span className="text-xs text-ardosia-500">{p.codigo}</span> {p.nome}
+                    </Link>
+                    <Selo tom={TOM_STATUS_PROJETO[p.status]}>{STATUS_PROJETO[p.status]}</Selo>
+                  </li>
+                ))}
+              </ul>
+            )}
+            {cliente.apelidos.length > 0 && <p className="mt-3 text-xs text-ardosia-500">Também aparece nas planilhas como: {cliente.apelidos.map((a) => a.apelido).join(", ")}</p>}
+          </Cartao>
+
           <Cartao titulo="Contatos (key users, sponsor, TI)">
             {cliente.contatos.length === 0 ? (
               <Vazio>Nenhum contato cadastrado.</Vazio>

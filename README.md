@@ -10,8 +10,8 @@ Aplicação web interna da MAIS i9 para substituir os controles em planilha
 | Incremento | Conteúdo | Situação |
 |---|---|---|
 | 1 · Fundação | Login Microsoft 365, perfis, recursos e capacidade com vigência, clientes e contatos, feriados, semanas ISO, auditoria | ✅ |
-| 2 · Portfólio | Portfólio, página do projeto, importação do CTRL-003 | próximo |
-| 3 · Capacidade | Planejamento semanal, indisponibilidades, mapa de carga | |
+| 2 · Portfólio | Portfólio (filtros, ordenação, linha do tempo), página do projeto, importação do CTRL-003 com revisão e De-Para, carga real por recurso | ✅ |
+| 3 · Capacidade | Planejamento semanal editável, indisponibilidades com aprovação, mapa de carga | próximo |
 | 4 · Cronograma | Backlog, cronograma, Gantt, rateio automático, importação do CTRL-001 | |
 | 5 · Execução | Pré-projeto, complexidade, RAID, testes, UAT, deployment | |
 | 6 · Status | Status reports, documentos, dashboard executivo | |
@@ -46,6 +46,14 @@ permite entrar sem senha com qualquer usuário cadastrado. **Nunca habilite isso
 | `npm run db:deploy` | aplica migrações pendentes |
 | `npm run db:seed` | dados iniciais (idempotente) |
 
+## Importar o CTRL-003
+
+**Administração → Importação**: envie o `.xlsx`. O sistema lê Portfólio Projetos, Planejamento Recursos,
+Capacidade e Indisponibilidades e mostra uma revisão linha a linha (criar / atualizar / sem alteração,
+alertas e erros). Nomes não reconhecidos vão para o **De-Para**, que fica salvo como apelido.
+Nada é gravado até clicar em **Efetivar**. Reimportar o mesmo arquivo não duplica nada, e campos
+vazios na planilha não apagam dados do sistema. O arquivo original fica guardado no lote.
+
 ## Login com Microsoft 365
 
 1. No portal do Azure → **Microsoft Entra ID → Registros de aplicativo → Novo registro**
@@ -69,7 +77,7 @@ docker compose up -d --build  # db → migrador (migrações + seed) → app na 
 
 ### Backup
 
-`scripts/backup.sh` gera `backups/maisi9-AAAAMMDD-HHMM.sql.gz` (mantém 30 dias). Agende no cron:
+`scripts/backup.sh` gera `backups/maisi9-AAAAMMDD-HHMM.sql.gz` e o pacote dos arquivos enviados (mantém 30 dias). Agende no cron:
 
 ```
 0 2 * * * /opt/maisi9/scripts/backup.sh
@@ -80,11 +88,12 @@ Restauração: `gunzip -c backups/<arquivo>.sql.gz | docker compose exec -T db p
 ## Estrutura
 
 ```
-app/(app)/          telas autenticadas (início, recursos, clientes, admin/*)
+app/(app)/          telas autenticadas (início, portfólio, projetos/[id]/*, recursos, clientes, admin/*)
 app/login/          tela de login
 components/         UI compartilhada (ui.tsx, formulario.tsx, historico.tsx, menu)
 lib/domain/         regras puras e testadas: semanas ISO, feriados, capacidade, faixas, diffs de auditoria
-lib/services/       regras que acessam o banco (capacidade por semana, auditoria, feriados)
+lib/services/       regras que acessam o banco (capacidade e carga por semana, portfólio, auditoria)
+lib/importacao/     leitura de planilhas, validação pura (testada) e efetivação da importação
 lib/auth/           sessão e matriz de permissões por perfil
 prisma/             schema, migrações e seed
 tests/              testes unitários (Vitest)

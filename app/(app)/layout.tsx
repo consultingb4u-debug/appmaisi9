@@ -8,7 +8,7 @@ export default async function LayoutApp({ children }: LayoutProps<"/">) {
 
   const principal: ItemMenu[] = [
     { href: "/", rotulo: "Início", icone: "◧" },
-    { href: "/portfolio", rotulo: "Portfólio", icone: "▤", emBreve: "incremento 2" },
+    { href: "/portfolio", rotulo: "Portfólio", icone: "▤" },
     { href: "/recursos", rotulo: "Recursos", icone: "◉" },
     { href: "/capacidade", rotulo: "Capacidade", icone: "▦", emBreve: "incremento 3" },
     { href: "/clientes", rotulo: "Clientes", icone: "◆" },
@@ -16,6 +16,7 @@ export default async function LayoutApp({ children }: LayoutProps<"/">) {
   const admin: ItemMenu[] = [
     pode(usuario.perfil, "ver", "USUARIOS") && { href: "/admin/usuarios", rotulo: "Usuários", icone: "☺" },
     pode(usuario.perfil, "ver", "FERIADOS") && { href: "/admin/feriados", rotulo: "Feriados", icone: "✦" },
+    pode(usuario.perfil, "ver", "IMPORTACAO") && { href: "/admin/importacao", rotulo: "Importação", icone: "⇪" },
     pode(usuario.perfil, "ver", "AUDITORIA") && { href: "/admin/auditoria", rotulo: "Auditoria", icone: "≡" },
   ].filter(Boolean) as ItemMenu[];
 

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { dia } from "@/lib/domain/datas";
-import { capacidadeDaSemana, capacidadeVigente, faixaUtilizacao, validarVigencias } from "@/lib/domain/capacidade";
+import { ausenciasPorDia, capacidadeDaSemana, capacidadeVigente, faixaUtilizacao, validarVigencias } from "@/lib/domain/capacidade";
 
 describe("capacidadeDaSemana", () => {
   it("semana sem feriado: líquida = bruta", () => {
@@ -49,5 +49,19 @@ describe("faixaUtilizacao (faixas do CTRL-003)", () => {
     [1.83, "SOBRECARREGADO"],
   ] as const)("%f → %s", (u, faixa) => {
     expect(faixaUtilizacao(u)).toBe(faixa);
+  });
+});
+
+describe("indisponibilidades", () => {
+  it("treinamento de 8h na segunda reduz 40h → 32h; feriado no mesmo dia não desconta duas vezes", () => {
+    const aus = ausenciasPorDia([{ inicio: dia(2026, 10, 19), fim: dia(2026, 10, 19), horasPorDia: 8 }]);
+    expect(capacidadeDaSemana(dia(2026, 10, 19), 40, new Set(), aus)).toMatchObject({ liquida: 32, horasIndisponivel: 8 });
+    expect(capacidadeDaSemana(dia(2026, 10, 19), 40, new Set(["2026-10-19"]), aus).liquida).toBe(32);
+  });
+  it("férias de semana inteira zeram a capacidade; meio período desconta metade", () => {
+    const ferias = ausenciasPorDia([{ inicio: dia(2026, 10, 26), fim: dia(2026, 11, 1), horasPorDia: null }]);
+    expect(capacidadeDaSemana(dia(2026, 10, 26), 40, new Set(), ferias).liquida).toBe(0);
+    const meio = ausenciasPorDia([{ inicio: dia(2026, 10, 26), fim: dia(2026, 10, 30), horasPorDia: 4 }]);
+    expect(capacidadeDaSemana(dia(2026, 10, 26), 40, new Set(), meio).liquida).toBe(20);
   });
 });

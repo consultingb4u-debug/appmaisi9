@@ -4,7 +4,10 @@ import { usuarioAtual } from "@/lib/auth/sessao";
 import { NOME_PERFIL, pode } from "@/lib/auth/permissoes";
 import { chaveDia, formatarData, somarDias } from "@/lib/domain/datas";
 import { rotuloSemana, semanaDe, semanasEntre } from "@/lib/domain/semanas";
-import { capacidadePorSemana } from "@/lib/services/capacidade";
+import clsx from "clsx";
+import { cargaPorSemana, COR_FAIXA, formatarUtilizacao, ROTULO_FAIXA } from "@/lib/services/capacidade";
+import { STATUS_INDISPONIBILIDADE, TIPO_INDISPONIBILIDADE } from "@/lib/domain/rotulos";
+import { GradeSemanal, type CelulaGrade } from "@/components/grade-semanal";
 import { Cabecalho, Campo, Cartao, Selo, Vazio } from "@/components/ui";
 import { BotaoAcao, Formulario } from "@/components/formulario";
 import { HistoricoEntidade } from "@/components/historico";
@@ -28,8 +31,15 @@ export default async function PaginaRecurso({ params }: PageProps<"/recursos/[id
 
   const atual = semanaDe(new Date());
   const semanas = semanasEntre(atual.inicio, somarDias(atual.inicio, 7 * 11));
-  const caps = (await capacidadePorSemana([recurso.id], semanas)).get(recurso.id)!;
-  const feriados = await db.feriado.findMany({ where: { data: { gte: semanas[0].inicio, lte: semanas.at(-1)!.fim } }, orderBy: { data: "asc" } });
+  const carga = (await cargaPorSemana([recurso.id], semanas)).get(recurso.id)!;
+  const [feriados, indisponibilidades] = await Promise.all([
+    db.feriado.findMany({ where: { data: { gte: semanas[0].inicio, lte: semanas.at(-1)!.fim } }, orderBy: { data: "asc" } }),
+    db.indisponibilidade.findMany({ where: { recursoId: recurso.id, fim: { gte: somarDias(atual.inicio, -90) } }, orderBy: { inicio: "asc" } }),
+  ]);
+  const projetosCarga = [...new Map(semanas.flatMap((s) => carga.get(s.id)!.projetos).map((p) => [p.projetoId, p])).values()].sort((a, b) => a.cliente.localeCompare(b.cliente));
+  const celulasProjetos = new Map<string, CelulaGrade>(
+    semanas.flatMap((s) => carga.get(s.id)!.projetos.map((p) => [`${p.projetoId}|${s.id}`, { horas: p.horas, dica: p.observacao ?? undefined }] as [string, CelulaGrade])),
+  );
 
   return (
     <>
@@ -45,26 +55,96 @@ export default async function PaginaRecurso({ params }: PageProps<"/recursos/[id
         }
       />
 
-      <Cartao titulo="Capacidade líquida — próximas 12 semanas" className="mb-6">
-        <div className="grid grid-cols-4 gap-2 sm:grid-cols-6 lg:grid-cols-12">
+      <Cartao titulo="Carga semanal — próximas 12 semanas" className="mb-6">
+        <div className="grid grid-cols-3 gap-2 sm:grid-cols-6 lg:grid-cols-12">
           {semanas.map((s) => {
-            const c = caps.get(s.id)!;
+            const c = carga.get(s.id)!;
             return (
-              <div key={s.id} className={`rounded-md border px-2 py-2 text-center ${c.diasFeriado ? "border-destaque/40 bg-destaque/5" : "border-ardosia-100"}`}>
-                <div className="text-[11px] font-medium text-ardosia-500">{rotuloSemana(s)}</div>
-                <div className="text-lg font-semibold tabular-nums">{c.liquida}h</div>
-                <div className="text-[10px] text-ardosia-500">{c.diasFeriado ? `−${c.horasFeriado}h feriado` : `${formatarData(s.inicio).slice(0, 5)}`}</div>
+              <div key={s.id} className={clsx("rounded-md border px-2 py-2 text-center", c.faixa ? "border-transparent " + COR_FAIXA[c.faixa] : "border-ardosia-100")} title={c.faixa ? ROTULO_FAIXA[c.faixa] : undefined}>
+                <div className="text-[11px] font-medium opacity-80">{rotuloSemana(s)}</div>
+                <div className="text-lg font-semibold tabular-nums">{formatarUtilizacao(c.utilizacao)}</div>
+                <div className="text-[10px] tabular-nums opacity-80">
+                  {c.planejado}h / {c.capacidade.liquida}h
+                </div>
+                {(c.capacidade.diasFeriado > 0 || c.capacidade.horasIndisponivel > 0) && (
+                  <div className="text-[10px] opacity-80">−{c.capacidade.horasFeriado + c.capacidade.horasIndisponivel}h {c.capacidade.horasIndisponivel ? "ausência" : "feriado"}</div>
+                )}
               </div>
             );
           })}
         </div>
+        <div className="mt-3 flex flex-wrap gap-3 text-xs text-ardosia-500">
+          {(Object.keys(ROTULO_FAIXA) as (keyof typeof ROTULO_FAIXA)[]).map((f) => (
+            <span key={f} className={clsx("rounded px-1.5", COR_FAIXA[f])}>
+              {ROTULO_FAIXA[f]}
+            </span>
+          ))}
+          <span>· utilização = planejado ÷ capacidade líquida (capacidade − feriados − ausências aprovadas)</span>
+        </div>
         {feriados.length > 0 && (
-          <p className="mt-3 text-xs text-ardosia-500">
+          <p className="mt-2 text-xs text-ardosia-500">
             Feriados no período: {feriados.map((f) => `${formatarData(f.data).slice(0, 5)} ${f.descricao}`).join(" · ")}
           </p>
         )}
-        <p className="mt-1 text-xs text-ardosia-500">Férias, ausências e projetos alocados entram nesta visão nos próximos incrementos.</p>
       </Cartao>
+
+      <Cartao titulo="Projetos que consomem a capacidade" className="mb-6">
+        {projetosCarga.length === 0 ? (
+          <Vazio>Nenhuma alocação nas próximas 12 semanas.</Vazio>
+        ) : (
+          <GradeSemanal
+            linhas={projetosCarga.map((p) => ({ chave: p.projetoId, rotulo: p.projeto, sub: p.cliente, href: `/projetos/${p.projetoId}` }))}
+            semanas={semanas}
+            celulas={celulasProjetos}
+            rotuloLinha="Projeto"
+            rodape={[
+              { rotulo: "Capacidade líquida", valores: new Map(semanas.map((s) => [s.id, { texto: `${carga.get(s.id)!.capacidade.liquida}` }])) },
+              {
+                rotulo: "Utilização",
+                valores: new Map(
+                  semanas.map((s) => {
+                    const c = carga.get(s.id)!;
+                    return [s.id, { texto: formatarUtilizacao(c.utilizacao), destaque: c.faixa === "SOBRECARREGADO" ? "critico" : c.faixa === "ATENCAO" ? "alerta" : undefined }];
+                  }),
+                ),
+              },
+            ]}
+          />
+        )}
+      </Cartao>
+
+      {indisponibilidades.length > 0 && (
+        <Cartao titulo="Indisponibilidades" className="mb-6">
+          <table className="tabela">
+            <thead>
+              <tr>
+                <th>Período</th>
+                <th>Tipo</th>
+                <th>Horas/dia</th>
+                <th>Observação</th>
+                <th>Situação</th>
+              </tr>
+            </thead>
+            <tbody>
+              {indisponibilidades.map((i) => (
+                <tr key={i.id}>
+                  <td className="whitespace-nowrap tabular-nums">
+                    {formatarData(i.inicio)}
+                    {i.fim.getTime() !== i.inicio.getTime() && ` a ${formatarData(i.fim)}`}
+                  </td>
+                  <td>{TIPO_INDISPONIBILIDADE[i.tipo]}</td>
+                  <td className="tabular-nums">{i.horasPorDia ? `${i.horasPorDia.toNumber()}h` : "dia inteiro"}</td>
+                  <td className="text-ardosia-600">{i.observacao ?? "—"}</td>
+                  <td>
+                    <Selo tom={i.status === "APROVADA" ? "ok" : i.status === "RECUSADA" ? "neutro" : "alerta"}>{STATUS_INDISPONIBILIDADE[i.status]}</Selo>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <p className="mt-2 text-xs text-ardosia-500">Somente indisponibilidades aprovadas reduzem a capacidade. Cadastro e aprovação na tela Capacidade (incremento 3).</p>
+        </Cartao>
+      )}
 
       <div className="grid gap-6 lg:grid-cols-[380px_1fr]">
         <Cartao titulo="Dados do recurso">

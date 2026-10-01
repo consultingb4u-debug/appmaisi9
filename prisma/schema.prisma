@@ -62,6 +62,10 @@ model Recurso {
   usuario         Usuario?             @relation(fields: [usuarioId], references: [id], onDelete: SetNull)
   apelidos        RecursoApelido[]
   capacidades     RecursoCapacidade[]
+  projetosGp      Projeto[]            @relation("ProjetoGp")
+  participacoes   ProjetoMembro[]
+  alocacoes       AlocacaoSemanal[]
+  indisponibilidades Indisponibilidade[]
 
   @@map("recurso")
 }
@@ -108,6 +112,8 @@ model Cliente {
   atualizadoPorId String?   @map("atualizado_por_id") @db.Uuid
 
   contatos        ContatoCliente[]
+  apelidos        ClienteApelido[]
+  projetos        Projeto[]
 
   @@map("cliente")
 }
@@ -135,6 +141,267 @@ model ContatoCliente {
 
   @@unique([clienteId, nome])
   @@map("contato_cliente")
+}
+
+/// Grafias alternativas do cliente nas planilhas ("DIPIL" → Dipil).
+model ClienteApelido {
+  id        String  @id @default(uuid()) @db.Uuid
+  clienteId String  @map("cliente_id") @db.Uuid
+  apelido   String  @unique
+
+  cliente   Cliente @relation(fields: [clienteId], references: [id], onDelete: Cascade)
+
+  @@map("cliente_apelido")
+}
+
+// ───────────────────────────── Projetos ─────────────────────────────
+
+enum TipoProjeto {
+  PROJETO
+  SUPORTE
+  SUSTENTACAO
+  ALOCACAO
+  INTERNO
+}
+
+enum StatusProjeto {
+  PROJETO_IDENTIFICADO
+  APROVACAO_CLIENTE
+  NAO_APROVADO
+  EM_ANDAMENTO
+  BLOQUEADO
+  CONCLUIDO
+  CANCELADO
+}
+
+enum Prioridade {
+  BAIXA
+  MEDIA
+  ALTA
+  CRITICA
+}
+
+enum StatusExecutivo {
+  VERDE
+  AMARELO
+  VERMELHO
+}
+
+enum FaseProjeto {
+  ENVISIONING
+  DEVELOPMENT
+  DEPLOYMENT
+  POST_DEPLOY
+}
+
+model Projeto {
+  id                        String           @id @default(uuid()) @db.Uuid
+  codigo                    String           @unique
+  clienteId                 String           @map("cliente_id") @db.Uuid
+  nome                      String
+  tipo                      TipoProjeto      @default(PROJETO)
+  status                    StatusProjeto    @default(EM_ANDAMENTO)
+  prioridade                Prioridade       @default(MEDIA)
+  gpId                      String?          @map("gp_id") @db.Uuid
+  dataKickoff               DateTime?        @map("data_kickoff") @db.Date
+  dataGoLiveAlvo            DateTime?        @map("data_go_live_alvo") @db.Date
+  dataGoLiveReal            DateTime?        @map("data_go_live_real") @db.Date
+  dataEncerramentoPrevista  DateTime?        @map("data_encerramento_prevista") @db.Date
+  dataEncerramentoReal      DateTime?        @map("data_encerramento_real") @db.Date
+  horasVendidas             Decimal?         @map("horas_vendidas") @db.Decimal(8, 1)
+  notas                     String?
+  statusExecutivo           StatusExecutivo? @map("status_executivo")
+  faseAtual                 FaseProjeto?     @map("fase_atual")
+  arquivadoEm               DateTime?        @map("arquivado_em")
+  criadoEm                  DateTime         @default(now()) @map("criado_em")
+  criadoPorId               String?          @map("criado_por_id") @db.Uuid
+  atualizadoEm              DateTime         @updatedAt @map("atualizado_em")
+  atualizadoPorId           String?          @map("atualizado_por_id") @db.Uuid
+
+  cliente                   Cliente          @relation(fields: [clienteId], references: [id])
+  gp                        Recurso?         @relation("ProjetoGp", fields: [gpId], references: [id], onDelete: SetNull)
+  membros                   ProjetoMembro[]
+  alocacoes                 AlocacaoSemanal[]
+
+  @@unique([clienteId, nome])
+  @@index([status])
+  @@map("projeto")
+}
+
+enum PapelProjeto {
+  GP
+  FUNCIONAL
+  TECNICO
+  DEV
+  ANALISTA
+  APOIO
+}
+
+model ProjetoMembro {
+  id        String       @id @default(uuid()) @db.Uuid
+  projetoId String       @map("projeto_id") @db.Uuid
+  recursoId String       @map("recurso_id") @db.Uuid
+  papel     PapelProjeto
+  inicio    DateTime?    @db.Date
+  fim       DateTime?    @db.Date
+  criadoEm  DateTime     @default(now()) @map("criado_em")
+
+  projeto   Projeto      @relation(fields: [projetoId], references: [id], onDelete: Cascade)
+  recurso   Recurso      @relation(fields: [recursoId], references: [id])
+
+  @@unique([projetoId, recursoId, papel])
+  @@map("projeto_membro")
+}
+
+// ───────────────────────────── Alocação e disponibilidade ─────────────────────────────
+
+enum StatusAlocacao {
+  PLANEJADO
+  EM_ANDAMENTO
+  BLOQUEADO
+  AGUARDANDO_CLIENTE
+  CONCLUIDO
+  CANCELADO
+}
+
+/// Unidade do planejamento: Projeto + Recurso + Semana.
+/// Previstas = coalesce(horasManuais, horasCalculadas) + horasAvulsas.
+model AlocacaoSemanal {
+  id               String         @id @default(uuid()) @db.Uuid
+  projetoId        String         @map("projeto_id") @db.Uuid
+  recursoId        String         @map("recurso_id") @db.Uuid
+  semanaId         String         @map("semana_id")
+  horasCalculadas  Decimal        @default(0) @map("horas_calculadas") @db.Decimal(6, 1)
+  horasManuais     Decimal?       @map("horas_manuais") @db.Decimal(6, 1)
+  horasAvulsas     Decimal        @default(0) @map("horas_avulsas") @db.Decimal(6, 1)
+  horasRealizadas  Decimal        @default(0) @map("horas_realizadas") @db.Decimal(6, 1)
+  status           StatusAlocacao @default(PLANEJADO)
+  prioridade       Prioridade?
+  observacao       String?
+  importLinhaId    String?        @map("import_linha_id") @db.Uuid
+  criadoEm         DateTime       @default(now()) @map("criado_em")
+  criadoPorId      String?        @map("criado_por_id") @db.Uuid
+  atualizadoEm     DateTime       @updatedAt @map("atualizado_em")
+  atualizadoPorId  String?        @map("atualizado_por_id") @db.Uuid
+
+  projeto          Projeto        @relation(fields: [projetoId], references: [id], onDelete: Cascade)
+  recurso          Recurso        @relation(fields: [recursoId], references: [id])
+  semana           Semana         @relation(fields: [semanaId], references: [id])
+
+  @@unique([projetoId, recursoId, semanaId])
+  @@index([recursoId, semanaId])
+  @@map("alocacao_semanal")
+}
+
+enum TipoIndisponibilidade {
+  FERIAS
+  FERIADO_LOCAL
+  AUSENCIA
+  TREINAMENTO
+  BLOQUEIO
+  OUTROS
+}
+
+enum StatusIndisponibilidade {
+  PENDENTE
+  APROVADA
+  RECUSADA
+}
+
+model Indisponibilidade {
+  id              String                  @id @default(uuid()) @db.Uuid
+  recursoId       String                  @map("recurso_id") @db.Uuid
+  tipo            TipoIndisponibilidade
+  inicio          DateTime                @db.Date
+  fim             DateTime                @db.Date
+  horasPorDia     Decimal?                @map("horas_por_dia") @db.Decimal(4, 1)
+  observacao      String?
+  status          StatusIndisponibilidade @default(PENDENTE)
+  importLinhaId   String?                 @map("import_linha_id") @db.Uuid
+  criadoEm        DateTime                @default(now()) @map("criado_em")
+  criadoPorId     String?                 @map("criado_por_id") @db.Uuid
+  atualizadoEm    DateTime                @updatedAt @map("atualizado_em")
+
+  recurso         Recurso                 @relation(fields: [recursoId], references: [id], onDelete: Cascade)
+
+  @@index([recursoId, inicio])
+  @@map("indisponibilidade")
+}
+
+// ───────────────────────────── Importação ─────────────────────────────
+
+enum TipoImportacao {
+  CTRL003
+  CTRL001
+}
+
+enum StatusLote {
+  CARREGADO
+  VALIDADO
+  COM_ERROS
+  EFETIVADO
+  DESCARTADO
+}
+
+enum AcaoImportacao {
+  CRIAR
+  ATUALIZAR
+  IGNORAR
+}
+
+enum StatusLinha {
+  OK
+  ALERTA
+  ERRO
+}
+
+model ImportLote {
+  id            String         @id @default(uuid()) @db.Uuid
+  tipo          TipoImportacao
+  arquivoNome   String         @map("arquivo_nome")
+  arquivoChave  String         @map("arquivo_chave")
+  status        StatusLote     @default(CARREGADO)
+  resumo        String?
+  carregadoPorId String?       @map("carregado_por_id") @db.Uuid
+  carregadoEm   DateTime       @default(now()) @map("carregado_em")
+  efetivadoPorId String?       @map("efetivado_por_id") @db.Uuid
+  efetivadoEm   DateTime?      @map("efetivado_em")
+
+  linhas        ImportLinha[]
+
+  @@map("import_lote")
+}
+
+/// Staging: cada linha relevante da planilha, com os dados brutos em JSON.
+model ImportLinha {
+  id               String          @id @default(uuid()) @db.Uuid
+  loteId           String          @map("lote_id") @db.Uuid
+  aba              String
+  linhaOrigem      Int             @map("linha_origem")
+  entidade         String
+  chave            String
+  dados            Json
+  acao             AcaoImportacao?
+  status           StatusLinha?
+  entidadeIdDestino String?        @map("entidade_id_destino")
+
+  lote             ImportLote      @relation(fields: [loteId], references: [id], onDelete: Cascade)
+  mensagens        ImportMensagem[]
+
+  @@index([loteId, aba])
+  @@map("import_linha")
+}
+
+model ImportMensagem {
+  id       String      @id @default(uuid()) @db.Uuid
+  linhaId  String      @map("linha_id") @db.Uuid
+  nivel    StatusLinha
+  campo    String?
+  mensagem String
+
+  linha    ImportLinha @relation(fields: [linhaId], references: [id], onDelete: Cascade)
+
+  @@map("import_mensagem")
 }
 
 // ───────────────────────────── Calendário ─────────────────────────────
@@ -165,6 +432,8 @@ model Semana {
   numero  Int
   inicio  DateTime @unique @db.Date
   fim     DateTime @db.Date
+
+  alocacoes AlocacaoSemanal[]
 
   @@unique([anoIso, numero])
   @@map("semana")

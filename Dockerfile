@@ -17,8 +17,8 @@ CMD ["sh", "-c", "npx prisma migrate deploy && npx prisma db seed"]
 
 FROM node:22-alpine AS app
 WORKDIR /app
-ENV NODE_ENV=production PORT=3000 HOSTNAME=0.0.0.0
-RUN addgroup -S app && adduser -S app -G app
+ENV NODE_ENV=production PORT=3000 HOSTNAME=0.0.0.0 STORAGE_DIR=/app/storage
+RUN addgroup -S app && adduser -S app -G app && mkdir -p /app/storage && chown app:app /app/storage
 COPY --from=build --chown=app:app /app/.next/standalone ./
 COPY --from=build --chown=app:app /app/.next/static ./.next/static
 COPY --from=build --chown=app:app /app/public ./public

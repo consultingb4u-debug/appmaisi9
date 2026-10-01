@@ -7,5 +7,7 @@ cd "$(dirname "$0")/.."
 mkdir -p backups
 ARQ="backups/maisi9-$(date +%Y%m%d-%H%M).sql.gz"
 docker compose exec -T db pg_dump -U maisi9 -d maisi9 --no-owner | gzip > "$ARQ"
-find backups -name 'maisi9-*.sql.gz' -mtime +30 -delete
+# Arquivos enviados (planilhas importadas, documentos)
+docker compose exec -T app tar czf - -C /app storage > "backups/maisi9-arquivos-$(date +%Y%m%d-%H%M).tar.gz"
+find backups -name 'maisi9-*' -mtime +30 -delete
 echo "Backup gerado: $ARQ"

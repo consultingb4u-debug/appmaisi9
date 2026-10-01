@@ -8,7 +8,8 @@ export type Modulo =
   | "CLIENTES"
   | "FERIADOS"
   | "USUARIOS"
-  | "AUDITORIA";
+  | "AUDITORIA"
+  | "IMPORTACAO";
 
 export type Acao = "ver" | "editar";
 
@@ -24,6 +25,7 @@ const MATRIZ: Record<Perfil, Partial<Record<Modulo, Acao[]>>> = {
     FERIADOS: ["ver", "editar"],
     USUARIOS: ["ver", "editar"],
     AUDITORIA: ["ver"],
+    IMPORTACAO: ["ver", "editar"],
   },
   GESTOR: {
     PORTFOLIO: ["ver", "editar"],
@@ -34,6 +36,7 @@ const MATRIZ: Record<Perfil, Partial<Record<Modulo, Acao[]>>> = {
     FERIADOS: ["ver", "editar"],
     USUARIOS: ["ver"],
     AUDITORIA: ["ver"],
+    IMPORTACAO: ["ver", "editar"],
   },
   CONSULTOR: {
     PORTFOLIO: ["ver"],

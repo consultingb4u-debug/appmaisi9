@@ -31,8 +31,11 @@ services:
       DATABASE_URL: postgresql://maisi9:${POSTGRES_PASSWORD:-maisi9}@db:5432/maisi9?schema=public
     ports:
       - "${APP_PORT:-3000}:3000"
+    volumes:
+      - arquivos:/app/storage # planilhas importadas e, depois, documentos
     depends_on:
       migrador: { condition: service_completed_successfully }
 
 volumes:
   dados_db:
+  arquivos:

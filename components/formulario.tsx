@@ -17,7 +17,6 @@ export function Formulario({
   rotuloEnviar = "Salvar",
   limparAoSalvar = false,
   className,
-  acoesExtras,
   somenteLeitura = false,
 }: {
   acao: (estado: EstadoAcao, dados: FormData) => Promise<EstadoAcao>;
@@ -25,7 +24,6 @@ export function Formulario({
   rotuloEnviar?: string;
   limparAoSalvar?: boolean;
   className?: string;
-  acoesExtras?: ReactNode;
   /** Exibe os campos bloqueados e sem botão (perfil sem permissão de edição). */
   somenteLeitura?: boolean;
 }) {
@@ -45,7 +43,6 @@ export function Formulario({
         <button type="submit" disabled={enviando} className={classeBotao("primario")}>
           {enviando ? "Salvando…" : rotuloEnviar}
         </button>
-        {acoesExtras}
         {estado?.erro && <span className="text-sm text-critico">{estado.erro}</span>}
         {estado?.ok && estado.mensagem && <span className="text-sm text-ok">{estado.mensagem}</span>}
       </div>

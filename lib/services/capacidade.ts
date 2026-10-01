@@ -85,6 +85,6 @@ export const COR_FAIXA: Record<FaixaUtilizacao, string> = {
 
 export function formatarUtilizacao(u: number | null): string {
   if (u === null) return "—";
-  if (!Number.isFinite(u)) return "∞";
+  if (!Number.isFinite(u)) return "sem cap."; // horas planejadas numa semana sem capacidade (férias, feriados)
   return `${Math.round(u * 100)}%`;
 }

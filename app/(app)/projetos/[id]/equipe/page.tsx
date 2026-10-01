@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
 import { usuarioAtual } from "@/lib/auth/sessao";
@@ -111,9 +112,16 @@ export default async function Equipe({ params }: PageProps<"/projetos/[id]/equip
         )}
       </Cartao>
 
-      <Cartao titulo="Alocação semanal (horas previstas)">
+      <Cartao
+        titulo="Alocação semanal (horas previstas)"
+        acoes={
+          <Link href={`/capacidade/planejamento?projeto=${id}&n=12`} className="text-sm text-navy-800 hover:underline">
+            Editar planejamento
+          </Link>
+        }
+      >
         {pessoas.length === 0 ? (
-          <Vazio>Sem alocação planejada. O planejamento semanal editável chega no incremento 3; o rateio automático do cronograma, no incremento 4.</Vazio>
+          <Vazio>Sem alocação planejada. Use “Editar planejamento”; o rateio automático do cronograma chega no incremento 4.</Vazio>
         ) : (
           <>
             <GradeSemanal linhas={pessoas.map((r) => ({ chave: r.id, rotulo: r.nome, href: `/recursos/${r.id}` }))} semanas={semanas} celulas={celulas} />

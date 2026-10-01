@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
 import { usuarioAtual } from "@/lib/auth/sessao";
@@ -88,7 +89,20 @@ export default async function PaginaRecurso({ params }: PageProps<"/recursos/[id
         )}
       </Cartao>
 
-      <Cartao titulo="Projetos que consomem a capacidade" className="mb-6">
+      <Cartao
+        titulo="Projetos que consomem a capacidade"
+        className="mb-6"
+        acoes={
+          <span className="flex gap-3 text-sm">
+            <Link href={`/capacidade/planejamento?recurso=${recurso.id}&n=12`} className="text-navy-800 hover:underline">
+              Ajustar planejamento
+            </Link>
+            <Link href={`/capacidade/indisponibilidades?recurso=${recurso.id}`} className="text-navy-800 hover:underline">
+              Indisponibilidades
+            </Link>
+          </span>
+        }
+      >
         {projetosCarga.length === 0 ? (
           <Vazio>Nenhuma alocação nas próximas 12 semanas.</Vazio>
         ) : (
@@ -142,7 +156,7 @@ export default async function PaginaRecurso({ params }: PageProps<"/recursos/[id
               ))}
             </tbody>
           </table>
-          <p className="mt-2 text-xs text-ardosia-500">Somente indisponibilidades aprovadas reduzem a capacidade. Cadastro e aprovação na tela Capacidade (incremento 3).</p>
+          <p className="mt-2 text-xs text-ardosia-500">Somente indisponibilidades aprovadas reduzem a capacidade. Cadastro e aprovação em Capacidade › Indisponibilidades.</p>
         </Cartao>
       )}
 

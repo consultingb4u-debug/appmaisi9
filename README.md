@@ -11,8 +11,8 @@ Aplicação web interna da MAIS i9 para substituir os controles em planilha
 |---|---|---|
 | 1 · Fundação | Login Microsoft 365, perfis, recursos e capacidade com vigência, clientes e contatos, feriados, semanas ISO, auditoria | ✅ |
 | 2 · Portfólio | Portfólio (filtros, ordenação, linha do tempo), página do projeto, importação do CTRL-003 com revisão e De-Para, carga real por recurso | ✅ |
-| 3 · Capacidade | Planejamento semanal editável, indisponibilidades com aprovação, mapa de carga | próximo |
-| 4 · Cronograma | Backlog, cronograma, Gantt, rateio automático, importação do CTRL-001 | |
+| 3 · Capacidade | Mapa de carga com detalhe recurso × semana, planejamento semanal editável inline, indisponibilidades com solicitação e aprovação | ✅ |
+| 4 · Cronograma | Backlog, cronograma, Gantt, rateio automático, apontamento por atividade, importação do CTRL-001 | próximo |
 | 5 · Execução | Pré-projeto, complexidade, RAID, testes, UAT, deployment | |
 | 6 · Status | Status reports, documentos, dashboard executivo | |
 

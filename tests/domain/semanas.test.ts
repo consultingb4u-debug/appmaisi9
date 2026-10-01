@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { dia } from "@/lib/domain/datas";
-import { rotuloSemana, semanaDe, semanasEntre } from "@/lib/domain/semanas";
+import { rotuloSemana, semanaDe, semanaPorId, semanasEntre } from "@/lib/domain/semanas";
 
 describe("semanaDe", () => {
   it("S40/2026 começa em 28/09/2026, como no CTRL-003", () => {
@@ -33,5 +33,14 @@ describe("semanasEntre", () => {
     expect(ss).toHaveLength(14);
     expect(ss[0].id).toBe("2026-W40");
     expect(ss.at(-1)!.id).toBe("2026-W53");
+  });
+});
+
+describe("semanaPorId", () => {
+  it("ida e volta", () => {
+    expect(semanaPorId("2026-W40")?.inicio).toEqual(dia(2026, 9, 28));
+    expect(semanaPorId("2026-W53")?.inicio).toEqual(dia(2026, 12, 28));
+    expect(semanaPorId("2027-W53")).toBeNull();
+    expect(semanaPorId("xx")).toBeNull();
   });
 });

@@ -10,7 +10,7 @@ export default async function LayoutApp({ children }: LayoutProps<"/">) {
     { href: "/", rotulo: "Início", icone: "◧" },
     { href: "/portfolio", rotulo: "Portfólio", icone: "▤" },
     { href: "/recursos", rotulo: "Recursos", icone: "◉" },
-    { href: "/capacidade", rotulo: "Capacidade", icone: "▦", emBreve: "incremento 3" },
+    { href: "/capacidade", rotulo: "Capacidade", icone: "▦" },
     { href: "/clientes", rotulo: "Clientes", icone: "◆" },
   ];
   const admin: ItemMenu[] = [

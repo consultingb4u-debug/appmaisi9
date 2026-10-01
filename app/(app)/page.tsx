@@ -11,7 +11,7 @@ import clsx from "clsx";
 const ENTREGAS = [
   { n: 1, titulo: "Fundação", itens: "Login Microsoft 365, perfis, cadastros, calendário, auditoria", feito: true },
   { n: 2, titulo: "Portfólio e projetos", itens: "Portfólio, página do projeto, importação do CTRL-003", feito: true },
-  { n: 3, titulo: "Capacidade", itens: "Planejamento semanal editável, indisponibilidades, mapa de carga" },
+  { n: 3, titulo: "Capacidade", itens: "Planejamento semanal editável, indisponibilidades, mapa de carga", feito: true },
   { n: 4, titulo: "Cronograma", itens: "Backlog, cronograma, Gantt, rateio automático, importação do CTRL-001" },
   { n: 5, titulo: "Execução", itens: "Pré-projeto, complexidade, RAID, testes, UAT, deployment" },
   { n: 6, titulo: "Status e dashboard", itens: "Status reports, documentos, dashboard executivo final" },
@@ -68,9 +68,9 @@ export default async function Inicio({ searchParams }: PageProps<"/">) {
       <div className="mb-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
         <Indicador rotulo="Projetos ativos" valor={ativos.length} href="/portfolio" />
         <Indicador rotulo="Bloqueados" valor={projetos.filter((p) => p.status === "BLOQUEADO").length} href="/portfolio?status=BLOQUEADO" tom={projetos.some((p) => p.status === "BLOQUEADO") ? "critico" : "navy"} />
-        <Indicador rotulo={`Utilização ${rotuloSemana(atual)}`} valor={formatarUtilizacao(capLiquida ? planejado / capLiquida : null)} detalhe={`${planejado}h planejadas de ${capLiquida}h líquidas`} href="/recursos" />
-        <Indicador rotulo="Sobrecarregados" valor={sobrecarregados.length} detalhe="acima de 100% nesta semana" tom={sobrecarregados.length ? "critico" : "ok"} />
-        <Indicador rotulo="Disponíveis" valor={disponiveis.length} detalhe="abaixo de 50% nesta semana" tom="ok" />
+        <Indicador rotulo={`Utilização ${rotuloSemana(atual)}`} valor={formatarUtilizacao(capLiquida ? planejado / capLiquida : null)} detalhe={`${planejado}h planejadas de ${capLiquida}h líquidas`} href="/capacidade" />
+        <Indicador rotulo="Sobrecarregados" valor={sobrecarregados.length} detalhe="acima de 100% nesta semana" tom={sobrecarregados.length ? "critico" : "ok"} href="/capacidade?criticos=1" />
+        <Indicador rotulo="Disponíveis" valor={disponiveis.length} detalhe="abaixo de 50% nesta semana" tom="ok" href="/capacidade" />
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
@@ -124,7 +124,7 @@ export default async function Inicio({ searchParams }: PageProps<"/">) {
                 {sobrecarregados.map(({ recurso, c }) => (
                   <li key={recurso.id}>
                     <div className="flex items-center justify-between">
-                      <Link href={`/recursos/${recurso.id}`} className="font-medium hover:underline">
+                      <Link href={`/capacidade?r=${recurso.id}&s=${atual.id}`} className="font-medium hover:underline">
                         {recurso.nome}
                       </Link>
                       <Selo tom="critico">

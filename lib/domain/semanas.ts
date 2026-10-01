@@ -45,3 +45,13 @@ export function semanasEntre(de: Date, ate: Date): SemanaIso[] {
 export function rotuloSemana(s: Pick<SemanaIso, "anoIso" | "numero">): string {
   return `S${String(s.numero).padStart(2, "0")}/${String(s.anoIso).slice(-2)}`;
 }
+
+/** "2026-W40" → semana ISO; null se o identificador for inválido. */
+export function semanaPorId(id: string): SemanaIso | null {
+  const m = /^(\d{4})-W(\d{2})$/.exec(id);
+  if (!m) return null;
+  const ano = Number(m[1]);
+  const numero = Number(m[2]);
+  const s = semanaDe(somarDias(inicioDaSemana(dia(ano, 1, 4)), (numero - 1) * 7));
+  return s.anoIso === ano && s.numero === numero ? s : null;
+}

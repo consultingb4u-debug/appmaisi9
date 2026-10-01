@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { usuarioAtual } from "@/lib/auth/sessao";
 import { carregarProjeto } from "@/lib/services/projeto";
+import { cronogramaDoProjeto } from "@/lib/services/cronograma";
 import { formatarData } from "@/lib/domain/datas";
 import { PRIORIDADE, STATUS_EXECUTIVO, STATUS_PROJETO, TIPO_PROJETO, TOM_PRIORIDADE, TOM_STATUS_PROJETO } from "@/lib/domain/rotulos";
 import { Selo } from "@/components/ui";
@@ -17,6 +18,9 @@ export default async function LayoutProjeto({ children, params }: LayoutProps<"/
   if (!p) notFound();
   const base = `/projetos/${p.id}`;
   const vendidas = p.horasVendidas?.toNumber() ?? null;
+  const crono = await cronogramaDoProjeto(p.id);
+  const temCronograma = crono.atividades.length > 0;
+  const forecast = crono.atividades.filter((a) => a.status !== "CANCELADO").reduce((t, a) => t + a.totais.forecast, 0);
 
   const info: [string, string][] = [
     ["GP", p.gp?.nome ?? "—"],
@@ -27,6 +31,7 @@ export default async function LayoutProjeto({ children, params }: LayoutProps<"/
     ["Horas vendidas", vendidas === null ? "—" : h(vendidas)],
     ["Planejado", h(p.horasPlanejadas)],
     ["Realizado", h(p.horasRealizadas)],
+    ...(temCronograma ? ([["Forecast", h(forecast)]] as [string, string][]) : []),
   ];
 
   return (
@@ -61,7 +66,7 @@ export default async function LayoutProjeto({ children, params }: LayoutProps<"/
             )}
           </div>
         </div>
-        <dl className="mt-4 grid grid-cols-2 gap-x-6 gap-y-3 text-sm sm:grid-cols-4 lg:grid-cols-8">
+        <dl className="mt-4 grid grid-cols-2 gap-x-6 gap-y-3 text-sm sm:grid-cols-3 lg:grid-cols-9">
           {info.map(([r, v]) => (
             <div key={r}>
               <dt className="text-[11px] font-medium tracking-wide text-ardosia-500 uppercase">{r}</dt>
@@ -69,6 +74,17 @@ export default async function LayoutProjeto({ children, params }: LayoutProps<"/
             </div>
           ))}
         </dl>
+        {temCronograma && (
+          <div className="mt-4">
+            <div className="mb-1 flex justify-between text-xs text-ardosia-500">
+              <span>Conclusão (ponderada pelo esforço)</span>
+              <span className="font-medium text-navy-900">{crono.progresso}%</span>
+            </div>
+            <div className="h-2 overflow-hidden rounded-full bg-ardosia-100">
+              <div className="h-full bg-ok" style={{ width: `${crono.progresso}%` }} />
+            </div>
+          </div>
+        )}
         {vendidas !== null && vendidas > 0 && (
           <div className="mt-4">
             <div className="mb-1 flex justify-between text-xs text-ardosia-500">
@@ -85,8 +101,8 @@ export default async function LayoutProjeto({ children, params }: LayoutProps<"/
         abas={[
           { href: base, rotulo: "Visão Geral" },
           { href: `${base}/pre-projeto`, rotulo: "Pré-Projeto", emBreve: true },
-          { href: `${base}/backlog`, rotulo: "Backlog", emBreve: true },
-          { href: `${base}/cronograma`, rotulo: "Cronograma", emBreve: true },
+          { href: `${base}/backlog`, rotulo: "Backlog" },
+          { href: `${base}/cronograma`, rotulo: "Cronograma" },
           { href: `${base}/operacional`, rotulo: "Operacional", emBreve: true },
           { href: `${base}/testes`, rotulo: "Testes Internos", emBreve: true },
           { href: `${base}/uat`, rotulo: "UAT", emBreve: true },

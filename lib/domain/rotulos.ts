@@ -97,3 +97,46 @@ export function normalizarTexto(s: string): string {
     .trim()
     .toLowerCase();
 }
+
+export const FASE: Record<"ENVISIONING" | "DEVELOPMENT" | "DEPLOYMENT" | "POST_DEPLOY", string> = {
+  ENVISIONING: "Envisioning",
+  DEVELOPMENT: "Development",
+  DEPLOYMENT: "Deployment",
+  POST_DEPLOY: "Post Deploy",
+};
+export const FASES = Object.keys(FASE) as (keyof typeof FASE)[];
+
+export const STATUS_ITEM: Record<"NAO_INICIADO" | "EM_ANDAMENTO" | "BLOQUEADO" | "CONCLUIDO" | "CANCELADO", string> = {
+  NAO_INICIADO: "Não iniciado",
+  EM_ANDAMENTO: "Em andamento",
+  BLOQUEADO: "Bloqueado",
+  CONCLUIDO: "Concluído",
+  CANCELADO: "Cancelado",
+};
+export const TOM_STATUS_ITEM: Record<keyof typeof STATUS_ITEM, Tom> = {
+  NAO_INICIADO: "neutro",
+  EM_ANDAMENTO: "livre",
+  BLOQUEADO: "critico",
+  CONCLUIDO: "ok",
+  CANCELADO: "neutro",
+};
+
+export const SITUACAO_PRAZO: Record<"CONCLUIDO" | "ATRASADO" | "ATENCAO" | "NO_PRAZO", [string, Tom]> = {
+  CONCLUIDO: ["Concluído", "ok"],
+  ATRASADO: ["Atrasado", "critico"],
+  ATENCAO: ["Atenção", "alerta"],
+  NO_PRAZO: ["No prazo", "livre"],
+};
+
+export const TIPO_BACKLOG: Record<"ENTREGA" | "REQUISITO" | "MELHORIA" | "INTEGRACAO" | "RELATORIO" | "CUSTOMIZACAO", string> = {
+  ENTREGA: "Entrega",
+  REQUISITO: "Requisito",
+  MELHORIA: "Melhoria",
+  INTEGRACAO: "Integração",
+  RELATORIO: "Relatório",
+  CUSTOMIZACAO: "Customização",
+};
+export const ADERENCIA: Record<"ADERENTE" | "PARCIAL" | "GAP" | "A_VALIDAR", string> = { ADERENTE: "Aderente", PARCIAL: "Parcial", GAP: "Gap", A_VALIDAR: "A validar" };
+export const SIM_NAO: Record<"SIM" | "NAO" | "A_CONFIRMAR", string> = { SIM: "Sim", NAO: "Não", A_CONFIRMAR: "A confirmar" };
+export const VALIDACAO: Record<"PENDENTE" | "APROVADO" | "REPROVADO" | "NA", string> = { PENDENTE: "Pendente", APROVADO: "Aprovado", REPROVADO: "Reprovado", NA: "N/A" };
+export const TOM_VALIDACAO: Record<keyof typeof VALIDACAO, Tom> = { PENDENTE: "alerta", APROVADO: "ok", REPROVADO: "critico", NA: "neutro" };

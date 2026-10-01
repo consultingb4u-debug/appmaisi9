@@ -1,4 +1,4 @@
-# MAIS i9 — Gestão de Projetos · Resumo técnico (incrementos 1 a 3)
+# MAIS i9 — Gestão de Projetos · Resumo técnico (incrementos 1 a 4)
 
 > Público: equipe técnica / administração. Situação em 01/10/2026.
 > Repositório: `consultingb4u-debug/appmaisi9`, branch `claude/mais-i9-project-management-3bapfx`.
@@ -18,11 +18,11 @@ Substituir as planilhas CTRL-001 (uma por projeto) e CTRL-003 (gestão de recurs
 | 1 | Fundação: autenticação, perfis, cadastros (recursos, capacidade com vigência, clientes, contatos, feriados), semanas ISO, auditoria | ✅ |
 | 2 | Portfólio, página do projeto (visão geral, equipe, histórico), importação do CTRL-003 com revisão | ✅ |
 | 3 | Capacidade: mapa de carga, planejamento semanal editável, indisponibilidades com aprovação | ✅ |
-| 4 | Backlog, cronograma com várias pessoas por tarefa, Gantt, rateio automático nas semanas, apontamento por atividade, importação do CTRL-001 | em desenvolvimento |
+| 4 | Backlog, cronograma com várias pessoas por tarefa, Gantt, rateio automático nas semanas, apontamento por atividade, importação do CTRL-001 | ✅ |
 | 5 | Pré-projeto/complexidade, RAID, testes internos, UAT, deployment | — |
 | 6 | Status reports, documentos, dashboard executivo final | — |
 
-Números atuais: 17 tabelas, 18 enums, 2 migrações, 18 rotas de tela, ~6.700 linhas de TypeScript (sem o client gerado), 50 testes unitários.
+Números atuais: 23 tabelas, 23 enums, 3 migrações, 22 rotas de tela, 77 testes unitários.
 
 ## 3. Stack e decisões
 
@@ -89,7 +89,8 @@ export async function atualizarX(id: string, _: EstadoAcao, dados: FormData): Pr
 | Projetos | `projeto` (código PRJ-0001 sequencial), `projeto_membro` (GP, funcional, técnico…) |
 | Capacidade | `alocacao_semanal` (UNIQUE projeto + recurso + semana), `indisponibilidade` (pendente/aprovada/recusada) |
 | Calendário | `semana` (ISO, 2025–2028 no seed; criada sob demanda fora disso), `feriado` |
-| Importação | `import_lote`, `import_linha` (staging com dados brutos em JSONB), `import_mensagem` |
+| Cronograma | `backlog_item`, `atividade` (CRON-001…), `atividade_atribuicao` (atividade × recurso × esforço/falta), `atribuicao_semana` (rateio semanal), `atividade_predecessora`, `apontamento` (horas por recurso × atividade × semana) |
+| Importação | `import_lote` (+ projeto no CTRL-001), `import_linha` (staging com dados brutos em JSONB), `import_mensagem` |
 | Auditoria | `auditoria` |
 
 **Horas da alocação semanal:** `previstas = coalesce(horas_manuais, horas_calculadas) + horas_avulsas`.
@@ -100,6 +101,21 @@ export async function atualizarX(id: string, _: EstadoAcao, dados: FormData): Pr
 **Capacidade líquida:** capacidade vigente − feriados em dia útil − indisponibilidades **aprovadas**.
 
 **Utilização:** previstas ÷ capacidade líquida. Faixas do CTRL-003, avaliadas por semana: < 50 % disponível · 50–85 % adequado · 85–100 % atenção · > 100 % sobrecarregado.
+
+## 5b. Cronograma → capacidade (incremento 4)
+
+- `ratearHoras()` (pura, 8 testes): distribui o que **falta** de cada atribuição nos dias úteis do recurso
+  (sem fins de semana, feriados e ausências aprovadas de dia inteiro), a partir da semana atual, arredondando
+  em 0,5 h. Exemplo real: Go Live da Kover, 4h de 28/10 a 03/11 → 2,5h na S44 e 1,5h na S45.
+- `recalcularProjeto()` roda na mesma transação de qualquer alteração no cronograma, em apontamentos e em
+  ausências aprovadas. Ele regrava `atribuicao_semana` e `alocacao_semanal.horas_calculadas`, preservando
+  ajustes manuais e horas avulsas. Semanas passadas não são redistribuídas.
+- Falta = valor informado ou previsto − realizado. Forecast = realizado + falta.
+  Progresso = média ponderada pelo esforço previsto.
+- Qualidade do cronograma: regras da aba "Auditoria CTRL-003" que continuam fazendo sentido, mais
+  "período só com feriado".
+- Resultado com os dados reais: Luiz Dornelles na S40/26 = 59h (CTRL-003) + 14h (cronograma Kover) =
+  **73h / 40h = 183 %**, exatamente o número do diagnóstico das planilhas.
 
 ## 6. Importação do CTRL-003
 
@@ -114,12 +130,26 @@ export async function atualizarX(id: string, _: EstadoAcao, dados: FormData): Pr
 3. Nomes não reconhecidos vão para um De-Para na tela; a associação vira apelido e vale para as próximas importações.
 4. A efetivação reavalia tudo dentro da transação e é **idempotente**: reimportar o mesmo arquivo dá 0 alterações. Campos vazios na planilha nunca apagam dados do sistema, e linhas com erro são puladas.
 
+### Importação do CTRL-001
+
+- Feita por projeto (escolhido no upload). Lê as datas do Pré-Projeto, o Backlog e o Cronograma.
+  As abas de pré-projeto/complexidade, operacional, testes, deployment e status entram no incremento 5;
+  basta reimportar o mesmo arquivo.
+- `avaliarCtrl001()` (pura, 7 testes):
+  - agrupa `CRON-006`, `CRON-006.2` e `CRON-006.3` numa atividade com N atribuições, dividindo o esforço
+    repetido (decisão de negócio);
+  - converte o status "Atrasado" em situação calculada e % em fração para 0–100;
+  - liga a atividade ao requisito pela coluna "Atividade" (`REQ-…`);
+  - cria o contato do cliente quando a coluna "Recurso Cliente" traz uma pessoa;
+  - importa o realizado como um único apontamento.
+- Reimportar substitui pelos valores da planilha o que foi alterado no sistema; a revisão avisa linha a linha.
+
 ## 7. Segurança
 
 - Login Microsoft 365 via Entra ID (OIDC). No primeiro acesso a pessoa entra como **Visualização**; e-mails em `ADMIN_EMAILS` entram como Administrador.
 - O perfil é conferido no banco a cada requisição: desativar um usuário tem efeito imediato.
 - Hoje a permissão é por módulo (`lib/auth/permissoes.ts`). A função `pode()` já está pronta para restringir por projeto na versão 1.3.
-- Consultor: consulta tudo e solicita indisponibilidade apenas para o próprio recurso. Inputs de edição não são renderizados para ele, e as Server Actions recusam a escrita.
+- Consultor: consulta tudo, aponta as próprias horas e atualiza falta/% das suas atividades em **Minhas horas**, e solicita indisponibilidade apenas para si. Inputs de edição não são renderizados para ele, e as Server Actions recusam a escrita.
 - `AUTH_DEV_LOGIN=true` habilita login sem senha. **Nunca em produção**: o seed só cria o administrador de desenvolvimento quando essa variável está ligada.
 
 ## 8. Qualidade e testes

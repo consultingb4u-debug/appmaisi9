@@ -25,7 +25,9 @@ docker compose up -d --build
 
 Abra http://localhost:3000, clique em **Entrar sem senha** (usuário `admin@maisi9.local`), vá em
 **Administração → Importação** e envie o `CTRL-003_Gestao_Recursos_v5.3.xlsx`. Confira a revisão,
-marque a confirmação e clique em **Efetivar**. Portfólio, Capacidade e Recursos passam a mostrar os dados reais.
+marque a confirmação e clique em **Efetivar**. Depois importe cada CTRL-001 escolhendo o tipo
+"CTRL-001" e o projeto correspondente (ex.: Kover · Implantação WMS). Portfólio, Cronograma, Capacidade
+e Recursos passam a mostrar os dados reais.
 
 Para parar: `docker compose down` (os dados ficam guardados; `docker compose down -v` apaga tudo).
 
@@ -36,8 +38,8 @@ Para parar: `docker compose down` (os dados ficam guardados; `docker compose dow
 | 1 · Fundação | Login Microsoft 365, perfis, recursos e capacidade com vigência, clientes e contatos, feriados, semanas ISO, auditoria | ✅ |
 | 2 · Portfólio | Portfólio (filtros, ordenação, linha do tempo), página do projeto, importação do CTRL-003 com revisão e De-Para, carga real por recurso | ✅ |
 | 3 · Capacidade | Mapa de carga com detalhe recurso × semana, planejamento semanal editável inline, indisponibilidades com solicitação e aprovação | ✅ |
-| 4 · Cronograma | Backlog, cronograma, Gantt, rateio automático, apontamento por atividade, importação do CTRL-001 | próximo |
-| 5 · Execução | Pré-projeto, complexidade, RAID, testes, UAT, deployment | |
+| 4 · Cronograma | Backlog, cronograma (várias pessoas por tarefa, edição inline), Gantt, rateio automático nas semanas, apontamento por atividade (Minhas horas), importação do CTRL-001 | ✅ |
+| 5 · Execução | Pré-projeto, complexidade, RAID, testes, UAT, deployment | próximo |
 | 6 · Status | Status reports, documentos, dashboard executivo | |
 
 ## Stack

@@ -1,7 +1,7 @@
 import { auth } from "@/auth";
 import { db } from "@/lib/db";
 import { pode } from "@/lib/auth/permissoes";
-import { arquivoDoLote } from "@/lib/importacao/ctrl003/servico";
+import { arquivoDoLote } from "@/lib/importacao/lotes";
 
 /** Download do arquivo original do lote (rastreabilidade da importação). */
 export async function GET(_: Request, { params }: RouteContext<"/admin/importacao/[id]/arquivo">) {

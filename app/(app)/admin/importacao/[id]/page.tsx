@@ -4,7 +4,7 @@ import clsx from "clsx";
 import { db } from "@/lib/db";
 import { exigirPagina } from "@/lib/auth/sessao";
 import { pode } from "@/lib/auth/permissoes";
-import { pendenciasDoLote } from "@/lib/importacao/ctrl003/servico";
+import { pendenciasDoLote } from "@/lib/importacao/lotes";
 import { descreverLinha, NOME_ENTIDADE, STATUS_LOTE } from "@/lib/importacao/descricao";
 import { Cabecalho, Cartao, Selo, Vazio } from "@/components/ui";
 import { BotaoAcao, Formulario } from "@/components/formulario";
@@ -13,7 +13,7 @@ import { descartar, efetivar, mapear, revalidar } from "../acoes";
 
 const ACAO = { CRIAR: ["Criar", "ok"], ATUALIZAR: ["Atualizar", "livre"], IGNORAR: ["Sem alteração", "neutro"] } as const;
 const NIVEL = { OK: ["OK", "ok"], ALERTA: ["Alerta", "alerta"], ERRO: ["Erro", "critico"] } as const;
-const ENTIDADES = ["Projeto", "Alocacao", "Capacidade", "Indisponibilidade"];
+const ENTIDADES = ["Projeto", "Alocacao", "Capacidade", "Indisponibilidade", "Cabecalho", "Backlog", "Atividade"];
 
 export default async function PaginaLote({ params, searchParams }: PageProps<"/admin/importacao/[id]">) {
   const u = await exigirPagina("ver", "IMPORTACAO");
@@ -21,6 +21,7 @@ export default async function PaginaLote({ params, searchParams }: PageProps<"/a
   const { status: fStatus, entidade: fEntidade } = await searchParams;
   const lote = await db.importLote.findUnique({ where: { id } });
   if (!lote) notFound();
+  const projetoDoLote = lote.projetoId ? await db.projeto.findUnique({ where: { id: lote.projetoId }, select: { id: true, nome: true, cliente: { select: { nome: true } } } }) : null;
   const aberto = lote.status !== "EFETIVADO" && lote.status !== "DESCARTADO";
   const editavel = aberto && pode(u.perfil, "editar", "IMPORTACAO");
 
@@ -60,7 +61,7 @@ export default async function PaginaLote({ params, searchParams }: PageProps<"/a
     <>
       <Cabecalho
         titulo={lote.arquivoNome}
-        subtitulo={`Carregado em ${formatoDataHora.format(lote.carregadoEm)}${lote.efetivadoEm ? ` · efetivado em ${formatoDataHora.format(lote.efetivadoEm)}` : ""}`}
+        subtitulo={`${lote.tipo === "CTRL001" ? `CTRL-001 do projeto ${projetoDoLote ? `${projetoDoLote.cliente.nome} · ${projetoDoLote.nome}` : "?"}` : "CTRL-003 Gestão de Recursos"} · carregado em ${formatoDataHora.format(lote.carregadoEm)}${lote.efetivadoEm ? ` · efetivado em ${formatoDataHora.format(lote.efetivadoEm)}` : ""}`}
         trilha={[{ rotulo: "Importação", href: "/admin/importacao" }]}
         acoes={
           <>
@@ -71,6 +72,11 @@ export default async function PaginaLote({ params, searchParams }: PageProps<"/a
           </>
         }
       />
+      {lote.status === "EFETIVADO" && projetoDoLote && (
+        <Link href={`/projetos/${projetoDoLote.id}/cronograma`} className="mb-4 block text-sm text-navy-800 underline">
+          Abrir o cronograma de {projetoDoLote.nome} →
+        </Link>
+      )}
       {lote.status === "EFETIVADO" && (
         <div className="mb-4 rounded-md border border-ok/30 bg-ok/10 px-4 py-3 text-sm text-ok">
           <strong>Importação efetivada</strong>

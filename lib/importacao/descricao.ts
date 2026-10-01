@@ -15,6 +15,12 @@ export function descreverLinha(entidade: string, d: Dados): string {
     }
     case "Indisponibilidade":
       return `${t(d.recurso)} · ${t(d.tipo)} · ${t(d.inicio)} a ${t(d.fim)}`;
+    case "Cabecalho":
+      return `${t(d.cliente)} · ${t(d.projeto)} · início ${t(d.inicio) || "—"} · Go Live ${t(d.goLive) || "—"}`;
+    case "Backlog":
+      return `${t(d["ID"])} · ${t(d["Requisito"])}`;
+    case "Atividade":
+      return `${t(d["ID"])} · ${t(d["Tarefa"])} · ${t(d["Recurso MAIS i9"]) || "sem recurso"} · ${t(d["Esforço Previsto (h)"])}h · ${t(d["Início Previsto"])} a ${t(d["Fim Previsto"])}`;
     default:
       return "";
   }
@@ -25,6 +31,9 @@ export const NOME_ENTIDADE: Record<string, string> = {
   Alocacao: "Alocação semanal",
   Capacidade: "Capacidade",
   Indisponibilidade: "Indisponibilidade",
+  Cabecalho: "Datas do projeto",
+  Backlog: "Backlog",
+  Atividade: "Cronograma",
 };
 
 export const STATUS_LOTE = {

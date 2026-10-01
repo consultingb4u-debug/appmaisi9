@@ -7,7 +7,7 @@ import { db } from "@/lib/db";
 import { exigir } from "@/lib/auth/sessao";
 import { ErroNegocio, executarAcao, lerFormulario } from "@/lib/acoes";
 import { auditar } from "@/lib/services/auditoria";
-import { carregarCtrl003, efetivarLote, validarLote } from "@/lib/importacao/ctrl003/servico";
+import { carregarCtrl001, carregarCtrl003, efetivarLote, validarLote } from "@/lib/importacao/lotes";
 import type { EstadoAcao } from "@/components/formulario";
 
 const LIMITE_BYTES = 10 * 1024 * 1024;
@@ -20,8 +20,12 @@ export async function enviarPlanilha(_: EstadoAcao, dados: FormData): Promise<Es
     if (!(arquivo instanceof File) || arquivo.size === 0) throw new ErroNegocio("Selecione o arquivo .xlsx.");
     if (!arquivo.name.toLowerCase().endsWith(".xlsx")) throw new ErroNegocio("Envie um arquivo .xlsx (Excel).");
     if (arquivo.size > LIMITE_BYTES) throw new ErroNegocio("Arquivo maior que 10 MB.");
+    const f = lerFormulario(dados);
+    const tipo = f.tipo === "CTRL001" ? "CTRL001" : "CTRL003";
+    if (tipo === "CTRL001" && !f.projetoId) throw new ErroNegocio("Escolha o projeto do CTRL-001.");
     try {
-      id = await carregarCtrl003(arquivo.name, Buffer.from(await arquivo.arrayBuffer()), u.id);
+      const bytes = Buffer.from(await arquivo.arrayBuffer());
+      id = tipo === "CTRL001" ? await carregarCtrl001(arquivo.name, bytes, f.projetoId!, u.id) : await carregarCtrl003(arquivo.name, bytes, u.id);
     } catch (e) {
       throw new ErroNegocio(e instanceof Error ? `Não foi possível ler a planilha: ${e.message}` : "Não foi possível ler a planilha.");
     }

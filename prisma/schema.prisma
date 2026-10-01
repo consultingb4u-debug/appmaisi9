@@ -66,6 +66,10 @@ model Recurso {
   participacoes   ProjetoMembro[]
   alocacoes       AlocacaoSemanal[]
   indisponibilidades Indisponibilidade[]
+  atribuicoes     AtividadeAtribuicao[]
+  apontamentos    Apontamento[]
+  backlogResponsavel BacklogItem[]      @relation("BacklogResponsavel")
+  atividadesResponsavel Atividade[]     @relation("AtividadeResponsavel")
 
   @@map("recurso")
 }
@@ -138,6 +142,7 @@ model ContatoCliente {
   atualizadoEm    DateTime      @updatedAt @map("atualizado_em")
 
   cliente         Cliente       @relation(fields: [clienteId], references: [id], onDelete: Cascade)
+  atividades      Atividade[]
 
   @@unique([clienteId, nome])
   @@map("contato_cliente")
@@ -222,6 +227,9 @@ model Projeto {
   gp                        Recurso?         @relation("ProjetoGp", fields: [gpId], references: [id], onDelete: SetNull)
   membros                   ProjetoMembro[]
   alocacoes                 AlocacaoSemanal[]
+  backlog                   BacklogItem[]
+  atividades                Atividade[]
+  apontamentos              Apontamento[]
 
   @@unique([clienteId, nome])
   @@index([status])
@@ -251,6 +259,181 @@ model ProjetoMembro {
 
   @@unique([projetoId, recursoId, papel])
   @@map("projeto_membro")
+}
+
+// ───────────────────────────── Backlog e cronograma ─────────────────────────────
+
+enum TipoBacklog {
+  ENTREGA
+  REQUISITO
+  MELHORIA
+  INTEGRACAO
+  RELATORIO
+  CUSTOMIZACAO
+}
+
+enum AderenciaPadrao {
+  ADERENTE
+  PARCIAL
+  GAP
+  A_VALIDAR
+}
+
+enum SimNaoAConfirmar {
+  SIM
+  NAO
+  A_CONFIRMAR
+}
+
+enum StatusItem {
+  NAO_INICIADO
+  EM_ANDAMENTO
+  BLOQUEADO
+  CONCLUIDO
+  CANCELADO
+}
+
+enum Validacao {
+  PENDENTE
+  APROVADO
+  REPROVADO
+  NA
+}
+
+model BacklogItem {
+  id               String           @id @default(uuid()) @db.Uuid
+  projetoId        String           @map("projeto_id") @db.Uuid
+  codigo           String
+  moduloProcesso   String?          @map("modulo_processo")
+  requisito        String
+  tipo             TipoBacklog      @default(ENTREGA)
+  prioridade       Prioridade       @default(MEDIA)
+  aderenciaPadrao  AderenciaPadrao  @default(A_VALIDAR) @map("aderencia_padrao")
+  solucaoProposta  String?          @map("solucao_proposta")
+  customizacao     SimNaoAConfirmar @default(A_CONFIRMAR)
+  criterioAceite   String?          @map("criterio_aceite")
+  estimativaHoras  Decimal?         @map("estimativa_horas") @db.Decimal(7, 1)
+  responsavelId    String?          @map("responsavel_id") @db.Uuid
+  status           StatusItem       @default(NAO_INICIADO)
+  validacaoCliente Validacao        @default(PENDENTE) @map("validacao_cliente")
+  observacao       String?
+  ordem            Int              @default(0)
+  importLinhaId    String?          @map("import_linha_id") @db.Uuid
+  criadoEm         DateTime         @default(now()) @map("criado_em")
+  criadoPorId      String?          @map("criado_por_id") @db.Uuid
+  atualizadoEm     DateTime         @updatedAt @map("atualizado_em")
+  atualizadoPorId  String?          @map("atualizado_por_id") @db.Uuid
+
+  projeto          Projeto          @relation(fields: [projetoId], references: [id], onDelete: Cascade)
+  responsavel      Recurso?         @relation("BacklogResponsavel", fields: [responsavelId], references: [id], onDelete: SetNull)
+  atividades       Atividade[]
+
+  @@unique([projetoId, codigo])
+  @@map("backlog_item")
+}
+
+/// Atividade do cronograma (CRON-001). Esforço, realizado e forecast são somas das atribuições/apontamentos.
+model Atividade {
+  id                  String       @id @default(uuid()) @db.Uuid
+  projetoId           String       @map("projeto_id") @db.Uuid
+  codigo              String
+  fase                FaseProjeto
+  backlogItemId       String?      @map("backlog_item_id") @db.Uuid
+  tarefa              String
+  moduloProcesso      String?      @map("modulo_processo")
+  responsavelId       String?      @map("responsavel_id") @db.Uuid
+  contatoClienteId    String?      @map("contato_cliente_id") @db.Uuid
+  clienteParticipa    Boolean      @default(false) @map("cliente_participa")
+  inicioPrevisto      DateTime?    @map("inicio_previsto") @db.Date
+  fimPrevisto         DateTime?    @map("fim_previsto") @db.Date
+  percentualConclusao Int          @default(0) @map("percentual_conclusao")
+  status              StatusItem   @default(NAO_INICIADO)
+  marco               Boolean      @default(false)
+  dataRealConclusao   DateTime?    @map("data_real_conclusao") @db.Date
+  observacao          String?
+  ordem               Int          @default(0)
+  importLinhaId       String?      @map("import_linha_id") @db.Uuid
+  criadoEm            DateTime     @default(now()) @map("criado_em")
+  criadoPorId         String?      @map("criado_por_id") @db.Uuid
+  atualizadoEm        DateTime     @updatedAt @map("atualizado_em")
+  atualizadoPorId     String?      @map("atualizado_por_id") @db.Uuid
+
+  projeto             Projeto      @relation(fields: [projetoId], references: [id], onDelete: Cascade)
+  backlogItem         BacklogItem? @relation(fields: [backlogItemId], references: [id], onDelete: SetNull)
+  responsavel         Recurso?     @relation("AtividadeResponsavel", fields: [responsavelId], references: [id], onDelete: SetNull)
+  contatoCliente      ContatoCliente? @relation(fields: [contatoClienteId], references: [id], onDelete: SetNull)
+  atribuicoes         AtividadeAtribuicao[]
+  predecessoras       AtividadePredecessora[] @relation("Sucessora")
+  sucessoras          AtividadePredecessora[] @relation("Predecessora")
+  apontamentos        Apontamento[]
+
+  @@unique([projetoId, codigo])
+  @@index([projetoId, fase])
+  @@map("atividade")
+}
+
+/// Quem executa a atividade e com quanto esforço (substitui as linhas CRON-xxx.2/.3 da planilha).
+model AtividadeAtribuicao {
+  id                String    @id @default(uuid()) @db.Uuid
+  atividadeId       String    @map("atividade_id") @db.Uuid
+  recursoId         String    @map("recurso_id") @db.Uuid
+  esforcoPrevisto   Decimal   @default(0) @map("esforco_previsto") @db.Decimal(7, 1)
+  horasParaConcluir Decimal?  @map("horas_para_concluir") @db.Decimal(7, 1)
+
+  atividade         Atividade @relation(fields: [atividadeId], references: [id], onDelete: Cascade)
+  recurso           Recurso   @relation(fields: [recursoId], references: [id])
+  rateio            AtribuicaoSemana[]
+
+  @@unique([atividadeId, recursoId])
+  @@map("atividade_atribuicao")
+}
+
+/// Distribuição automática das horas da atribuição nas semanas (explica as horas calculadas da alocação).
+model AtribuicaoSemana {
+  atribuicaoId    String              @map("atribuicao_id") @db.Uuid
+  semanaId        String              @map("semana_id")
+  horasCalculadas Decimal             @map("horas_calculadas") @db.Decimal(6, 1)
+
+  atribuicao      AtividadeAtribuicao @relation(fields: [atribuicaoId], references: [id], onDelete: Cascade)
+  semana          Semana              @relation(fields: [semanaId], references: [id])
+
+  @@id([atribuicaoId, semanaId])
+  @@map("atribuicao_semana")
+}
+
+model AtividadePredecessora {
+  atividadeId    String    @map("atividade_id") @db.Uuid
+  predecessoraId String    @map("predecessora_id") @db.Uuid
+
+  atividade      Atividade @relation("Sucessora", fields: [atividadeId], references: [id], onDelete: Cascade)
+  predecessora   Atividade @relation("Predecessora", fields: [predecessoraId], references: [id], onDelete: Cascade)
+
+  @@id([atividadeId, predecessoraId])
+  @@map("atividade_predecessora")
+}
+
+/// Horas realizadas: cada pessoa aponta por atividade e semana (atividade nula = projeto sem cronograma).
+model Apontamento {
+  id           String     @id @default(uuid()) @db.Uuid
+  recursoId    String     @map("recurso_id") @db.Uuid
+  projetoId    String     @map("projeto_id") @db.Uuid
+  atividadeId  String?    @map("atividade_id") @db.Uuid
+  semanaId     String     @map("semana_id")
+  horas        Decimal    @db.Decimal(5, 1)
+  descricao    String?
+  criadoEm     DateTime   @default(now()) @map("criado_em")
+  criadoPorId  String?    @map("criado_por_id") @db.Uuid
+  atualizadoEm DateTime   @updatedAt @map("atualizado_em")
+
+  recurso      Recurso    @relation(fields: [recursoId], references: [id])
+  projeto      Projeto    @relation(fields: [projetoId], references: [id], onDelete: Cascade)
+  atividade    Atividade? @relation(fields: [atividadeId], references: [id], onDelete: Cascade)
+  semana       Semana     @relation(fields: [semanaId], references: [id])
+
+  @@index([recursoId, semanaId])
+  @@index([atividadeId])
+  @@index([projetoId, recursoId, semanaId])
+  @@map("apontamento")
 }
 
 // ───────────────────────────── Alocação e disponibilidade ─────────────────────────────
@@ -358,6 +541,7 @@ enum StatusLinha {
 model ImportLote {
   id            String         @id @default(uuid()) @db.Uuid
   tipo          TipoImportacao
+  projetoId     String?        @map("projeto_id") @db.Uuid
   arquivoNome   String         @map("arquivo_nome")
   arquivoChave  String         @map("arquivo_chave")
   status        StatusLote     @default(CARREGADO)
@@ -433,7 +617,9 @@ model Semana {
   inicio  DateTime @unique @db.Date
   fim     DateTime @db.Date
 
-  alocacoes AlocacaoSemanal[]
+  alocacoes    AlocacaoSemanal[]
+  rateios      AtribuicaoSemana[]
+  apontamentos Apontamento[]
 
   @@unique([anoIso, numero])
   @@map("semana")

@@ -9,6 +9,7 @@ import { ErroNegocio, executarAcao, lerFormulario } from "@/lib/acoes";
 import { auditar } from "@/lib/services/auditoria";
 import { previstas } from "@/lib/services/alocacoes";
 import { garantirSemana } from "@/lib/services/semanas";
+import { recalcularProjetosDoRecurso } from "@/lib/services/cronograma";
 import { editarCelula } from "@/lib/domain/alocacao";
 import { parseDia } from "@/lib/domain/datas";
 import { rotuloSemana } from "@/lib/domain/semanas";
@@ -142,8 +143,10 @@ export async function criarIndisponibilidade(_: EstadoAcao, dados: FormData): Pr
     const criada = await db.$transaction(async (tx) => {
       const c = await tx.indisponibilidade.create({ data: { ...v, horasPorDia: v.horasPorDia ?? null, observacao: v.observacao ?? null, status, criadoPorId: u.id }, include: { recurso: true } });
       await auditar(tx, { entidade: "Indisponibilidade", entidadeId: c.id, acao: "CRIAR", usuarioId: u.id, resumo: `${c.recurso.nome} · ${c.tipo} · ${v.inicio.toISOString().slice(0, 10)} a ${v.fim.toISOString().slice(0, 10)} (${status})`, depois: c });
+      // Ausência aprovada muda os dias úteis do recurso: redistribui o cronograma.
+      if (status === "APROVADA") await recalcularProjetosDoRecurso(tx, c.recursoId);
       return c;
-    });
+    }, { timeout: 30_000 });
     revalidarCapacidade(undefined, criada.recursoId);
     return { ok: true, mensagem: gestor ? "Indisponibilidade registrada." : "Solicitação enviada para aprovação." };
   });
@@ -156,8 +159,9 @@ export async function decidirIndisponibilidade(id: string, decisao: "APROVADA" |
       const antes = await tx.indisponibilidade.findUniqueOrThrow({ where: { id } });
       const depois = await tx.indisponibilidade.update({ where: { id }, data: { status: decisao } });
       await auditar(tx, { entidade: "Indisponibilidade", entidadeId: id, acao: "ALTERAR", usuarioId: u.id, resumo: decisao === "APROVADA" ? "Aprovada" : "Recusada", antes, depois });
+      if (antes.status === "APROVADA" || decisao === "APROVADA") await recalcularProjetosDoRecurso(tx, depois.recursoId);
       return depois;
-    });
+    }, { timeout: 30_000 });
     revalidarCapacidade(undefined, i.recursoId);
   });
 }
@@ -172,7 +176,8 @@ export async function excluirIndisponibilidade(id: string): Promise<EstadoAcao> 
     await db.$transaction(async (tx) => {
       await tx.indisponibilidade.delete({ where: { id } });
       await auditar(tx, { entidade: "Indisponibilidade", entidadeId: id, acao: "EXCLUIR", usuarioId: u.id, resumo: `${i.recurso.nome} · ${i.tipo}` });
-    });
+      if (i.status === "APROVADA") await recalcularProjetosDoRecurso(tx, i.recursoId);
+    }, { timeout: 30_000 });
     revalidarCapacidade(undefined, i.recursoId);
   });
 }

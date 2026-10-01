@@ -5,6 +5,7 @@ import { ehFimDeSemana, parseDia } from "@/lib/domain/datas";
 import { ADERENCIA, enumPorRotulo, FASE, normalizarTexto, PRIORIDADE, SIM_NAO, STATUS_ITEM, TIPO_BACKLOG, VALIDACAO } from "@/lib/domain/rotulos";
 import type { Primitivo } from "../planilha";
 import type { LinhaLida001 } from "./ler";
+import { avaliarLinhaExecucao, ENTIDADES_EXECUCAO, renomearDuplicados, type ContextoExecucao, type ResolvidoExecucao } from "./execucao";
 
 export type Nivel = "OK" | "ALERTA" | "ERRO";
 export type Mensagem = { nivel: Exclude<Nivel, "OK">; campo?: string; mensagem: string };
@@ -55,7 +56,7 @@ export type Avaliacao001 = {
   acao: Acao;
   status: Nivel;
   mensagens: Mensagem[];
-  resolvido: ResolvidoCabecalho | ResolvidoBacklog | ResolvidoAtividade | null;
+  resolvido: ResolvidoCabecalho | ResolvidoBacklog | ResolvidoAtividade | ResolvidoExecucao | null;
 };
 
 type AtividadeExistente = {
@@ -78,6 +79,7 @@ export type ContextoCtrl001 = {
   recursos: { id: string; nome: string; apelidos: string[] }[];
   backlog: Map<string, ResolvidoBacklog>; // por código
   atividades: Map<string, AtividadeExistente>; // por código
+  execucao: ContextoExecucao;
 };
 
 const txt = (v: Primitivo | undefined): string | null => (v === null || v === undefined || String(v).trim() === "" ? null : String(v).trim());
@@ -115,7 +117,14 @@ export function avaliarCtrl001(linhas: LinhaLida001[], ctx: ContextoCtrl001): { 
     grupos.set(base, [...(grupos.get(base) ?? []), l]);
   }
 
+  const renomeados = renomearDuplicados(linhas);
+
   const avaliacoes = linhas.map((l): Avaliacao001 => {
+    if (ENTIDADES_EXECUCAO.includes(l.entidade as (typeof ENTIDADES_EXECUCAO)[number])) {
+      const r = avaliarLinhaExecucao(l, ctx.execucao, { recursos: ctx.recursos, codigosBacklog, renomeados });
+      const erro = r.mensagens.some((m) => m.nivel === "ERRO");
+      return { chave: r.chave, acao: erro ? "IGNORAR" : r.acao, status: erro ? "ERRO" : r.mensagens.length ? "ALERTA" : "OK", mensagens: r.mensagens, resolvido: erro ? null : r.resolvido };
+    }
     const d = l.dados;
     const msgs: Mensagem[] = [];
     let acao: Acao = "IGNORAR";

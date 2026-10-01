@@ -13,7 +13,7 @@ import { descartar, efetivar, mapear, revalidar } from "../acoes";
 
 const ACAO = { CRIAR: ["Criar", "ok"], ATUALIZAR: ["Atualizar", "livre"], IGNORAR: ["Sem alteração", "neutro"] } as const;
 const NIVEL = { OK: ["OK", "ok"], ALERTA: ["Alerta", "alerta"], ERRO: ["Erro", "critico"] } as const;
-const ENTIDADES = ["Projeto", "Alocacao", "Capacidade", "Indisponibilidade", "Cabecalho", "Backlog", "Atividade"];
+const ENTIDADES = Object.keys(NOME_ENTIDADE);
 
 export default async function PaginaLote({ params, searchParams }: PageProps<"/admin/importacao/[id]">) {
   const u = await exigirPagina("ver", "IMPORTACAO");

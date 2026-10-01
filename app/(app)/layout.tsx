@@ -45,7 +45,7 @@ export default async function LayoutApp({ children }: LayoutProps<"/">) {
         </div>
       </aside>
       <div className="flex min-w-0 flex-1 flex-col">
-        <details className="group bg-navy-900 md:hidden">
+        <details className="nao-imprimir group bg-navy-900 md:hidden">
           <summary className="flex cursor-pointer list-none items-center justify-between px-4 py-3">
             <span className="font-bold text-white">
               MAIS <span className="text-destaque">i9</span>

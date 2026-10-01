@@ -69,6 +69,9 @@ model Recurso {
   atribuicoes     AtividadeAtribuicao[]
   apontamentos    Apontamento[]
   backlogResponsavel BacklogItem[]      @relation("BacklogResponsavel")
+  itensOperacionais ItemOperacional[]
+  casosTeste        CasoTeste[]
+  deploymentItens   DeploymentItem[]
   atividadesResponsavel Atividade[]     @relation("AtividadeResponsavel")
 
   @@map("recurso")
@@ -230,6 +233,15 @@ model Projeto {
   backlog                   BacklogItem[]
   atividades                Atividade[]
   apontamentos              Apontamento[]
+  avaliacaoComplexidade     AvaliacaoComplexidade?
+  notasComplexidade         ProjetoComplexidade[]
+  preProjeto                PreProjeto?
+  preProjetoItens           PreProjetoItem[]
+  itensOperacionais         ItemOperacional[]
+  casosTeste                CasoTeste[]
+  deployments               Deployment[]
+  statusReports             StatusReport[]
+  documentos                Documento[]
 
   @@unique([clienteId, nome])
   @@index([status])
@@ -327,6 +339,8 @@ model BacklogItem {
   projeto          Projeto          @relation(fields: [projetoId], references: [id], onDelete: Cascade)
   responsavel      Recurso?         @relation("BacklogResponsavel", fields: [responsavelId], references: [id], onDelete: SetNull)
   atividades       Atividade[]
+  casosTeste       CasoTeste[]
+  itensOperacionais ItemOperacional[]
 
   @@unique([projetoId, codigo])
   @@map("backlog_item")
@@ -366,6 +380,7 @@ model Atividade {
   predecessoras       AtividadePredecessora[] @relation("Sucessora")
   sucessoras          AtividadePredecessora[] @relation("Predecessora")
   apontamentos        Apontamento[]
+  itensOperacionais   ItemOperacional[]
 
   @@unique([projetoId, codigo])
   @@index([projetoId, fase])
@@ -434,6 +449,317 @@ model Apontamento {
   @@index([atividadeId])
   @@index([projetoId, recursoId, semanaId])
   @@map("apontamento")
+}
+
+// ───────────────────────────── Pré-projeto e complexidade ─────────────────────────────
+
+enum DimensaoComplexidade {
+  ESFORCO
+  PRAZO
+  COMPLEXIDADE
+  RISCO
+}
+
+enum NivelComplexidade {
+  N1
+  N2
+  N3
+  N4
+}
+
+/// Os 12 critérios do CTRL-001 (aba Pré-Projeto | Complexidade); editáveis pelo administrador.
+model CriterioComplexidade {
+  id        String               @id @default(uuid()) @db.Uuid
+  dimensao  DimensaoComplexidade
+  nome      String               @unique
+  descricao0 String              @map("descricao_0")
+  descricao1 String              @map("descricao_1")
+  descricao2 String              @map("descricao_2")
+  descricao3 String              @map("descricao_3")
+  ordem     Int
+  ativo     Boolean              @default(true)
+
+  notas     ProjetoComplexidade[]
+
+  @@map("criterio_complexidade")
+}
+
+model ProjetoComplexidade {
+  id             String               @id @default(uuid()) @db.Uuid
+  projetoId      String               @map("projeto_id") @db.Uuid
+  criterioId     String               @map("criterio_id") @db.Uuid
+  nota           Int?
+  gatilhoCritico Boolean              @default(false) @map("gatilho_critico")
+  observacao     String?
+
+  projeto        Projeto              @relation(fields: [projetoId], references: [id], onDelete: Cascade)
+  criterio       CriterioComplexidade @relation(fields: [criterioId], references: [id])
+
+  @@unique([projetoId, criterioId])
+  @@map("projeto_complexidade")
+}
+
+/// Resultado da avaliação (gravado ao salvar, para filtros e histórico).
+model AvaliacaoComplexidade {
+  projetoId      String             @id @map("projeto_id") @db.Uuid
+  avaliador      String?
+  data           DateTime?          @db.Date
+  horasEstimadas Decimal?           @map("horas_estimadas") @db.Decimal(8, 1)
+  score          Int                @default(0)
+  gatilhos       Int                @default(0)
+  nivelFinal     NivelComplexidade? @map("nivel_final")
+  atualizadoEm   DateTime           @updatedAt @map("atualizado_em")
+  atualizadoPorId String?           @map("atualizado_por_id") @db.Uuid
+
+  projeto        Projeto            @relation(fields: [projetoId], references: [id], onDelete: Cascade)
+
+  @@map("avaliacao_complexidade")
+}
+
+enum StatusPreProjeto {
+  EM_PREPARACAO
+  PRONTO
+  PRONTO_COM_RESSALVAS
+  BLOQUEADO
+}
+
+model PreProjeto {
+  projetoId   String           @id @map("projeto_id") @db.Uuid
+  status      StatusPreProjeto @default(EM_PREPARACAO)
+  observacao  String?
+  atualizadoEm DateTime        @updatedAt @map("atualizado_em")
+
+  projeto     Projeto          @relation(fields: [projetoId], references: [id], onDelete: Cascade)
+
+  @@map("pre_projeto")
+}
+
+enum StatusChecklist {
+  PENDENTE
+  EM_ANDAMENTO
+  CONCLUIDO
+  BLOQUEADO
+  NA
+}
+
+model PreProjetoItem {
+  id                 String          @id @default(uuid()) @db.Uuid
+  projetoId          String          @map("projeto_id") @db.Uuid
+  categoria          String
+  item               String
+  responsavel        String?
+  informacaoContato  String?         @map("informacao_contato")
+  validacaoEsperada  String?         @map("validacao_esperada")
+  status             StatusChecklist @default(PENDENTE)
+  prazo              DateTime?       @db.Date
+  observacao         String?
+  ordem              Int             @default(0)
+
+  projeto            Projeto         @relation(fields: [projetoId], references: [id], onDelete: Cascade)
+
+  @@unique([projetoId, item])
+  @@map("pre_projeto_item")
+}
+
+// ───────────────────────────── Registro operacional (RAID) ─────────────────────────────
+
+enum TipoItemOperacional {
+  PENDENCIA
+  DECISAO
+  DEPENDENCIA
+  PROBLEMA
+  RISCO
+  CHANGE_REQUEST
+  DEFEITO
+}
+
+enum StatusOperacional {
+  ABERTO
+  EM_ANDAMENTO
+  AGUARDANDO
+  BLOQUEADO
+  APROVADO
+  REPROVADO
+  FECHADO
+  CANCELADO
+}
+
+enum NivelImpacto {
+  NAO
+  BAIXO
+  MEDIO
+  ALTO
+}
+
+/// Pendências, decisões, dependências, problemas, riscos, change requests e defeitos de teste.
+model ItemOperacional {
+  id                  String              @id @default(uuid()) @db.Uuid
+  projetoId           String              @map("projeto_id") @db.Uuid
+  codigo              String
+  tipo                TipoItemOperacional
+  descricao           String
+  origemCausa         String?             @map("origem_causa")
+  impactoConsequencia String?             @map("impacto_consequencia")
+  responsavelId       String?             @map("responsavel_id") @db.Uuid
+  responsavelTexto    String?             @map("responsavel_texto")
+  dataAbertura        DateTime            @default(now()) @map("data_abertura") @db.Date
+  prazo               DateTime?           @db.Date
+  status              StatusOperacional   @default(ABERTO)
+  impactoEscopo       NivelImpacto        @default(NAO) @map("impacto_escopo")
+  impactoPrazo        NivelImpacto        @default(NAO) @map("impacto_prazo")
+  impactoHoras        NivelImpacto        @default(NAO) @map("impacto_horas")
+  acaoResposta        String?             @map("acao_resposta")
+  decisaoAprovador    String?             @map("decisao_aprovador")
+  evidencia           String?
+  probabilidade       Int?
+  impacto             Int?
+  horasCr             Decimal?            @map("horas_cr") @db.Decimal(7, 1)
+  diasCr              Int?                @map("dias_cr")
+  atividadeId         String?             @map("atividade_id") @db.Uuid
+  backlogItemId       String?             @map("backlog_item_id") @db.Uuid
+  execucaoTesteId     String?             @unique @map("execucao_teste_id") @db.Uuid
+  dataFechamento      DateTime?           @map("data_fechamento") @db.Date
+  importLinhaId       String?             @map("import_linha_id") @db.Uuid
+  criadoEm            DateTime            @default(now()) @map("criado_em")
+  criadoPorId         String?             @map("criado_por_id") @db.Uuid
+  atualizadoEm        DateTime            @updatedAt @map("atualizado_em")
+  atualizadoPorId     String?             @map("atualizado_por_id") @db.Uuid
+
+  projeto             Projeto             @relation(fields: [projetoId], references: [id], onDelete: Cascade)
+  responsavel         Recurso?            @relation(fields: [responsavelId], references: [id], onDelete: SetNull)
+  atividade           Atividade?          @relation(fields: [atividadeId], references: [id], onDelete: SetNull)
+  backlogItem         BacklogItem?        @relation(fields: [backlogItemId], references: [id], onDelete: SetNull)
+  execucaoTeste       ExecucaoTeste?      @relation(fields: [execucaoTesteId], references: [id], onDelete: SetNull)
+
+  @@unique([projetoId, codigo])
+  @@index([projetoId, tipo, status])
+  @@map("item_operacional")
+}
+
+// ───────────────────────────── Testes e UAT ─────────────────────────────
+
+enum TipoTeste {
+  INTERNO
+  UAT
+}
+
+enum ResultadoTeste {
+  PLANEJADO
+  NAO_EXECUTADO
+  APROVADO
+  REPROVADO
+  BLOQUEADO
+  NA
+}
+
+model CasoTeste {
+  id                String        @id @default(uuid()) @db.Uuid
+  projetoId         String        @map("projeto_id") @db.Uuid
+  tipo              TipoTeste
+  codigo            String
+  backlogItemId     String?       @map("backlog_item_id") @db.Uuid
+  moduloProcesso    String?       @map("modulo_processo")
+  cenario           String
+  preCondicao       String?       @map("pre_condicao")
+  passos            String?
+  resultadoEsperado String?       @map("resultado_esperado")
+  responsavelId     String?       @map("responsavel_id") @db.Uuid
+  responsavelTexto  String?       @map("responsavel_texto")
+  ordem             Int           @default(0)
+  importLinhaId     String?       @map("import_linha_id") @db.Uuid
+  criadoEm          DateTime      @default(now()) @map("criado_em")
+  atualizadoEm      DateTime      @updatedAt @map("atualizado_em")
+
+  projeto           Projeto       @relation(fields: [projetoId], references: [id], onDelete: Cascade)
+  backlogItem       BacklogItem?  @relation(fields: [backlogItemId], references: [id], onDelete: SetNull)
+  responsavel       Recurso?      @relation(fields: [responsavelId], references: [id], onDelete: SetNull)
+  execucoes         ExecucaoTeste[]
+
+  @@unique([projetoId, tipo, codigo])
+  @@map("caso_teste")
+}
+
+/// Cada rodada (ciclo) de execução fica registrada: o histórico de retestes não se perde.
+model ExecucaoTeste {
+  id              String         @id @default(uuid()) @db.Uuid
+  casoId          String         @map("caso_id") @db.Uuid
+  ciclo           Int            @default(1)
+  data            DateTime?      @db.Date
+  executor        String?
+  resultadoObtido String?        @map("resultado_obtido")
+  resultado       ResultadoTeste @default(PLANEJADO)
+  validacao       Validacao      @default(PENDENTE)
+  evidencia       String?
+  observacao      String?
+  criadoEm        DateTime       @default(now()) @map("criado_em")
+  criadoPorId     String?        @map("criado_por_id") @db.Uuid
+
+  caso            CasoTeste      @relation(fields: [casoId], references: [id], onDelete: Cascade)
+  defeito         ItemOperacional?
+
+  @@unique([casoId, ciclo])
+  @@map("execucao_teste")
+}
+
+// ───────────────────────────── Deployment ─────────────────────────────
+
+enum DecisaoGoNoGo {
+  PENDENTE
+  GO
+  NO_GO
+  GO_COM_RESSALVAS
+}
+
+enum Obrigatoriedade {
+  SIM
+  NAO
+  CONDICIONAL
+}
+
+model Deployment {
+  id              String        @id @default(uuid()) @db.Uuid
+  projetoId       String        @map("projeto_id") @db.Uuid
+  nome            String
+  janelaInicio    DateTime?     @map("janela_inicio") @db.Date
+  janelaFim       DateTime?     @map("janela_fim") @db.Date
+  dataGoLiveReal  DateTime?     @map("data_go_live_real") @db.Date
+  decisao         DecisaoGoNoGo @default(PENDENTE)
+  dataDecisao     DateTime?     @map("data_decisao") @db.Date
+  aprovadores     String?
+  justificativa   String?
+  hypercareInicio DateTime?     @map("hypercare_inicio") @db.Date
+  hypercareFim    DateTime?     @map("hypercare_fim") @db.Date
+  criadoEm        DateTime      @default(now()) @map("criado_em")
+  atualizadoEm    DateTime      @updatedAt @map("atualizado_em")
+
+  projeto         Projeto       @relation(fields: [projetoId], references: [id], onDelete: Cascade)
+  itens           DeploymentItem[]
+
+  @@unique([projetoId, nome])
+  @@map("deployment")
+}
+
+model DeploymentItem {
+  id               String          @id @default(uuid()) @db.Uuid
+  deploymentId     String          @map("deployment_id") @db.Uuid
+  categoria        String
+  item             String
+  obrigatorio      Obrigatoriedade @default(SIM)
+  status           StatusChecklist @default(PENDENTE)
+  responsavelId    String?         @map("responsavel_id") @db.Uuid
+  responsavelTexto String?         @map("responsavel_texto")
+  dataPrevista     DateTime?       @map("data_prevista") @db.Date
+  dataReal         DateTime?       @map("data_real") @db.Date
+  evidencia        String?
+  riscoObservacao  String?         @map("risco_observacao")
+  aprovacao        Validacao       @default(PENDENTE)
+  ordem            Int             @default(0)
+
+  deployment       Deployment      @relation(fields: [deploymentId], references: [id], onDelete: Cascade)
+  responsavel      Recurso?        @relation(fields: [responsavelId], references: [id], onDelete: SetNull)
+
+  @@unique([deploymentId, item])
+  @@map("deployment_item")
 }
 
 // ───────────────────────────── Alocação e disponibilidade ─────────────────────────────
@@ -653,4 +979,62 @@ model Auditoria {
   @@index([projetoId])
   @@index([dataHora])
   @@map("auditoria")
+}
+
+// ───────────────────────────── Status report e documentos ─────────────────────────────
+
+/// Status report periódico. Os indicadores são uma fotografia (JSON) tirada ao gerar/atualizar
+/// o rascunho e congelada ao publicar — o histórico mostra o que foi reportado na época.
+model StatusReport {
+  id                  String          @id @default(uuid()) @db.Uuid
+  projetoId           String          @map("projeto_id") @db.Uuid
+  dataReferencia      DateTime        @map("data_referencia") @db.Date
+  periodoInicio       DateTime?       @map("periodo_inicio") @db.Date
+  periodoFim          DateTime?       @map("periodo_fim") @db.Date
+  statusExecutivo     StatusExecutivo @map("status_executivo")
+  faseAtual           String?         @map("fase_atual")
+  resumo              String?
+  entregasConcluidas  String?         @map("entregas_concluidas")
+  proximasEntregas    String?         @map("proximas_entregas")
+  pontosAtencao       String?         @map("pontos_atencao")
+  decisoesNecessarias String?         @map("decisoes_necessarias")
+  indicadores         Json
+  publicado           Boolean         @default(false)
+  publicadoEm         DateTime?       @map("publicado_em")
+  publicadoPorId      String?         @map("publicado_por_id") @db.Uuid
+  importLinhaId       String?         @map("import_linha_id") @db.Uuid
+  criadoEm            DateTime        @default(now()) @map("criado_em")
+  criadoPorId         String?         @map("criado_por_id") @db.Uuid
+  atualizadoEm        DateTime        @updatedAt @map("atualizado_em")
+
+  projeto             Projeto         @relation(fields: [projetoId], references: [id], onDelete: Cascade)
+
+  @@index([projetoId, dataReferencia])
+  @@map("status_report")
+}
+
+enum TipoDocumento {
+  LINK
+  ARQUIVO
+}
+
+model Documento {
+  id            String        @id @default(uuid()) @db.Uuid
+  projetoId     String        @map("projeto_id") @db.Uuid
+  titulo        String
+  categoria     String
+  tipo          TipoDocumento
+  url           String?
+  arquivoNome   String?       @map("arquivo_nome")
+  arquivoChave  String?       @map("arquivo_chave")
+  tamanho       Int?
+  mimeType      String?       @map("mime_type")
+  observacao    String?
+  criadoEm      DateTime      @default(now()) @map("criado_em")
+  criadoPorId   String?       @map("criado_por_id") @db.Uuid
+
+  projeto       Projeto       @relation(fields: [projetoId], references: [id], onDelete: Cascade)
+
+  @@index([projetoId])
+  @@map("documento")
 }

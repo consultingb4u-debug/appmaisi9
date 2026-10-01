@@ -14,6 +14,7 @@ export type FiltrosPortfolio = {
   gp?: string;
   recurso?: string;
   prioridade?: string;
+  complexidade?: string; // N1–N4 ou "nao" (não avaliado)
   de?: Date | null;
   ate?: Date | null;
 };
@@ -28,6 +29,8 @@ export async function listarPortfolio(f: FiltrosPortfolio) {
   if (f.tipo) where.tipo = f.tipo as TipoProjeto;
   if (f.gp) where.gpId = f.gp;
   if (f.prioridade) where.prioridade = f.prioridade as Prioridade;
+  if (f.complexidade === "nao") where.avaliacaoComplexidade = { is: null };
+  else if (f.complexidade && ["N1", "N2", "N3", "N4"].includes(f.complexidade)) where.avaliacaoComplexidade = { is: { nivelFinal: f.complexidade as "N1" } };
   if (f.recurso) where.OR = [{ membros: { some: { recursoId: f.recurso } } }, { alocacoes: { some: { recursoId: f.recurso } } }];
 
   const projetos = await db.projeto.findMany({
@@ -36,6 +39,7 @@ export async function listarPortfolio(f: FiltrosPortfolio) {
       cliente: { select: { id: true, nome: true } },
       gp: { select: { id: true, nome: true } },
       membros: { select: { recursoId: true } },
+      avaliacaoComplexidade: { select: { nivelFinal: true } },
       alocacoes: { include: { semana: { select: { inicio: true, fim: true } } } },
     },
     orderBy: [{ cliente: { nome: "asc" } }, { nome: "asc" }],
@@ -60,6 +64,7 @@ export async function listarPortfolio(f: FiltrosPortfolio) {
         tipo: p.tipo,
         status: p.status,
         prioridade: p.prioridade,
+        complexidade: p.avaliacaoComplexidade?.nivelFinal ?? null,
         statusExecutivo: p.statusExecutivo,
         dataKickoff: p.dataKickoff,
         dataGoLive: p.dataGoLiveReal ?? p.dataGoLiveAlvo,

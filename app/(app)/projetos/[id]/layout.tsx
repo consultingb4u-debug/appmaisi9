@@ -3,7 +3,9 @@ import { usuarioAtual } from "@/lib/auth/sessao";
 import { carregarProjeto } from "@/lib/services/projeto";
 import { cronogramaDoProjeto } from "@/lib/services/cronograma";
 import { formatarData } from "@/lib/domain/datas";
-import { PRIORIDADE, STATUS_EXECUTIVO, STATUS_PROJETO, TIPO_PROJETO, TOM_PRIORIDADE, TOM_STATUS_PROJETO } from "@/lib/domain/rotulos";
+import { PRIORIDADE, STATUS_EXECUTIVO, STATUS_PROJETO, TIPO_PROJETO, TOM_NIVEL, TOM_PRIORIDADE, TOM_STATUS_PROJETO } from "@/lib/domain/rotulos";
+import { db } from "@/lib/db";
+import { GOVERNANCA } from "@/lib/domain/execucao";
 import { Selo } from "@/components/ui";
 import { Abas } from "@/components/abas";
 import Link from "next/link";
@@ -18,7 +20,7 @@ export default async function LayoutProjeto({ children, params }: LayoutProps<"/
   if (!p) notFound();
   const base = `/projetos/${p.id}`;
   const vendidas = p.horasVendidas?.toNumber() ?? null;
-  const crono = await cronogramaDoProjeto(p.id);
+  const [crono, aval] = await Promise.all([cronogramaDoProjeto(p.id), db.avaliacaoComplexidade.findUnique({ where: { projetoId: p.id }, select: { nivelFinal: true } })]);
   const temCronograma = crono.atividades.length > 0;
   const forecast = crono.atividades.filter((a) => a.status !== "CANCELADO").reduce((t, a) => t + a.totais.forecast, 0);
 
@@ -56,6 +58,15 @@ export default async function LayoutProjeto({ children, params }: LayoutProps<"/
           <div className="flex flex-wrap items-center gap-2">
             <Selo tom={TOM_STATUS_PROJETO[p.status]}>{STATUS_PROJETO[p.status]}</Selo>
             <Selo tom={TOM_PRIORIDADE[p.prioridade]}>Prioridade {PRIORIDADE[p.prioridade]}</Selo>
+            {aval?.nivelFinal ? (
+              <Link href={`${base}/pre-projeto`} title={GOVERNANCA[aval.nivelFinal]}>
+                <Selo tom={TOM_NIVEL[aval.nivelFinal]}>Complexidade {aval.nivelFinal}</Selo>
+              </Link>
+            ) : (
+              <Link href={`${base}/pre-projeto`}>
+                <Selo>Complexidade não avaliada</Selo>
+              </Link>
+            )}
             {p.statusExecutivo ? (
               <span className="inline-flex items-center gap-1.5 rounded-full bg-fundo px-2 py-0.5 text-xs font-medium">
                 <span className={`h-2.5 w-2.5 rounded-full ${COR_EXEC[p.statusExecutivo]}`} />
@@ -100,17 +111,17 @@ export default async function LayoutProjeto({ children, params }: LayoutProps<"/
       <Abas
         abas={[
           { href: base, rotulo: "Visão Geral" },
-          { href: `${base}/pre-projeto`, rotulo: "Pré-Projeto", emBreve: true },
+          { href: `${base}/pre-projeto`, rotulo: "Pré-Projeto" },
           { href: `${base}/backlog`, rotulo: "Backlog" },
           { href: `${base}/cronograma`, rotulo: "Cronograma" },
-          { href: `${base}/operacional`, rotulo: "Operacional", emBreve: true },
-          { href: `${base}/testes`, rotulo: "Testes Internos", emBreve: true },
-          { href: `${base}/uat`, rotulo: "UAT", emBreve: true },
-          { href: `${base}/deployment`, rotulo: "Deployment", emBreve: true },
-          { href: `${base}/status`, rotulo: "Status Reports", emBreve: true },
-          { href: `${base}/riscos`, rotulo: "Riscos", emBreve: true },
+          { href: `${base}/operacional`, rotulo: "Operacional" },
+          { href: `${base}/testes`, rotulo: "Testes Internos" },
+          { href: `${base}/uat`, rotulo: "UAT" },
+          { href: `${base}/deployment`, rotulo: "Deployment" },
+          { href: `${base}/status`, rotulo: "Status Reports" },
+          { href: `${base}/riscos`, rotulo: "Riscos" },
           { href: `${base}/equipe`, rotulo: "Equipe" },
-          { href: `${base}/documentos`, rotulo: "Documentos", emBreve: true },
+          { href: `${base}/documentos`, rotulo: "Documentos" },
           { href: `${base}/historico`, rotulo: "Histórico" },
         ]}
       />

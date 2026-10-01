@@ -53,3 +53,15 @@ body {
     @apply bg-fundo/60;
   }
 }
+
+/* Impressão (status report em PDF): só o conteúdo. */
+@media print {
+  aside,
+  nav,
+  .nao-imprimir {
+    display: none !important;
+  }
+  body {
+    background: white !important;
+  }
+}

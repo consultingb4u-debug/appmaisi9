@@ -50,8 +50,8 @@ Para parar: `docker compose down` (os dados ficam guardados; `docker compose dow
 | 2 · Portfólio | Portfólio (filtros, ordenação, linha do tempo), página do projeto, importação do CTRL-003 com revisão e De-Para, carga real por recurso | ✅ |
 | 3 · Capacidade | Mapa de carga com detalhe recurso × semana, planejamento semanal editável inline, indisponibilidades com solicitação e aprovação | ✅ |
 | 4 · Cronograma | Backlog, cronograma (várias pessoas por tarefa, edição inline), Gantt, rateio automático nas semanas, apontamento por atividade (Minhas horas), importação do CTRL-001 | ✅ |
-| 5 · Execução | Pré-projeto, complexidade, RAID, testes, UAT, deployment | próximo |
-| 6 · Status | Status reports, documentos, dashboard executivo | |
+| 5 · Execução | Pré-projeto e complexidade (N1–N4), registro operacional (RAID), matriz de riscos, testes internos e UAT com ciclos e defeitos, deployment com prontidão Go/No-Go e hypercare, importação das demais abas do CTRL-001 | ✅ |
+| 6 · Status | Status reports com indicadores congelados e histórico, documentos (links SharePoint ou arquivos), painel executivo na tela inicial | ✅ |
 
 ## Stack
 
@@ -90,6 +90,14 @@ Capacidade e Indisponibilidades e mostra uma revisão linha a linha (criar / atu
 alertas e erros). Nomes não reconhecidos vão para o **De-Para**, que fica salvo como apelido.
 Nada é gravado até clicar em **Efetivar**. Reimportar o mesmo arquivo não duplica nada, e campos
 vazios na planilha não apagam dados do sistema. O arquivo original fica guardado no lote.
+
+## Importar o CTRL-001
+
+Também em **Administração → Importação**, escolhendo o tipo CTRL-001 e o projeto. São lidas as abas
+Pré-Projeto | Complexidade, Pré-Projeto, Backlog, Cronograma, Operacional, Teste Interno,
+Teste Cliente | UAT, Deployment e Status Report. As abas calculadas (Dashboard, Auditoria) são
+recalculadas pelo sistema. Reimportar não duplica nada: um resultado de teste diferente vira um
+novo ciclo de execução, e o histórico é mantido.
 
 ## Login com Microsoft 365
 

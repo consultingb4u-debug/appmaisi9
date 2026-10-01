@@ -6,6 +6,7 @@ import { PrismaClient } from "../lib/generated/prisma/client";
 import { dia } from "../lib/domain/datas";
 import { feriadosNacionais } from "../lib/domain/feriados";
 import { semanasEntre } from "../lib/domain/semanas";
+import { CRITERIOS_COMPLEXIDADE } from "../lib/domain/modelos";
 
 const db = new PrismaClient({ adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL }) });
 
@@ -55,6 +56,12 @@ async function main() {
   }
 
   await db.cliente.createMany({ data: CLIENTES.map((nome) => ({ nome })), skipDuplicates: true });
+
+  // Critérios de complexidade do CTRL-001 (editáveis depois; o seed não sobrescreve).
+  await db.criterioComplexidade.createMany({
+    data: CRITERIOS_COMPLEXIDADE.map((c, i) => ({ dimensao: c.dimensao, nome: c.nome, descricao0: c.d[0], descricao1: c.d[1], descricao2: c.d[2], descricao3: c.d[3], ordem: i + 1 })),
+    skipDuplicates: true,
+  });
 
   // Administrador para o login de desenvolvimento (nunca usado em produção).
   if (process.env.AUTH_DEV_LOGIN === "true") {

@@ -140,3 +140,76 @@ export const ADERENCIA: Record<"ADERENTE" | "PARCIAL" | "GAP" | "A_VALIDAR", str
 export const SIM_NAO: Record<"SIM" | "NAO" | "A_CONFIRMAR", string> = { SIM: "Sim", NAO: "Não", A_CONFIRMAR: "A confirmar" };
 export const VALIDACAO: Record<"PENDENTE" | "APROVADO" | "REPROVADO" | "NA", string> = { PENDENTE: "Pendente", APROVADO: "Aprovado", REPROVADO: "Reprovado", NA: "N/A" };
 export const TOM_VALIDACAO: Record<keyof typeof VALIDACAO, Tom> = { PENDENTE: "alerta", APROVADO: "ok", REPROVADO: "critico", NA: "neutro" };
+
+// ───────────────────────────── Incremento 5 ─────────────────────────────
+
+export const DIMENSAO: Record<"ESFORCO" | "PRAZO" | "COMPLEXIDADE" | "RISCO", string> = { ESFORCO: "Esforço", PRAZO: "Prazo", COMPLEXIDADE: "Complexidade", RISCO: "Risco" };
+export const TOM_NIVEL: Record<"N1" | "N2" | "N3" | "N4", Tom> = { N1: "ok", N2: "livre", N3: "alerta", N4: "critico" };
+
+export const STATUS_PRE_PROJETO: Record<"EM_PREPARACAO" | "PRONTO" | "PRONTO_COM_RESSALVAS" | "BLOQUEADO", string> = {
+  EM_PREPARACAO: "Em preparação",
+  PRONTO: "Pronto",
+  PRONTO_COM_RESSALVAS: "Pronto com ressalvas",
+  BLOQUEADO: "Bloqueado",
+};
+export const TOM_PRE_PROJETO: Record<keyof typeof STATUS_PRE_PROJETO, Tom> = { EM_PREPARACAO: "livre", PRONTO: "ok", PRONTO_COM_RESSALVAS: "alerta", BLOQUEADO: "critico" };
+
+export const STATUS_CHECKLIST: Record<"PENDENTE" | "EM_ANDAMENTO" | "CONCLUIDO" | "BLOQUEADO" | "NA", string> = {
+  PENDENTE: "Pendente",
+  EM_ANDAMENTO: "Em andamento",
+  CONCLUIDO: "Concluído",
+  BLOQUEADO: "Bloqueado",
+  NA: "N/A",
+};
+export const TOM_CHECKLIST: Record<keyof typeof STATUS_CHECKLIST, Tom> = { PENDENTE: "alerta", EM_ANDAMENTO: "livre", CONCLUIDO: "ok", BLOQUEADO: "critico", NA: "neutro" };
+
+export const TIPO_OPERACIONAL: Record<"PENDENCIA" | "DECISAO" | "DEPENDENCIA" | "PROBLEMA" | "RISCO" | "CHANGE_REQUEST" | "DEFEITO", string> = {
+  PENDENCIA: "Pendência",
+  DECISAO: "Decisão",
+  DEPENDENCIA: "Dependência",
+  PROBLEMA: "Problema",
+  RISCO: "Risco",
+  CHANGE_REQUEST: "Change Request",
+  DEFEITO: "Defeito",
+};
+
+export const STATUS_OPERACIONAL: Record<"ABERTO" | "EM_ANDAMENTO" | "AGUARDANDO" | "BLOQUEADO" | "APROVADO" | "REPROVADO" | "FECHADO" | "CANCELADO", string> = {
+  ABERTO: "Aberto",
+  EM_ANDAMENTO: "Em andamento",
+  AGUARDANDO: "Aguardando",
+  BLOQUEADO: "Bloqueado",
+  APROVADO: "Aprovado",
+  REPROVADO: "Reprovado",
+  FECHADO: "Fechado",
+  CANCELADO: "Cancelado",
+};
+export const TOM_OPERACIONAL: Record<keyof typeof STATUS_OPERACIONAL, Tom> = {
+  ABERTO: "alerta",
+  EM_ANDAMENTO: "livre",
+  AGUARDANDO: "alerta",
+  BLOQUEADO: "critico",
+  APROVADO: "ok",
+  REPROVADO: "critico",
+  FECHADO: "neutro",
+  CANCELADO: "neutro",
+};
+
+export const NIVEL_IMPACTO: Record<"NAO" | "BAIXO" | "MEDIO" | "ALTO", string> = { NAO: "Não", BAIXO: "Baixo", MEDIO: "Médio", ALTO: "Alto" };
+
+export const SEVERIDADE: Record<"BAIXA" | "MEDIA" | "ALTA" | "CRITICA", string> = { BAIXA: "Baixa", MEDIA: "Média", ALTA: "Alta", CRITICA: "Crítica" };
+export const TOM_SEVERIDADE: Record<keyof typeof SEVERIDADE, Tom> = { BAIXA: "ok", MEDIA: "alerta", ALTA: "destaque", CRITICA: "critico" };
+
+export const RESULTADO_TESTE: Record<"PLANEJADO" | "NAO_EXECUTADO" | "APROVADO" | "REPROVADO" | "BLOQUEADO" | "NA", string> = {
+  PLANEJADO: "Planejado",
+  NAO_EXECUTADO: "Não executado",
+  APROVADO: "Aprovado",
+  REPROVADO: "Reprovado",
+  BLOQUEADO: "Bloqueado",
+  NA: "N/A",
+};
+export const TOM_RESULTADO: Record<keyof typeof RESULTADO_TESTE, Tom> = { PLANEJADO: "neutro", NAO_EXECUTADO: "alerta", APROVADO: "ok", REPROVADO: "critico", BLOQUEADO: "critico", NA: "neutro" };
+
+export const DECISAO_GO: Record<"PENDENTE" | "GO" | "NO_GO" | "GO_COM_RESSALVAS", string> = { PENDENTE: "Pendente", GO: "Go", NO_GO: "No-Go", GO_COM_RESSALVAS: "Go com ressalvas" };
+export const TOM_DECISAO_GO: Record<keyof typeof DECISAO_GO, Tom> = { PENDENTE: "alerta", GO: "ok", NO_GO: "critico", GO_COM_RESSALVAS: "destaque" };
+
+export const OBRIGATORIEDADE: Record<"SIM" | "NAO" | "CONDICIONAL", string> = { SIM: "Sim", NAO: "Não", CONDICIONAL: "Condicional" };

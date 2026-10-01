@@ -1,4 +1,4 @@
-# MAIS i9 — Gestão de Projetos · Resumo técnico (incrementos 1 a 4)
+# MAIS i9 — Gestão de Projetos · Resumo técnico (incrementos 1 a 6)
 
 > Público: equipe técnica / administração. Situação em 01/10/2026.
 > Repositório: `consultingb4u-debug/appmaisi9`, branch `claude/mais-i9-project-management-3bapfx`.
@@ -19,10 +19,10 @@ Substituir as planilhas CTRL-001 (uma por projeto) e CTRL-003 (gestão de recurs
 | 2 | Portfólio, página do projeto (visão geral, equipe, histórico), importação do CTRL-003 com revisão | ✅ |
 | 3 | Capacidade: mapa de carga, planejamento semanal editável, indisponibilidades com aprovação | ✅ |
 | 4 | Backlog, cronograma com várias pessoas por tarefa, Gantt, rateio automático nas semanas, apontamento por atividade, importação do CTRL-001 | ✅ |
-| 5 | Pré-projeto/complexidade, RAID, testes internos, UAT, deployment | — |
-| 6 | Status reports, documentos, dashboard executivo final | — |
+| 5 | Pré-projeto/complexidade, RAID, matriz de riscos, testes internos, UAT, deployment/Go-No-Go, importação das demais abas do CTRL-001 | ✅ |
+| 6 | Status reports (indicadores congelados), documentos, painel executivo | ✅ |
 
-Números atuais: 23 tabelas, 23 enums, 3 migrações, 22 rotas de tela, 77 testes unitários.
+Números atuais: 35 tabelas, 35 enums, 6 migrações, 30 telas, 95 testes unitários.
 
 ## 3. Stack e decisões
 
@@ -90,6 +90,9 @@ export async function atualizarX(id: string, _: EstadoAcao, dados: FormData): Pr
 | Capacidade | `alocacao_semanal` (UNIQUE projeto + recurso + semana), `indisponibilidade` (pendente/aprovada/recusada) |
 | Calendário | `semana` (ISO, 2025–2028 no seed; criada sob demanda fora disso), `feriado` |
 | Cronograma | `backlog_item`, `atividade` (CRON-001…), `atividade_atribuicao` (atividade × recurso × esforço/falta), `atribuicao_semana` (rateio semanal), `atividade_predecessora`, `apontamento` (horas por recurso × atividade × semana) |
+| Pré-projeto | `criterio_complexidade` (12 critérios do CTRL-001, no seed), `projeto_complexidade` (nota 0–3 + gatilho), `avaliacao_complexidade` (score, gatilhos, nível final), `pre_projeto`, `pre_projeto_item` |
+| Execução | `item_operacional` (pendência, decisão, dependência, problema, risco P×I, change request, defeito), `caso_teste` (TI-/UAT-), `execucao_teste` (um registro por ciclo), `deployment`, `deployment_item` |
+| Status | `status_report` (indicadores em JSONB, rascunho/publicado), `documento` (link ou arquivo) |
 | Importação | `import_lote` (+ projeto no CTRL-001), `import_linha` (staging com dados brutos em JSONB), `import_mensagem` |
 | Auditoria | `auditoria` |
 
@@ -133,8 +136,8 @@ export async function atualizarX(id: string, _: EstadoAcao, dados: FormData): Pr
 ### Importação do CTRL-001
 
 - Feita por projeto (escolhido no upload). Lê as datas do Pré-Projeto, o Backlog e o Cronograma.
-  As abas de pré-projeto/complexidade, operacional, testes, deployment e status entram no incremento 5;
-  basta reimportar o mesmo arquivo.
+  Desde o incremento 5 lê também complexidade, checklist de pré-projeto, operacional, testes internos, UAT,
+  deployment e status report.
 - `avaliarCtrl001()` (pura, 7 testes):
   - agrupa `CRON-006`, `CRON-006.2` e `CRON-006.3` numa atividade com N atribuições, dividindo o esforço
     repetido (decisão de negócio);
@@ -143,6 +146,33 @@ export async function atualizarX(id: string, _: EstadoAcao, dados: FormData): Pr
   - cria o contato do cliente quando a coluna "Recurso Cliente" traz uma pessoa;
   - importa o realizado como um único apontamento.
 - Reimportar substitui pelos valores da planilha o que foi alterado no sistema; a revisão avisa linha a linha.
+
+## 6b. Execução e status (incrementos 5 e 6)
+
+Regras puras em `lib/domain/execucao.ts` e `lib/domain/status.ts` (testadas em `tests/domain/execucao.test.ts`):
+
+- **Complexidade:** score = soma das notas; nível base ≤ 8 N1, ≤ 16 N2, ≤ 24 N3, acima N4; nota 3 marcada como gatilho crítico
+  eleva para no mínimo N3 (1 gatilho) ou N4 (2+). Nível final = maior dos dois. Governança: Execução Direta, Gestão Leve,
+  Gestão Parcial, Gestão Integral. O nível aparece no cabeçalho do projeto e como filtro/coluna no portfólio.
+- **Riscos:** severidade = probabilidade × impacto (≤ 4 baixa, ≤ 9 média, ≤ 15 alta, > 15 crítica); sem matriz, vale o
+  maior impacto (escopo/prazo/horas). Itens abertos com prazo passado contam como vencidos.
+- **Testes:** cada execução é um ciclo; o resumo usa o último ciclo de cada caso. Reprovar com "abrir defeito" cria um
+  item DEFEITO no Operacional, ligado à execução.
+- **Go/No-Go:** item obrigatório precisa estar concluído e não reprovado; condicional pendente vira ressalva; defeito
+  alto/crítico aberto e UAT reprovado bloqueiam. A tela sugere Go / Go com ressalvas / No-Go; a decisão é registrada
+  com aprovadores e pode atualizar o Go Live real do projeto.
+- **Status report:** o rascunho fotografa os indicadores (progresso, horas, atrasos, RAID, testes, prontidão) e sugere
+  o status executivo; ao publicar, o report fica congelado e o status executivo vai para o projeto. Imprime em PDF
+  pelo navegador.
+- **Documentos:** link (recomendado: SharePoint/Teams) ou arquivo de até 10 MB no armazenamento do sistema; download
+  passa pela verificação de permissão.
+- **Painel executivo (Início):** projetos ativos ordenados por gravidade (status vermelho, atrasos, pendências
+  vencidas, riscos altos, defeitos graves, estouro de horas) e projetos sem status report publicado há 14+ dias.
+
+Importação: `lib/importacao/ctrl001/execucao.ts` (pura). IDs de teste repetidos na planilha (a Kover tem duas séries
+TI-001…) recebem o próximo número livre; responsáveis como "Diego / Dornelles" ligam o primeiro nome reconhecido e
+guardam o texto completo (há dois Diegos cadastrados, então "Diego" sozinho fica como texto); textos-modelo do
+Status Report ("[Resumo…]") são ignorados.
 
 ## 7. Segurança
 
@@ -159,6 +189,8 @@ export async function atualizarX(id: string, _: EstadoAcao, dados: FormData): Pr
 - Testes de navegador (Playwright) rodados a cada incremento contra o **build de produção standalone**, cobrindo:
   - login, cadastros, duplicidade e histórico;
   - importação real do CTRL-003 e reimportação;
+  - importação dos CTRL-001 da Kover e da Sulmedic (todas as abas) e reimportação sem duplicar;
+  - complexidade, RAID, matriz de riscos, ciclo de teste reprovado com defeito, prontidão Go/No-Go, status report publicado, upload e download de documento;
   - edição da grade com reload;
   - indisponibilidade e aprovação;
   - restrições do consultor;

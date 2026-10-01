@@ -116,3 +116,27 @@ export function Campo({ rotulo, children, ajuda, className }: { rotulo: string; 
     </label>
   );
 }
+
+/** <option>s a partir de um mapa de rótulos (enum → texto). */
+export function opcoes(m: Record<string, string>) {
+  return Object.entries(m).map(([k, r]) => (
+    <option key={k} value={k}>
+      {r}
+    </option>
+  ));
+}
+
+/** Barra de progresso simples (0–100). */
+export function Barra({ valor, tom = "ok" }: { valor: number; tom?: "ok" | "alerta" | "critico" | "navy" }) {
+  const cor = { ok: "bg-ok", alerta: "bg-alerta", critico: "bg-critico", navy: "bg-navy-700" }[tom];
+  return (
+    <div className="h-2 overflow-hidden rounded-full bg-ardosia-100">
+      <div className={clsx("h-full", cor)} style={{ width: `${Math.max(0, Math.min(100, valor))}%` }} />
+    </div>
+  );
+}
+
+/** Data AAAA-MM-DD para <input type="date">. */
+export function valorData(d: Date | null | undefined): string {
+  return d ? d.toISOString().slice(0, 10) : "";
+}

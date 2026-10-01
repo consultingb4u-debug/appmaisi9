@@ -2,6 +2,8 @@ import { describe, expect, it } from "vitest";
 import { avaliarCtrl001, codigoBase, type ContextoCtrl001 } from "@/lib/importacao/ctrl001/avaliar";
 import type { LinhaLida001 } from "@/lib/importacao/ctrl001/ler";
 import { dia } from "@/lib/domain/datas";
+import type { ContextoExecucao } from "@/lib/importacao/ctrl001/execucao";
+import { CRITERIOS_COMPLEXIDADE } from "@/lib/domain/modelos";
 
 const ctx = (extra: Partial<ContextoCtrl001> = {}): ContextoCtrl001 => ({
   projeto: { nome: "Implantação WMS", cliente: "Kover", dataKickoff: null, dataGoLiveAlvo: null },
@@ -11,8 +13,22 @@ const ctx = (extra: Partial<ContextoCtrl001> = {}): ContextoCtrl001 => ({
   ],
   backlog: new Map(),
   atividades: new Map(),
+  execucao: execVazio(),
   ...extra,
 });
+
+function execVazio(): ContextoExecucao {
+  return {
+    criterios: CRITERIOS_COMPLEXIDADE.map((c) => c.nome),
+    complexidade: null,
+    preProjetoStatus: null,
+    preItens: new Map(),
+    operacional: new Map(),
+    casos: new Map(),
+    deployItens: new Map(),
+    statusReports: new Set(),
+  };
+}
 
 let n = 2;
 const atividade = (id: string, extra: Record<string, unknown> = {}): LinhaLida001 => ({
@@ -90,5 +106,70 @@ describe("avaliarCtrl001", () => {
   it("codigoBase", () => {
     expect(codigoBase("CRON-006.3")).toBe("CRON-006");
     expect(codigoBase(" CRON-010 ")).toBe("CRON-010");
+  });
+});
+
+describe("abas de execução", () => {
+  const ti = (id: string, extra: Record<string, unknown> = {}): LinhaLida001 => ({
+    aba: "Teste Interno",
+    linhaOrigem: n++,
+    entidade: "TesteInterno",
+    dados: { ID: id, Requisito: "REQ-002", "Módulo | Processo": "WMS", "Cenário | Passos": "Validar recebimento", "Responsável MAIS i9": "Luiz Dornelles", Resultado: "Planejado", ...extra } as LinhaLida001["dados"],
+  });
+
+  it("complexidade: calcula o nível pela regra e ignora planilha sem notas", () => {
+    const dados: Record<string, string | number | null> = { avaliador: "Laura Iris", data: "2026-09-28", horas: 120, nivelPlanilha: "N1" };
+    for (const c of CRITERIOS_COMPLEXIDADE) {
+      dados[`nota:${c.nome}`] = c.nome === "Integrações" ? 3 : 1;
+      dados[`gatilho:${c.nome}`] = c.nome === "Integrações" ? "Sim" : "Não";
+    }
+    const linha: LinhaLida001 = { aba: "Pré-Projeto | Complexidade", linhaOrigem: 10, entidade: "Complexidade", dados };
+    const a = avaliarCtrl001([linha], ctx()).avaliacoes[0];
+    expect(a.acao).toBe("CRIAR");
+    expect(a.mensagens.map((m) => m.mensagem).join()).toContain("pela regra o nível é N3");
+    const vazio = { ...linha, dados: { avaliador: "GP MAIS i9", "nota:Duração": null } };
+    expect(avaliarCtrl001([vazio], ctx()).avaliacoes[0].acao).toBe("IGNORAR");
+  });
+
+  it("testes: ID repetido ganha novo código; responsável composto e primeiro nome", () => {
+    const linhas = [ti("TI-001"), ti("TI-002"), ti("TI-001", { Requisito: "Ambiente WMS/ERP", "Cenário | Passos": "1. Acessar WMS", "Responsável MAIS i9": "Murilo / Dornelles", Resultado: "Aprovado", "Validação MAIS i9": "Aprovado" })];
+    const r = avaliarCtrl001(linhas, ctx()).avaliacoes;
+    expect(r[2].chave).toBe("INTERNO|TI-003");
+    expect(r[2].resolvido).toMatchObject({
+      codigo: "TI-003",
+      backlogCodigo: null,
+      cenario: "Ambiente WMS/ERP",
+      passos: "1. Acessar WMS",
+      responsavelId: "r-murilo",
+      responsavelTexto: "Murilo / Dornelles",
+      execucao: { resultado: "APROVADO", validacao: "APROVADO" },
+    });
+    expect(r[0].resolvido).toMatchObject({ execucao: null, responsavelId: "r-luiz", responsavelTexto: null });
+  });
+
+  it("testes: reimportar com resultado diferente vira novo ciclo; igual é ignorado", () => {
+    const linha = ti("TI-005", { Resultado: "Reprovado", "Defeito | Pendência": "Etiqueta não sai" });
+    const base = avaliarCtrl001([linha], ctx()).avaliacoes[0].resolvido as { execucao: unknown };
+    const { execucao, ...semExec } = base;
+    void execucao;
+    const casos = (resultado: string) => new Map([["INTERNO|TI-005", { json: JSON.stringify(semExec), ultima: { resultado, validacao: "PENDENTE" } }]]);
+    expect(avaliarCtrl001([linha], ctx({ execucao: { ...execVazio(), casos: casos("REPROVADO") } })).avaliacoes[0].acao).toBe("IGNORAR");
+    const a = avaliarCtrl001([linha], ctx({ execucao: { ...execVazio(), casos: casos("PLANEJADO") } })).avaliacoes[0];
+    expect(a.acao).toBe("ATUALIZAR");
+    expect(a.mensagens.map((m) => m.mensagem).join()).toContain("novo ciclo");
+  });
+
+  it("operacional: tipo inválido é erro; 'Sim' em impacto vira Médio", () => {
+    const op = (extra: Record<string, unknown>): LinhaLida001 => ({ aba: "Operacional", linhaOrigem: n++, entidade: "Operacional", dados: { ID: "PEN-001", Tipo: "Pendência", Descrição: "Acesso VPN", "Impacto Prazo": "Sim", Status: "Aberto", ...extra } as LinhaLida001["dados"] });
+    const ok = avaliarCtrl001([op({})], ctx()).avaliacoes[0];
+    expect(ok.resolvido).toMatchObject({ tipo: "PENDENCIA", impactoPrazo: "MEDIO", status: "ABERTO" });
+    expect(avaliarCtrl001([op({ Tipo: "Qualquer" })], ctx()).avaliacoes[0].status).toBe("ERRO");
+  });
+
+  it("deployment e status report-modelo", () => {
+    const dep: LinhaLida001 = { aba: "Deployment", linhaOrigem: 2, entidade: "DeploymentItem", dados: { Categoria: "Deploy", Item: "Smoke test", "Obrigatório?": "Condicional", Status: "Planejado", Responsável: "Luiz Dornelles" } };
+    expect(avaliarCtrl001([dep], ctx()).avaliacoes[0].resolvido).toMatchObject({ obrigatorio: "CONDICIONAL", status: "PENDENTE", responsavelId: "r-luiz" });
+    const sr: LinhaLida001 = { aba: "Status Report", linhaOrigem: 1, entidade: "StatusReport", dados: { "Status Executivo": "Amarelo", "Resumo Executivo": "[Resumo executivo: o que foi concluído]" } };
+    expect(avaliarCtrl001([sr], ctx()).avaliacoes[0].acao).toBe("IGNORAR");
   });
 });

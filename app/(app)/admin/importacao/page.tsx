@@ -81,7 +81,7 @@ export default async function PaginaImportacao() {
                   ))}
                 </select>
               </Campo>
-              <Campo rotulo="Arquivo .xlsx" ajuda="CTRL-003: Portfólio, Planejamento, Capacidade, Indisponibilidades. CTRL-001: datas do Pré-Projeto, Backlog e Cronograma. Abas automáticas são ignoradas.">
+              <Campo rotulo="Arquivo .xlsx" ajuda="CTRL-003: Portfólio, Planejamento, Capacidade, Indisponibilidades. CTRL-001: Pré-Projeto e Complexidade, Backlog, Cronograma, Operacional, Teste Interno, UAT, Deployment e Status Report. Abas automáticas (Dashboard, Auditoria) são recalculadas.">
                 <input name="arquivo" type="file" accept=".xlsx" required className="campo file:mr-3 file:rounded file:border-0 file:bg-ardosia-100 file:px-2 file:py-1 file:text-sm" />
               </Campo>
             </Formulario>

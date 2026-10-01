@@ -8,15 +8,11 @@ import { cargaPorSemana, COR_FAIXA, formatarUtilizacao, ROTULO_FAIXA } from "@/l
 import { Cabecalho, Cartao, Indicador, LinkBotao, Selo, Vazio } from "@/components/ui";
 import { pode } from "@/lib/auth/permissoes";
 import clsx from "clsx";
+import { DIAS_STATUS_REPORT, gravidade, saudeProjetos } from "@/lib/services/dashboard";
+import { STATUS_EXECUTIVO, TOM_NIVEL } from "@/lib/domain/rotulos";
 
-const ENTREGAS = [
-  { n: 1, titulo: "Fundação", itens: "Login Microsoft 365, perfis, cadastros, calendário, auditoria", feito: true },
-  { n: 2, titulo: "Portfólio e projetos", itens: "Portfólio, página do projeto, importação do CTRL-003", feito: true },
-  { n: 3, titulo: "Capacidade", itens: "Planejamento semanal editável, indisponibilidades, mapa de carga", feito: true },
-  { n: 4, titulo: "Cronograma", itens: "Backlog, cronograma, Gantt, rateio automático, importação do CTRL-001" },
-  { n: 5, titulo: "Execução", itens: "Pré-projeto, complexidade, RAID, testes, UAT, deployment" },
-  { n: 6, titulo: "Status e dashboard", itens: "Status reports, documentos, dashboard executivo final" },
-];
+const COR_EXEC = { VERDE: "bg-ok", AMARELO: "bg-alerta", VERMELHO: "bg-critico" } as const;
+
 
 export default async function Inicio({ searchParams }: PageProps<"/">) {
   const usuario = await usuarioAtual();
@@ -40,7 +36,9 @@ export default async function Inicio({ searchParams }: PageProps<"/">) {
       },
     }),
   ]);
-  const carga = await cargaPorSemana(recursos.map((r) => r.id), semanas);
+  const [carga, saude] = await Promise.all([cargaPorSemana(recursos.map((r) => r.id), semanas), saudeProjetos()]);
+  saude.sort((a, b) => gravidade(b) - gravidade(a) || a.cliente.localeCompare(b.cliente));
+  const soma = (f: (x: (typeof saude)[number]) => number) => saude.reduce((t, x) => t + f(x), 0);
   const daSemana = (sid: string) => recursos.map((r) => ({ recurso: r, c: carga.get(r.id)!.get(sid)! }));
   const semanaAtual = daSemana(atual.id);
   const capLiquida = semanaAtual.reduce((t, x) => t + x.c.capacidade.liquida, 0);
@@ -77,6 +75,80 @@ export default async function Inicio({ searchParams }: PageProps<"/">) {
         <Indicador rotulo="Sobrecarregados" valor={sobrecarregados.length} detalhe="acima de 100% nesta semana" tom={sobrecarregados.length ? "critico" : "ok"} href="/capacidade?criticos=1" />
         <Indicador rotulo="Disponíveis" valor={disponiveis.length} detalhe="abaixo de 50% nesta semana" tom="ok" href="/capacidade" />
       </div>
+
+      <div className="mb-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+        <Indicador rotulo="Status vermelho" valor={saude.filter((x) => x.statusExecutivo === "VERMELHO").length} detalhe={`${saude.filter((x) => x.statusExecutivo === "AMARELO").length} amarelo(s)`} tom={saude.some((x) => x.statusExecutivo === "VERMELHO") ? "critico" : "ok"} />
+        <Indicador rotulo="Atividades atrasadas" valor={soma((x) => x.atrasadas)} detalhe={`em ${saude.filter((x) => x.atrasadas).length} projeto(s)`} tom={soma((x) => x.atrasadas) ? "alerta" : "ok"} />
+        <Indicador rotulo="Pendências vencidas" valor={soma((x) => x.pendenciasVencidas)} tom={soma((x) => x.pendenciasVencidas) ? "critico" : "ok"} />
+        <Indicador rotulo="Riscos altos · defeitos graves" valor={`${soma((x) => x.riscosAltos)} · ${soma((x) => x.defeitosGraves)}`} tom={soma((x) => x.riscosAltos + x.defeitosGraves) ? "critico" : "ok"} />
+        <Indicador rotulo="Status report atrasado" valor={saude.filter((x) => x.reportAtrasado).length} detalhe={`sem report publicado há ${DIAS_STATUS_REPORT}+ dias`} tom={saude.some((x) => x.reportAtrasado) ? "alerta" : "ok"} />
+      </div>
+
+      <Cartao titulo="Saúde dos projetos ativos" className="mb-6">
+        {saude.length === 0 ? (
+          <Vazio>Nenhum projeto ativo.</Vazio>
+        ) : (
+          <div className="-m-4 max-h-[28rem] overflow-auto">
+            <table className="tabela">
+              <thead>
+                <tr>
+                  <th>Projeto</th>
+                  <th>GP</th>
+                  <th>Status</th>
+                  <th>Compl.</th>
+                  <th className="text-right">Conclusão</th>
+                  <th className="text-right">Atrasadas</th>
+                  <th className="text-right">Pend. vencidas</th>
+                  <th className="text-right">Riscos altos</th>
+                  <th className="text-right">Defeitos graves</th>
+                  <th className="text-right">Estouro</th>
+                  <th>Go Live</th>
+                  <th>Último report</th>
+                </tr>
+              </thead>
+              <tbody>
+                {saude.map((x) => {
+                  const n = (v: number, href: string) => (v ? <Link href={href} className="font-medium text-critico hover:underline">{v}</Link> : <span className="text-ardosia-300">—</span>);
+                  return (
+                    <tr key={x.id}>
+                      <td>
+                        <div className="text-xs text-ardosia-500">{x.cliente}</div>
+                        <Link href={`/projetos/${x.id}`} className="font-medium text-navy-800 hover:underline">
+                          {x.nome}
+                        </Link>
+                      </td>
+                      <td className="text-xs whitespace-nowrap">{x.gp ?? "—"}</td>
+                      <td>
+                        {x.statusExecutivo ? (
+                          <span className="inline-flex items-center gap-1.5 text-xs">
+                            <span className={clsx("h-2.5 w-2.5 rounded-full", COR_EXEC[x.statusExecutivo])} />
+                            {STATUS_EXECUTIVO[x.statusExecutivo]}{x.status === "BLOQUEADO" && " · bloqueado"}
+                          </span>
+                        ) : (
+                          <span className="text-xs text-ardosia-400">—</span>
+                        )}
+                      </td>
+                      <td>{x.complexidade ? <Selo tom={TOM_NIVEL[x.complexidade]}>{x.complexidade}</Selo> : <span className="text-ardosia-300">—</span>}</td>
+                      <td className="text-right tabular-nums">{x.temCronograma ? `${x.progresso}%` : <span className="text-ardosia-300">—</span>}</td>
+                      <td className="text-right tabular-nums">{n(x.atrasadas, `/projetos/${x.id}/cronograma`)}</td>
+                      <td className="text-right tabular-nums">{n(x.pendenciasVencidas, `/projetos/${x.id}/operacional?situacao=vencidos`)}</td>
+                      <td className="text-right tabular-nums">{n(x.riscosAltos, `/projetos/${x.id}/riscos`)}</td>
+                      <td className="text-right tabular-nums">{n(x.defeitosGraves, `/projetos/${x.id}/operacional?tipo=DEFEITO`)}</td>
+                      <td className="text-right tabular-nums">{x.estouro ? <span className="font-medium text-critico">+{x.estouro}h</span> : <span className="text-ardosia-300">—</span>}</td>
+                      <td className="text-xs whitespace-nowrap tabular-nums">{formatarData(x.goLive)}</td>
+                      <td className="text-xs whitespace-nowrap">
+                        <Link href={`/projetos/${x.id}/status`} className={clsx("hover:underline", x.reportAtrasado && "text-[#8a6a00]")}>
+                          {x.ultimoReport ? formatarData(x.ultimoReport) : "nunca"}
+                        </Link>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </Cartao>
 
       <div className="grid gap-6 lg:grid-cols-2">
         <Cartao titulo="Carga da equipe — próximas 4 semanas">
@@ -185,19 +257,6 @@ export default async function Inicio({ searchParams }: PageProps<"/">) {
             )}
           </Cartao>
 
-          <Cartao titulo="Entregas do sistema">
-            <ol className="space-y-2">
-              {ENTREGAS.map((e) => (
-                <li key={e.n} className="flex items-start gap-3 text-sm">
-                  <span className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[11px] font-semibold ${e.feito ? "bg-ok text-white" : "bg-ardosia-100 text-ardosia-600"}`}>{e.n}</span>
-                  <div>
-                    <span className="font-medium">{e.titulo}</span> {e.feito && <Selo tom="ok">disponível</Selo>}
-                    <div className="text-xs text-ardosia-500">{e.itens}</div>
-                  </div>
-                </li>
-              ))}
-            </ol>
-          </Cartao>
         </div>
       </div>
     </>

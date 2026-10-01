@@ -21,6 +21,23 @@ export function descreverLinha(entidade: string, d: Dados): string {
       return `${t(d["ID"])} · ${t(d["Requisito"])}`;
     case "Atividade":
       return `${t(d["ID"])} · ${t(d["Tarefa"])} · ${t(d["Recurso MAIS i9"]) || "sem recurso"} · ${t(d["Esforço Previsto (h)"])}h · ${t(d["Início Previsto"])} a ${t(d["Fim Previsto"])}`;
+    case "Complexidade": {
+      const notas = Object.entries(d).filter(([k, v]) => k.startsWith("nota:") && v !== null).length;
+      return `Avaliador ${t(d.avaliador) || "—"} · ${notas} critério(s) respondido(s) · nível na planilha ${t(d.nivelPlanilha) || "—"}`;
+    }
+    case "PreProjeto":
+      return `Status do pré-projeto: ${t(d.status)}`;
+    case "PreProjetoItem":
+      return `${t(d["Categoria"])} · ${t(d["Item / Requisito"])} · ${t(d["Status"]) || "—"}`;
+    case "Operacional":
+      return `${t(d["ID"])} · ${t(d["Tipo"])} · ${t(d["Descrição"])} · ${t(d["Status"])}`;
+    case "TesteInterno":
+    case "Uat":
+      return `${t(d["ID"])} · ${t(d["Requisito"])} · ${t(d["Cenário | Passos"]).split("\n")[0].slice(0, 80)} · ${t(d["Resultado"]) || "—"}`;
+    case "DeploymentItem":
+      return `${t(d["Categoria"])} · ${t(d["Item"])} · ${t(d["Status"]) || "—"}`;
+    case "StatusReport":
+      return `${t(d["Status Executivo"]) || "—"} · ${t(d["Resumo Executivo"]).slice(0, 80)}`;
     default:
       return "";
   }
@@ -34,6 +51,14 @@ export const NOME_ENTIDADE: Record<string, string> = {
   Cabecalho: "Datas do projeto",
   Backlog: "Backlog",
   Atividade: "Cronograma",
+  Complexidade: "Complexidade",
+  PreProjeto: "Status do pré-projeto",
+  PreProjetoItem: "Checklist de pré-projeto",
+  Operacional: "Operacional (RAID)",
+  TesteInterno: "Teste interno",
+  Uat: "UAT",
+  DeploymentItem: "Checklist de deployment",
+  StatusReport: "Status report",
 };
 
 export const STATUS_LOTE = {

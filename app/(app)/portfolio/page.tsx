@@ -4,7 +4,7 @@ import { db } from "@/lib/db";
 import { usuarioAtual } from "@/lib/auth/sessao";
 import { pode } from "@/lib/auth/permissoes";
 import { diffDias, formatarData, parseDia, somarDias } from "@/lib/domain/datas";
-import { PRIORIDADE, STATUS_PROJETO, TIPO_PROJETO, TOM_PRIORIDADE, TOM_STATUS_PROJETO } from "@/lib/domain/rotulos";
+import { PRIORIDADE, STATUS_PROJETO, TIPO_PROJETO, TOM_NIVEL, TOM_PRIORIDADE, TOM_STATUS_PROJETO } from "@/lib/domain/rotulos";
 import { rotuloSemana, semanaDe, semanasEntre } from "@/lib/domain/semanas";
 import { listarPortfolio, type LinhaPortfolio } from "@/lib/services/portfolio";
 import { Cabecalho, Cartao, LinkBotao, Selo, Vazio } from "@/components/ui";
@@ -20,6 +20,7 @@ const ORDENS: Record<string, (p: LinhaPortfolio) => string | number> = {
   projeto: (p) => p.nome,
   status: (p) => p.status,
   prioridade: (p) => ["BAIXA", "MEDIA", "ALTA", "CRITICA"].indexOf(p.prioridade),
+  complexidade: (p) => p.complexidade ?? "N0",
   gp: (p) => p.gp?.nome ?? "~",
   golive: (p) => p.dataGoLive?.getTime() ?? Number.MAX_SAFE_INTEGER,
   planejado: (p) => p.horasPlanejadas,
@@ -43,7 +44,7 @@ export default async function PaginaPortfolio({ searchParams }: PageProps<"/port
     const r = typeof x === "number" && typeof y === "number" ? x - y : String(x).localeCompare(String(y), "pt-BR");
     return p.dir === "desc" ? -r : r;
   });
-  const temFiltro = ["q", "cliente", "tipo", "gp", "recurso", "prioridade", "de", "ate"].some((k) => p[k]) || (p.status && p.status !== "ativos");
+  const temFiltro = ["q", "cliente", "tipo", "gp", "recurso", "prioridade", "complexidade", "de", "ate"].some((k) => p[k]) || (p.status && p.status !== "ativos");
 
   return (
     <>
@@ -108,6 +109,15 @@ export default async function PaginaPortfolio({ searchParams }: PageProps<"/port
             </option>
           ))}
         </select>
+        <select name="complexidade" defaultValue={p.complexidade ?? ""} className="campo py-1.5">
+          <option value="">Complexidade</option>
+          {["N1", "N2", "N3", "N4"].map((n) => (
+            <option key={n} value={n}>
+              {n}
+            </option>
+          ))}
+          <option value="nao">Não avaliado</option>
+        </select>
         <select name="tipo" defaultValue={p.tipo ?? ""} className="campo py-1.5">
           <option value="">Tipo</option>
           {Object.entries(TIPO_PROJETO).map(([v, r]) => (
@@ -153,6 +163,7 @@ export default async function PaginaPortfolio({ searchParams }: PageProps<"/port
                   <th>Tipo</th>
                   <ThOrdenavel campo="status" rotulo="Status" params={p} base="/portfolio" />
                   <ThOrdenavel campo="prioridade" rotulo="Prioridade" params={p} base="/portfolio" />
+                  <ThOrdenavel campo="complexidade" rotulo="Compl." params={p} base="/portfolio" />
                   <ThOrdenavel campo="gp" rotulo="GP" params={p} base="/portfolio" />
                   <th className="text-right">Equipe</th>
                   <ThOrdenavel campo="golive" rotulo="Go Live" params={p} base="/portfolio" />
@@ -179,6 +190,7 @@ export default async function PaginaPortfolio({ searchParams }: PageProps<"/port
                     <td>
                       <Selo tom={TOM_PRIORIDADE[x.prioridade]}>{PRIORIDADE[x.prioridade]}</Selo>
                     </td>
+                    <td>{x.complexidade ? <Selo tom={TOM_NIVEL[x.complexidade]}>{x.complexidade}</Selo> : <span className="text-ardosia-400">—</span>}</td>
                     <td className="whitespace-nowrap">{x.gp?.nome ?? <span className="text-ardosia-400">—</span>}</td>
                     <td className="text-right tabular-nums">{x.equipe}</td>
                     <td className="whitespace-nowrap tabular-nums">{x.dataGoLive ? formatarData(x.dataGoLive) : <span className="text-ardosia-400">—</span>}</td>

@@ -16,6 +16,8 @@ import { Formulario } from "@/components/formulario";
 import { CamposProjeto } from "@/components/campos-projeto";
 import { GradeSemanal, type CelulaGrade } from "@/components/grade-semanal";
 import { atualizarProjeto } from "../acoes";
+import { resumoExecucao } from "@/lib/services/execucao";
+import { PainelExecucao } from "@/components/painel-execucao";
 
 const h = (n: number) => `${Math.round(n * 10) / 10}h`;
 
@@ -34,7 +36,7 @@ export default async function VisaoGeral({ params }: PageProps<"/projetos/[id]">
   const celulas = new Map<string, CelulaGrade>(proximas.map((a) => [`${a.recursoId}|${a.semanaId}`, { horas: previstas(a), dica: a.observacao ?? undefined }]));
   const futuras = p.alocacoes.filter((a) => a.semana.inicio >= atual.inicio).reduce((t, a) => t + previstas(a), 0);
   const vendidas = p.horasVendidas?.toNumber() ?? null;
-  const crono = await cronogramaDoProjeto(p.id);
+  const [crono, execucao] = await Promise.all([cronogramaDoProjeto(p.id), resumoExecucao(p.id)]);
   const ativas = crono.atividades.filter((a) => a.status !== "CANCELADO");
   const fases = FASES.map((f) => {
     const doGrupo = ativas.filter((a) => a.fase === f);
@@ -63,6 +65,8 @@ export default async function VisaoGeral({ params }: PageProps<"/projetos/[id]">
         <Indicador rotulo="Planejado a partir desta semana" valor={h(futuras)} />
         <Indicador rotulo="Realizado" valor={h(p.horasRealizadas)} detalhe="soma das horas apontadas" />
       </div>
+
+      <PainelExecucao projetoId={p.id} r={execucao} />
 
       {crono.atividades.length > 0 && (
         <div className="grid gap-6 lg:grid-cols-3">

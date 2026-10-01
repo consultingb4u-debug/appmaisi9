@@ -4,6 +4,30 @@ Aplicação web interna da MAIS i9 para substituir os controles em planilha
 (CTRL-001 por projeto e CTRL-003 Gestão de Recursos).
 
 - Proposta, diagnóstico das planilhas e modelo de dados: [`docs/01-proposta-arquitetura.md`](docs/01-proposta-arquitetura.md)
+- Resumo técnico para a equipe de TI: [`docs/02-resumo-tecnico.md`](docs/02-resumo-tecnico.md)
+
+## Ver funcionando em 5 minutos (Docker)
+
+Pré-requisito: [Docker Desktop](https://www.docker.com/products/docker-desktop/) instalado.
+
+```bash
+git clone https://github.com/consultingb4u-debug/appmaisi9.git
+cd appmaisi9
+git checkout claude/mais-i9-project-management-3bapfx
+cp .env.example .env
+```
+
+No `.env`, preencha `AUTH_SECRET` com qualquer texto longo e ponha `AUTH_DEV_LOGIN="true"`. Depois:
+
+```bash
+docker compose up -d --build
+```
+
+Abra http://localhost:3000, clique em **Entrar sem senha** (usuário `admin@maisi9.local`), vá em
+**Administração → Importação** e envie o `CTRL-003_Gestao_Recursos_v5.3.xlsx`. Confira a revisão,
+marque a confirmação e clique em **Efetivar**. Portfólio, Capacidade e Recursos passam a mostrar os dados reais.
+
+Para parar: `docker compose down` (os dados ficam guardados; `docker compose down -v` apaga tudo).
 
 ## Status
 

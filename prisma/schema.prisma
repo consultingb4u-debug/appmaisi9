@@ -1,0 +1,201 @@
+// Modelo de dados — MAIS i9 Gestão de Projetos, Portfólio e Recursos
+// Referência funcional: docs/01-proposta-arquitetura.md (seção C)
+// Incremento 1: cadastros, segurança, calendário e auditoria.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ───────────────────────────── Segurança ─────────────────────────────
+
+enum Perfil {
+  ADMIN
+  GESTOR
+  CONSULTOR
+  VISUALIZADOR
+}
+
+model Usuario {
+  id            String    @id @default(uuid()) @db.Uuid
+  nome          String
+  email         String    @unique
+  perfil        Perfil    @default(VISUALIZADOR)
+  ativo         Boolean   @default(true)
+  ultimoAcesso  DateTime? @map("ultimo_acesso")
+  criadoEm      DateTime  @default(now()) @map("criado_em")
+  atualizadoEm  DateTime  @updatedAt @map("atualizado_em")
+
+  recurso       Recurso?
+  auditorias    Auditoria[]
+
+  @@map("usuario")
+}
+
+// ───────────────────────────── Recursos ─────────────────────────────
+
+enum TipoRecurso {
+  INTERNO
+  TERCEIRO
+}
+
+model Recurso {
+  id              String      @id @default(uuid()) @db.Uuid
+  usuarioId       String?     @unique @map("usuario_id") @db.Uuid
+  nome            String      @unique
+  email           String?     @unique
+  cargo           String?
+  area            String?
+  tipo            TipoRecurso @default(INTERNO)
+  ativo           Boolean     @default(true)
+  dataEntrada     DateTime?   @map("data_entrada") @db.Date
+  dataSaida       DateTime?   @map("data_saida") @db.Date
+  criadoEm        DateTime    @default(now()) @map("criado_em")
+  criadoPorId     String?     @map("criado_por_id") @db.Uuid
+  atualizadoEm    DateTime    @updatedAt @map("atualizado_em")
+  atualizadoPorId String?     @map("atualizado_por_id") @db.Uuid
+
+  usuario         Usuario?             @relation(fields: [usuarioId], references: [id], onDelete: SetNull)
+  apelidos        RecursoApelido[]
+  capacidades     RecursoCapacidade[]
+
+  @@map("recurso")
+}
+
+/// Grafias alternativas usadas nas planilhas ("Dornelles", "Laura Iris").
+/// Usado pela importação para resolver nomes automaticamente.
+model RecursoApelido {
+  id        String  @id @default(uuid()) @db.Uuid
+  recursoId String  @map("recurso_id") @db.Uuid
+  apelido   String  @unique
+
+  recurso   Recurso @relation(fields: [recursoId], references: [id], onDelete: Cascade)
+
+  @@map("recurso_apelido")
+}
+
+/// Capacidade semanal com vigência. vigenciaFim nula = vigente.
+model RecursoCapacidade {
+  id              String    @id @default(uuid()) @db.Uuid
+  recursoId       String    @map("recurso_id") @db.Uuid
+  vigenciaInicio  DateTime  @map("vigencia_inicio") @db.Date
+  vigenciaFim     DateTime? @map("vigencia_fim") @db.Date
+  horasSemanais   Decimal   @map("horas_semanais") @db.Decimal(5, 1)
+  criadoEm        DateTime  @default(now()) @map("criado_em")
+  criadoPorId     String?   @map("criado_por_id") @db.Uuid
+
+  recurso         Recurso   @relation(fields: [recursoId], references: [id], onDelete: Cascade)
+
+  @@index([recursoId, vigenciaInicio])
+  @@map("recurso_capacidade")
+}
+
+// ───────────────────────────── Clientes ─────────────────────────────
+
+model Cliente {
+  id              String    @id @default(uuid()) @db.Uuid
+  nome            String    @unique
+  razaoSocial     String?   @map("razao_social")
+  segmento        String?
+  ativo           Boolean   @default(true)
+  criadoEm        DateTime  @default(now()) @map("criado_em")
+  criadoPorId     String?   @map("criado_por_id") @db.Uuid
+  atualizadoEm    DateTime  @updatedAt @map("atualizado_em")
+  atualizadoPorId String?   @map("atualizado_por_id") @db.Uuid
+
+  contatos        ContatoCliente[]
+
+  @@map("cliente")
+}
+
+enum FuncaoContato {
+  SPONSOR
+  GP_CLIENTE
+  KEY_USER
+  TI
+  OUTRO
+}
+
+model ContatoCliente {
+  id              String        @id @default(uuid()) @db.Uuid
+  clienteId       String        @map("cliente_id") @db.Uuid
+  nome            String
+  email           String?
+  telefone        String?
+  funcao          FuncaoContato @default(OUTRO)
+  ativo           Boolean       @default(true)
+  criadoEm        DateTime      @default(now()) @map("criado_em")
+  atualizadoEm    DateTime      @updatedAt @map("atualizado_em")
+
+  cliente         Cliente       @relation(fields: [clienteId], references: [id], onDelete: Cascade)
+
+  @@unique([clienteId, nome])
+  @@map("contato_cliente")
+}
+
+// ───────────────────────────── Calendário ─────────────────────────────
+
+enum AbrangenciaFeriado {
+  NACIONAL
+  ESTADUAL
+  MUNICIPAL
+}
+
+model Feriado {
+  id          String             @id @default(uuid()) @db.Uuid
+  data        DateTime           @db.Date
+  descricao   String
+  abrangencia AbrangenciaFeriado @default(NACIONAL)
+  uf          String?            @db.Char(2)
+  municipio   String?
+  criadoEm    DateTime           @default(now()) @map("criado_em")
+
+  @@unique([data, abrangencia, descricao])
+  @@map("feriado")
+}
+
+/// Semana ISO (segunda a domingo). id no formato "2026-W40".
+model Semana {
+  id      String   @id
+  anoIso  Int      @map("ano_iso")
+  numero  Int
+  inicio  DateTime @unique @db.Date
+  fim     DateTime @db.Date
+
+  @@unique([anoIso, numero])
+  @@map("semana")
+}
+
+// ───────────────────────────── Auditoria ─────────────────────────────
+
+enum AcaoAuditoria {
+  CRIAR
+  ALTERAR
+  EXCLUIR
+  IMPORTAR
+  PUBLICAR
+}
+
+/// Log imutável. `alteracoes` guarda {campo: [antes, depois]}.
+model Auditoria {
+  id         String        @id @default(uuid()) @db.Uuid
+  entidade   String
+  entidadeId String        @map("entidade_id")
+  projetoId  String?       @map("projeto_id") @db.Uuid
+  acao       AcaoAuditoria
+  usuarioId  String?       @map("usuario_id") @db.Uuid
+  dataHora   DateTime      @default(now()) @map("data_hora")
+  resumo     String?
+  alteracoes Json?
+
+  usuario    Usuario?      @relation(fields: [usuarioId], references: [id], onDelete: SetNull)
+
+  @@index([entidade, entidadeId])
+  @@index([projetoId])
+  @@index([dataHora])
+  @@map("auditoria")
+}

@@ -1,0 +1,34 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  verificar:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: maisi9
+          POSTGRES_USER: maisi9
+          POSTGRES_PASSWORD: maisi9
+        ports: ["5432:5432"]
+        options: --health-cmd "pg_isready -U maisi9" --health-interval 5s --health-retries 10
+    env:
+      DATABASE_URL: postgresql://maisi9:maisi9@localhost:5432/maisi9?schema=public
+      AUTH_SECRET: ci-secret
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm test
+      - run: npx prisma migrate deploy
+      - run: npx prisma db seed
+      - run: npm run build

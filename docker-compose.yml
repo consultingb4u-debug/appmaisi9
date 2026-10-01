@@ -1,0 +1,38 @@
+# Uso: cp .env.example .env (preencher) && docker compose up -d --build
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: maisi9
+      POSTGRES_USER: maisi9
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-maisi9}
+    volumes:
+      - dados_db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U maisi9 -d maisi9"]
+      interval: 5s
+      retries: 10
+
+  migrador:
+    build: { context: ., target: migrador }
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql://maisi9:${POSTGRES_PASSWORD:-maisi9}@db:5432/maisi9?schema=public
+    depends_on:
+      db: { condition: service_healthy }
+    restart: "no"
+
+  app:
+    build: { context: ., target: app }
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql://maisi9:${POSTGRES_PASSWORD:-maisi9}@db:5432/maisi9?schema=public
+    ports:
+      - "${APP_PORT:-3000}:3000"
+    depends_on:
+      migrador: { condition: service_completed_successfully }
+
+volumes:
+  dados_db:

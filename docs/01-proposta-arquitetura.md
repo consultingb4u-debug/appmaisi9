@@ -1,5 +1,5 @@
 # MAIS i9 — Gestão de Projetos, Portfólio e Recursos
-## Proposta de Arquitetura (Etapa 1 — para aprovação) · v2
+## Proposta de Arquitetura (Etapa 1 — para aprovação) · v3
 
 > **Base desta versão:** análise célula a célula (valores, fórmulas, validações, formatações condicionais e nomes definidos) de:
 > - `CTRL-001_Kover_Implantação_WMS_v1.9.xlsx` (12 abas)
@@ -73,7 +73,7 @@
    | Julis Felipe | S42 | 0h | Sulmedic 24h | 24h | 40h | 60% (invisível no CTRL-003) |
 
    Kover (140h) e Sulmedic Reforma Tributária (88h) **não têm nenhuma linha** no Planejamento Recursos: a consolidação manual CTRL-001 → CTRL-003 não aconteceu, mesmo com a aba Auditoria preparada para isso.
-3. **Atividades com vários recursos viram linhas duplicadas** (`CRON-006`, `.2`, `.3`), com o mesmo esforço repetido em cada linha e uma linha sem recurso (só cliente). Isso infla o total do projeto e gera 6 alertas "Esforço sem Recurso MAIS i9" no Kover.
+3. **Atividades com vários recursos viram linhas duplicadas** (`CRON-006`, `.2`, `.3`), com o mesmo esforço repetido em cada linha e uma linha sem recurso (só cliente). Como o esforço é o mesmo repetido (confirmado), **o Kover soma 140h mas o esforço real é 92h** em 26 tarefas; a duplicação também gera 6 alertas "Esforço sem Recurso MAIS i9".
 4. **Nomes de pessoas sem padrão:** "Diego / Dornelles", "Dornelles / Diego", "Diego / Murilo / Dornelles" nos testes (e existem **dois Diegos**: Fortunato e Bonilha); "Laura Iris" é GP do Sulmedic e aparece nas Indisponibilidades, mas não está na lista de recursos (que tem "Laura Camargo"); GP do Kover = "GP MAIS i9"; cliente "DIPIL" × "Dipil".
 5. **Recurso Cliente mistura empresa e pessoa** ("Kover", "Sulmedic", "Leondil Ribeiro").
 6. **Testes:** no Kover, o mesmo ID (`TI-001`…`TI-009`) existe duas vezes — 9 casos gerados automaticamente a partir do backlog + 55 casos detalhados, cuja coluna "Requisito" contém o nome do cenário (não o `REQ`), portanto **sem vínculo com o backlog**. Não existe coluna "Resultado obtido"; defeitos são texto livre e não viram pendência; o valor "Planejado" é usado sem constar da lista.
@@ -220,7 +220,7 @@ Banco relacional (PostgreSQL). Convenções:
 |---|---|
 | **indisponibilidade** | id, recurso_id, tipo (FERIAS · FERIADO_LOCAL · AUSENCIA · TREINAMENTO · BLOQUEIO · OUTROS), inicio, fim, horas_por_dia (padrão = jornada), observacao, status (PENDENTE · APROVADA · RECUSADA) — só APROVADA reduz capacidade |
 | **alocacao_semanal** | **Projeto + Recurso + Semana** — id, projeto_id, recurso_id, semana_id, horas_calculadas (soma das atribuições, mantida pelo sistema), horas_manuais (override, nulo = sem override), horas_avulsas (gestão, sustentação, alocação), horas_realizadas (soma dos apontamentos), status (PLANEJADO · EM_ANDAMENTO · BLOQUEADO · AGUARDANDO_CLIENTE · CONCLUIDO · CANCELADO), prioridade, observacao · UNIQUE(projeto, recurso, semana) |
-| **apontamento** | id, recurso_id, projeto_id, semana_id, atividade_id (opcional), data (opcional), horas, descricao |
+| **apontamento** | id, recurso_id, **atividade_id** (obrigatório para projetos com cronograma), projeto_id, semana_id, data, horas, descricao — **cada pessoa aponta as horas que fez por atividade**; projetos sem cronograma (suporte, sustentação, alocação) aceitam apontamento direto no projeto |
 
 > **Horas previstas** = `coalesce(horas_manuais, horas_calculadas) + horas_avulsas` · **Saldo** = previstas − realizadas.
 > **Capacidade líquida(semana)** = horas_semanais vigentes − feriados nacionais/locais × horas_dia − indisponibilidades aprovadas.
@@ -512,7 +512,7 @@ Objetivo: **substituir CTRL-001 e CTRL-003 no dia a dia**, sem voltar às planil
 | 9 | **Integração cronograma → capacidade** com rateio e override (D.5) |
 | 10 | Capacidade: mapa de carga semanal com detalhe, planejamento semanal editável (inclui horas avulsas), indisponibilidades com aprovação |
 | 11 | Página do recurso |
-| 12 | Apontamento de horas realizadas (formato a confirmar em J) |
+| 12 | Apontamento de horas realizadas **por atividade**, feito por cada consultor ("minhas atividades da semana") |
 | 13 | Operacional (RAID) com abas Riscos, Pendências e Change Requests |
 | 14 | Testes Internos e UAT (casos, execuções por ciclo, defeitos ligados ao RAID) |
 | 15 | Deployment (checklist por template, Go/No-Go, Go Live, Hypercare) |
@@ -570,7 +570,7 @@ Objetivo: **substituir CTRL-001 e CTRL-003 no dia a dia**, sem voltar às planil
 | CTRL-001 · Pré-Projeto \| Complexidade | avaliacao_complexidade, projeto_complexidade | Score 0 em todos os critérios → importar como "não avaliado", não como N1 |
 | CTRL-001 · Pré-Projeto | pre_projeto, pre_projeto_item; Go Live alvo → projeto | Conflito de datas com o Portfólio → alerta para escolher |
 | CTRL-001 · Backlog | backlog_item | Chave: projeto + REQ |
-| CTRL-001 · Cronograma | atividade, atividade_atribuicao, atividade_predecessora | **Linhas `CRON-xxx.n` são agrupadas na atividade `CRON-xxx`** como atribuições; linha sem recurso MAIS i9 com esforço → alerta (provável participação do cliente); "Atividade" (`REQ-…`) → `backlog_item_id`; status "Atrasado" → EM_ANDAMENTO/NAO_INICIADO + situação calculada; data em fim de semana → alerta |
+| CTRL-001 · Cronograma | atividade, atividade_atribuicao, atividade_predecessora | **Linhas `CRON-xxx.n` são agrupadas na atividade `CRON-xxx`** como atribuições; como o esforço era repetido, o **esforço da atividade é o da linha principal** e é dividido igualmente entre os recursos MAIS i9 (ex.: CRON-006 = 4h → Luiz 2h + Murilo 2h), com alerta para o GP ajustar; linha sem recurso MAIS i9 com esforço → alerta (provável participação do cliente); "Atividade" (`REQ-…`) → `backlog_item_id`; status "Atrasado" → EM_ANDAMENTO/NAO_INICIADO + situação calculada; data em fim de semana → alerta |
 | CTRL-001 · Operacional | item_operacional | Tipo mapeado 1:1 |
 | CTRL-001 · Teste Interno / UAT | caso_teste + execucao_teste (ciclo 1) | IDs duplicados → renumerar com De-Para de ID; "Requisito" que não é `REQ-…` → vira cenário, sem vínculo, com alerta; responsáveis múltiplos ("Diego / Dornelles") → principal + observação; "Defeito \| Pendência" preenchido → item_operacional tipo DEFEITO |
 | CTRL-001 · Deployment | deployment + deployment_item | 12 itens; "Go/No-Go aprovado" → decisão do deployment |
@@ -583,17 +583,20 @@ Objetivo: **substituir CTRL-001 e CTRL-003 no dia a dia**, sem voltar às planil
 
 ---
 
-## J. Perguntas (decisões de negócio necessárias)
+## J. Decisões registradas
 
-1. **Horas realizadas** — hoje ninguém lança (coluna vazia no CTRL-003 e 0h nos CTRL-001). Quem vai apontar e com que granularidade? Proposta: o consultor aponta **por semana e projeto**, escolhendo a atividade opcionalmente; o GP revisa.
-2. **Faixas de utilização** — manter as atuais (**< 50% Disponível · 50–85% Adequado · 85–100% Atenção · > 100% Sobrecarregado**), avaliadas semana a semana em vez da média do período?
-3. **Rateio** — aprova a regra "uniforme por dia útil do recurso, sobre as horas que faltam, a partir da semana atual", com ajuste por atribuição e override por semana?
-4. **Atividades com vários recursos** — o esforço das linhas `.2`/`.3` (ex.: 4h para Luiz e 4h para Murilo no CRON-006) é **individual** (8h no total) ou é o mesmo esforço repetido (4h no total)? A observação "A validar: esforço individual" sugere individual.
-5. **Progresso** — trocar a média simples por **média ponderada pelo esforço**?
-6. **GP do projeto** — quem é o GP de cada projeto? O Portfólio só tem Funcional/Técnico; o Sulmedic indica "Laura Iris" e o Kover "GP MAIS i9"; no planejamento, Carlos Camargo aparece com horas de "GP". **Laura Iris e Laura Camargo são a mesma pessoa?**
-7. **Status Executivo** — continua manual (Verde/Amarelo/Vermelho) definido pelo GP, com o sistema apenas **sugerindo** com base em atrasos, desvio de horas e RAID crítico?
-8. **Login** — a MAIS i9 usa Microsoft 365? Se sim, login com a conta corporativa.
-9. **Acesso dos consultores** — no MVP todos os recursos acessam (para atualizar % e apontar horas) ou só GPs e gestão?
-10. **Indisponibilidades** — quem aprova (status "Pendente" já existe na planilha)?
-11. **Hospedagem e documentos** — preferência de nuvem? Evidências e documentos ficam no SharePoint (só links) ou o sistema também armazena arquivos?
-12. **Tipos de projeto** — confirmar a lista Projeto · Suporte · Sustentação · Alocação · Interno (o CTRL-003 tem "Tipo" nos parâmetros e "Alocação DEV" no portfólio).
+| # | Tema | Decisão |
+|---|---|---|
+| 1 | Horas realizadas | **Cada pessoa aponta as horas que fez, por atividade.** O realizado da atividade, da alocação semanal e do projeto é a soma dos apontamentos. Consultores precisam de acesso ao sistema já no MVP |
+| 2 | Linhas `.2`/`.3` | **Mesmo esforço repetido.** Na importação o esforço conta uma vez e é dividido entre os recursos (ajustável). Kover: 92h reais, não 140h |
+| 3 | GP | **GP padrão = Carlos Camargo** (pré-preenchido em novos projetos e na importação, editável). "Laura Iris" e "Laura Camargo" são a mesma pessoa, com papel de **analista** — "Laura Iris" vira apelido no De-Para. "GP MAIS i9" → Carlos Camargo |
+| 4 | Progresso | **Média ponderada pelo esforço previsto** |
+| 5 | Faixas, rateio, status | Faixas atuais avaliadas **semana a semana**; rateio por dia útil com ajuste e override (D.5); Status Executivo **manual com sugestão** do sistema |
+| 6 | Login | **Microsoft 365 / Entra ID** (login com a conta corporativa) |
+| 7 | Perfis | **Administrador / Gestor:** Carlos Camargo, Alexandre Camargo, Murilo Fernandes — aprovam indisponibilidades, mantêm portfólio e planejamento. **Consultor:** demais recursos — atualizam suas atividades (%, horas para concluir) e apontam horas. **Visualização:** diretoria/convidados |
+
+### Pendentes (seguem com o padrão proposto, salvo indicação)
+- **Hospedagem:** Azure (natural com Microsoft 365) — App Service + PostgreSQL gerenciado. Até lá, Docker Compose em qualquer servidor.
+- **Documentos:** links para o SharePoint do projeto no MVP; upload de evidências pequenas no próprio sistema.
+- **Tipos de projeto:** Projeto · Suporte · Sustentação · Alocação · Interno.
+- **Entra ID:** para ativar o login corporativo é preciso registrar o aplicativo no Entra ID da MAIS i9 (Tenant ID, Client ID e Client Secret). Durante o desenvolvimento uso um login local de teste.

@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { Fragment } from "react";
+import { faltaAtribuicao } from "@/lib/domain/cronograma";
 import clsx from "clsx";
 import { chaveDia, formatarData } from "@/lib/domain/datas";
 import { FASE, FASES, SITUACAO_PRAZO, STATUS_ITEM, TOM_STATUS_ITEM } from "@/lib/domain/rotulos";
@@ -50,8 +52,10 @@ export function TabelaCronograma({ atividades, editavel, base, selecionada }: { 
               </tr>
               {doGrupo.map((a) => {
                 const [rotSit, tomSit] = a.situacao ? SITUACAO_PRAZO[a.situacao] : ["—", "neutro" as const];
+                const variosRecursos = a.atrib.length > 1;
                 return (
-                  <tr key={a.id} className={clsx(a.status === "CANCELADO" && "opacity-50", a.id === selecionada && "bg-destaque/5")}>
+                  <Fragment key={a.id}>
+                  <tr className={clsx(a.status === "CANCELADO" && "opacity-50", a.id === selecionada && "bg-destaque/5", variosRecursos && "[&>td]:border-b-0")}>
                     <td className="text-xs whitespace-nowrap">
                       {editavel ? (
                         <Link href={`${base}editar=${a.id}`} scroll={false} className="font-medium text-navy-800 hover:underline">
@@ -73,7 +77,7 @@ export function TabelaCronograma({ atividades, editavel, base, selecionada }: { 
                       </div>
                     </td>
                     <td className="text-xs whitespace-nowrap">
-                      {a.atrib.length ? a.atrib.map((x) => <div key={x.id}>{x.recurso.split(" ")[0]} {h(x.previsto)}h</div>) : <span className="text-ardosia-400">—</span>}
+                      {a.atrib.length === 1 ? a.atrib[0].recurso : variosRecursos ? <span className="text-ardosia-500">{a.atrib.length} recursos ↓</span> : <span className="text-ardosia-400">—</span>}
                     </td>
                     <td>{editavel ? <CampoInline atividadeId={a.id} campo="inicio" valor={a.inicioPrevisto ? chaveDia(a.inicioPrevisto) : ""} /> : formatarData(a.inicioPrevisto)}</td>
                     <td>{editavel ? <CampoInline atividadeId={a.id} campo="fim" valor={a.fimPrevisto ? chaveDia(a.fimPrevisto) : ""} /> : formatarData(a.fimPrevisto)}</td>
@@ -90,6 +94,26 @@ export function TabelaCronograma({ atividades, editavel, base, selecionada }: { 
                     <td>{editavel ? <CampoInline atividadeId={a.id} campo="status" valor={a.status} opcoes={OPCOES_STATUS} /> : <Selo tom={TOM_STATUS_ITEM[a.status]}>{STATUS_ITEM[a.status]}</Selo>}</td>
                     <td>{a.situacao ? <Selo tom={tomSit}>{rotSit}</Selo> : <span className="text-ardosia-400">—</span>}</td>
                   </tr>
+                  {/* Uma linha por recurso: cada uma é uma alocação individual com seus números. */}
+                  {variosRecursos &&
+                    a.atrib.map((x, i) => {
+                      const falta = faltaAtribuicao(x, a.status === "CONCLUIDO");
+                      return (
+                        <tr key={x.id} className={clsx("text-xs text-ardosia-600", a.status === "CANCELADO" && "opacity-50", i < a.atrib.length - 1 && "[&>td]:border-b-0")}>
+                          <td className="pl-4 text-ardosia-400">{a.codigo}.{i + 1}</td>
+                          <td className="text-ardosia-400">└ alocação individual</td>
+                          <td className="whitespace-nowrap text-navy-900">{x.recurso}</td>
+                          <td colSpan={3} />
+                          <td className="text-right tabular-nums">{h(x.previsto)}</td>
+                          <td className="text-right tabular-nums">{h(x.realizado)}</td>
+                          <td className="text-right tabular-nums">{h(falta)}</td>
+                          <td className="text-right tabular-nums">{h(x.realizado + falta)}</td>
+                          <td className="text-right tabular-nums">{h(x.realizado + falta - x.previsto)}</td>
+                          <td colSpan={3} />
+                        </tr>
+                      );
+                    })}
+                  </Fragment>
                 );
               })}
             </tbody>

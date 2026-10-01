@@ -3,12 +3,11 @@
 import { useState } from "react";
 import { classeBotao } from "./ui";
 
-type Linha = { chave: number; recursoId: string; previsto: string; falta: string; realizado?: number };
+type Linha = { chave: number; recursoId: string; previsto: string; falta: string; realizado: string; realizadoOriginal: number };
 
 /**
- * Pessoas que executam a atividade, cada uma com seu esforço.
- * Substitui as linhas duplicadas CRON-xxx.2 / .3 da planilha.
- * "Falta" vazio = previsto − realizado (calculado).
+ * Uma linha por recurso = uma alocação individual (substitui as linhas CRON-xxx.2 / .3 da planilha).
+ * "Realizado" alterado aqui vira apontamento na semana atual; "Falta" vazio = previsto − realizado.
  */
 export function EditorAtribuicoes({
   recursos,
@@ -19,11 +18,12 @@ export function EditorAtribuicoes({
 }) {
   const [linhas, setLinhas] = useState<Linha[]>(() =>
     iniciais.length
-      ? iniciais.map((a, i) => ({ chave: i, recursoId: a.recursoId, previsto: String(a.previsto), falta: a.falta === null ? "" : String(a.falta), realizado: a.realizado }))
-      : [{ chave: 0, recursoId: "", previsto: "", falta: "" }],
+      ? iniciais.map((a, i) => ({ chave: i, recursoId: a.recursoId, previsto: String(a.previsto), falta: a.falta === null ? "" : String(a.falta), realizado: String(a.realizado), realizadoOriginal: a.realizado }))
+      : [{ chave: 0, recursoId: "", previsto: "", falta: "", realizado: "", realizadoOriginal: 0 }],
   );
   const atualizar = (chave: number, campo: keyof Linha, v: string) => setLinhas((ls) => ls.map((l) => (l.chave === chave ? { ...l, [campo]: v } : l)));
   const total = linhas.reduce((t, l) => t + (Number(l.previsto) || 0), 0);
+  const totalReal = linhas.reduce((t, l) => t + (Number(l.realizado) || 0), 0);
 
   return (
     <div className="rounded-md border border-ardosia-100">
@@ -32,7 +32,7 @@ export function EditorAtribuicoes({
           <tr>
             <th className="px-2 py-1.5 text-left">Recurso MAIS i9</th>
             <th className="px-2 py-1.5 text-right">Previsto (h)</th>
-            <th className="px-2 py-1.5 text-right">Realizado</th>
+            <th className="px-2 py-1.5 text-right">Realizado (h)</th>
             <th className="px-2 py-1.5 text-right">Falta (h)</th>
             <th />
           </tr>
@@ -53,7 +53,9 @@ export function EditorAtribuicoes({
               <td className="px-2 py-1">
                 <input name="atribPrevisto" type="number" step="0.5" min="0" value={l.previsto} onChange={(e) => atualizar(l.chave, "previsto", e.target.value)} className="campo w-24 py-1 text-right" />
               </td>
-              <td className="px-2 py-1 text-right text-ardosia-500 tabular-nums">{l.realizado ?? 0}h</td>
+              <td className="px-2 py-1">
+                <input name="atribRealizado" type="number" step="0.5" min="0" value={l.realizado} placeholder="0" onChange={(e) => atualizar(l.chave, "realizado", e.target.value)} className="campo w-24 py-1 text-right" title="Total realizado por este recurso; a diferença é lançada como apontamento na semana atual" />
+              </td>
               <td className="px-2 py-1">
                 <input name="atribFalta" type="number" step="0.5" min="0" value={l.falta} placeholder="auto" onChange={(e) => atualizar(l.chave, "falta", e.target.value)} className="campo w-24 py-1 text-right" />
               </td>
@@ -67,11 +69,11 @@ export function EditorAtribuicoes({
         </tbody>
       </table>
       <div className="flex items-center justify-between border-t border-ardosia-100 px-2 py-1.5 text-xs">
-        <button type="button" onClick={() => setLinhas((ls) => [...ls, { chave: Math.max(0, ...ls.map((x) => x.chave)) + 1, recursoId: "", previsto: "", falta: "" }])} className={classeBotao("secundario", "sm")}>
+        <button type="button" onClick={() => setLinhas((ls) => [...ls, { chave: Math.max(0, ...ls.map((x) => x.chave)) + 1, recursoId: "", previsto: "", falta: "", realizado: "", realizadoOriginal: 0 }])} className={classeBotao("secundario", "sm")}>
           + Recurso
         </button>
         <span className="text-ardosia-600">
-          Esforço total: <strong className="tabular-nums">{total}h</strong>
+          Uma linha por recurso · previsto <strong className="tabular-nums">{total}h</strong> · realizado <strong className="tabular-nums">{totalReal}h</strong>
         </span>
       </div>
     </div>

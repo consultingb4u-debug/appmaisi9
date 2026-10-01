@@ -6,7 +6,9 @@ import { db } from "@/lib/db";
 import { exigir } from "@/lib/auth/sessao";
 import { ErroNegocio, executarAcao, lerFormulario } from "@/lib/acoes";
 import { auditar } from "@/lib/services/auditoria";
-import { recalcularProjeto } from "@/lib/services/cronograma";
+import { recalcularProjeto, sincronizarRealizadas } from "@/lib/services/cronograma";
+import { garantirSemana } from "@/lib/services/semanas";
+import { semanaDe } from "@/lib/domain/semanas";
 import { coerenciaStatus, proximoCodigo } from "@/lib/domain/cronograma";
 import { parseDia, paraDia } from "@/lib/domain/datas";
 import type { EstadoAcao } from "@/components/formulario";
@@ -108,19 +110,21 @@ const zAtividade = z.object({
   observacao: z.string().max(2000).optional(),
 });
 
-/** Atribuições vêm do formulário como listas paralelas: atribRecurso[], atribPrevisto[], atribFalta[]. */
+/** Atribuições (uma por recurso) vêm como listas paralelas: atribRecurso[], atribPrevisto[], atribRealizado[], atribFalta[]. */
 function lerAtribuicoes(dados: FormData) {
   const recursos = dados.getAll("atribRecurso").map(String);
   const previstos = dados.getAll("atribPrevisto").map(String);
+  const realizados = dados.getAll("atribRealizado").map(String);
   const faltas = dados.getAll("atribFalta").map(String);
   const lista = recursos
-    .map((recursoId, i) => ({ recursoId, previsto: previstos[i] ?? "", falta: faltas[i] ?? "" }))
+    .map((recursoId, i) => ({ recursoId, previsto: previstos[i] ?? "", realizado: realizados[i] ?? "", falta: faltas[i] ?? "" }))
     .filter((x) => x.recursoId);
   if (new Set(lista.map((x) => x.recursoId)).size !== lista.length) throw new ErroNegocio("O mesmo recurso aparece duas vezes na atividade.");
   return lista.map((x) => ({
     recursoId: z.uuid().parse(x.recursoId),
     esforcoPrevisto: zHoras.parse(x.previsto || 0),
     horasParaConcluir: x.falta === "" ? null : zHoras.parse(x.falta),
+    realizado: x.realizado === "" ? null : zHoras.parse(x.realizado),
   }));
 }
 
@@ -143,6 +147,30 @@ async function validarPredecessoras(tx: Parameters<Parameters<typeof db.$transac
     visto.add(x);
     pilha.push(...(deps.get(x) ?? []));
   }
+}
+
+type Tx = Parameters<Parameters<typeof db.$transaction>[0]>[0];
+
+/**
+ * "Realizado" digitado no formulário da atividade: o realizado continua sendo a soma dos apontamentos,
+ * então a diferença é lançada no apontamento da semana atual (fonte única das horas realizadas).
+ */
+async function ajustarRealizado(tx: Tx, projetoId: string, atividadeId: string, recursoId: string, total: number, usuarioId: string) {
+  const atual = (await tx.apontamento.aggregate({ where: { atividadeId, recursoId }, _sum: { horas: true } }))._sum.horas?.toNumber() ?? 0;
+  const diff = Math.round((total - atual) * 10) / 10;
+  if (diff === 0) return;
+  const semana = await garantirSemana(tx, semanaDe(new Date()).id);
+  const daSemana = await tx.apontamento.findFirst({ where: { atividadeId, recursoId, semanaId: semana.id } });
+  const novo = (daSemana?.horas.toNumber() ?? 0) + diff;
+  if (novo < 0) {
+    const nome = (await tx.recurso.findUnique({ where: { id: recursoId }, select: { nome: true } }))?.nome;
+    throw new ErroNegocio(`Para reduzir o realizado de ${nome} para ${total}h, ajuste as semanas anteriores em Minhas horas (nesta semana há ${daSemana?.horas.toNumber() ?? 0}h).`);
+  }
+  if (novo === 0 && daSemana) await tx.apontamento.delete({ where: { id: daSemana.id } });
+  else if (daSemana) await tx.apontamento.update({ where: { id: daSemana.id }, data: { horas: novo } });
+  else await tx.apontamento.create({ data: { recursoId, projetoId, atividadeId, semanaId: semana.id, horas: novo, descricao: "Lançado pelo cronograma", criadoPorId: usuarioId } });
+  await auditar(tx, { entidade: "Apontamento", entidadeId: daSemana?.id ?? `${recursoId}|${atividadeId}|${semana.id}`, projetoId, acao: "ALTERAR", usuarioId, resumo: `Realizado ajustado no cronograma: ${atual}h → ${total}h` });
+  await sincronizarRealizadas(tx, projetoId, recursoId, semana.id);
 }
 
 export async function salvarAtividade(projetoId: string, id: string | null, _: EstadoAcao, dados: FormData): Promise<EstadoAcao> {
@@ -199,8 +227,9 @@ export async function salvarAtividade(projetoId: string, id: string | null, _: E
           await tx.atividadeAtribuicao.upsert({
             where: { atividadeId_recursoId: { atividadeId: atividadeId!, recursoId: n.recursoId } },
             update: { esforcoPrevisto: n.esforcoPrevisto, horasParaConcluir: n.horasParaConcluir },
-            create: { atividadeId: atividadeId!, ...n },
+            create: { atividadeId: atividadeId!, recursoId: n.recursoId, esforcoPrevisto: n.esforcoPrevisto, horasParaConcluir: n.horasParaConcluir },
           });
+          if (n.realizado !== null) await ajustarRealizado(tx, projetoId, atividadeId!, n.recursoId, n.realizado, u.id);
           // Quem executa passa a fazer parte da equipe do projeto.
           const membro = await tx.projetoMembro.findFirst({ where: { projetoId, recursoId: n.recursoId } });
           if (!membro) await tx.projetoMembro.create({ data: { projetoId, recursoId: n.recursoId, papel: "FUNCIONAL" } });

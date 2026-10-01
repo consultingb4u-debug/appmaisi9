@@ -5,10 +5,10 @@ import { db } from "@/lib/db";
 import { usuarioAtual } from "@/lib/auth/sessao";
 import { pode } from "@/lib/auth/permissoes";
 import { chaveDia } from "@/lib/domain/datas";
-import { FASE, STATUS_ITEM } from "@/lib/domain/rotulos";
+import { FASE, SITUACAO_PRAZO, STATUS_ITEM } from "@/lib/domain/rotulos";
 import { rotuloSemana, semanaPorId } from "@/lib/domain/semanas";
 import { carregarCronograma } from "@/lib/services/cronograma";
-import { Campo, Cartao, Indicador, LinkBotao, Vazio } from "@/components/ui";
+import { Campo, Cartao, Indicador, LinkBotao, Selo, Vazio } from "@/components/ui";
 import { BotaoAcao, Formulario } from "@/components/formulario";
 import { EditorAtribuicoes } from "@/components/editor-atribuicoes";
 import { TabelaCronograma } from "@/components/cronograma/tabela";
@@ -192,6 +192,15 @@ export default async function Cronograma({ params, searchParams }: PageProps<"/p
               <Campo rotulo="Data real de conclusão">
                 <input type="date" name="dataRealConclusao" defaultValue={sel?.dataRealConclusao ? chaveDia(sel.dataRealConclusao) : ""} className="campo" />
               </Campo>
+              {sel && (
+                <div className="text-sm">
+                  <span className="rotulo">Prazo · duração útil</span>
+                  <div className="flex items-center gap-2 py-2">
+                    {sel.situacao ? <Selo tom={SITUACAO_PRAZO[sel.situacao][1]}>{SITUACAO_PRAZO[sel.situacao][0]}</Selo> : <span className="text-ardosia-400">—</span>}
+                    <span className="text-ardosia-600">{sel.duracao ?? "—"} dia(s) útil(eis)</span>
+                  </div>
+                </div>
+              )}
               <div className="flex flex-col justify-end gap-2 pb-1 text-sm">
                 <label className="flex items-center gap-2">
                   <input type="checkbox" name="marco" defaultChecked={sel?.marco} /> Marco
@@ -201,7 +210,7 @@ export default async function Cronograma({ params, searchParams }: PageProps<"/p
                 </label>
               </div>
               <div className="sm:col-span-2 lg:col-span-3">
-                <span className="rotulo">Recursos MAIS i9 e esforço</span>
+                <span className="rotulo">Recursos MAIS i9 — uma linha (alocação) por recurso</span>
                 <EditorAtribuicoes recursos={recursos} iniciais={sel?.atrib.map((x) => ({ recursoId: x.recursoId, previsto: x.previsto, falta: x.paraConcluir, realizado: x.realizado })) ?? []} />
               </div>
               <Campo rotulo="Predecessoras" ajuda="Ctrl/Cmd + clique para várias.">

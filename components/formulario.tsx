@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect, useRef, type ReactNode } from "react";
+import { startTransition, useActionState, useEffect, useRef, type ReactNode } from "react";
 import clsx from "clsx";
 import { classeBotao } from "./ui";
 
@@ -35,7 +35,18 @@ export function Formulario({
   }, [estado, limparAoSalvar]);
 
   return (
-    <form ref={ref} action={executar} className={clsx("space-y-4", className)}>
+    <form
+      ref={ref}
+      // Envio manual (em vez de action={...}): o React 19 limpa o formulário sozinho após uma
+      // form action, o que dessincroniza campos controlados (ex.: recursos da atividade).
+      // A limpeza acontece só quando pedida, em `limparAoSalvar`.
+      onSubmit={(e) => {
+        e.preventDefault();
+        const dados = new FormData(e.currentTarget);
+        startTransition(() => executar(dados));
+      }}
+      className={clsx("space-y-4", className)}
+    >
       <fieldset disabled={somenteLeitura} className="space-y-4">
         {children}
       </fieldset>

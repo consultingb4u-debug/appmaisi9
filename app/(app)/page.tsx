@@ -5,7 +5,8 @@ import { formatarData, somarDias } from "@/lib/domain/datas";
 import { rotuloSemana, semanaDe, semanasEntre } from "@/lib/domain/semanas";
 import { STATUS_ATIVOS, STATUS_PROJETO, TOM_STATUS_PROJETO } from "@/lib/domain/rotulos";
 import { cargaPorSemana, COR_FAIXA, formatarUtilizacao, ROTULO_FAIXA } from "@/lib/services/capacidade";
-import { Cabecalho, Cartao, Indicador, Selo, Vazio } from "@/components/ui";
+import { Cabecalho, Cartao, Indicador, LinkBotao, Selo, Vazio } from "@/components/ui";
+import { pode } from "@/lib/auth/permissoes";
 import clsx from "clsx";
 
 const ENTREGAS = [
@@ -60,7 +61,11 @@ export default async function Inicio({ searchParams }: PageProps<"/">) {
 
   return (
     <>
-      <Cabecalho titulo={`Olá, ${usuario.nome.split(" ")[0]}`} subtitulo={`Semana ${rotuloSemana(atual)} · ${formatarData(atual.inicio)} a ${formatarData(atual.fim)}`} />
+      <Cabecalho
+        titulo={`Olá, ${usuario.nome.split(" ")[0]}`}
+        subtitulo={`Semana ${rotuloSemana(atual)} · ${formatarData(atual.inicio)} a ${formatarData(atual.fim)}`}
+        acoes={pode(usuario.perfil, "editar", "PORTFOLIO") && <LinkBotao href="/portfolio/novo">+ Novo projeto</LinkBotao>}
+      />
       {aviso === "sem-permissao" && (
         <div className="mb-6 rounded-md border border-alerta/40 bg-alerta/10 px-4 py-3 text-sm text-[#8a6a00]">Seu perfil não tem acesso à página solicitada. Fale com um administrador se precisar.</div>
       )}

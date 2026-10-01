@@ -6,7 +6,18 @@ Aplicação web interna da MAIS i9 para substituir os controles em planilha
 - Proposta, diagnóstico das planilhas e modelo de dados: [`docs/01-proposta-arquitetura.md`](docs/01-proposta-arquitetura.md)
 - Resumo técnico para a equipe de TI: [`docs/02-resumo-tecnico.md`](docs/02-resumo-tecnico.md)
 
-## Ver funcionando em 5 minutos (Docker)
+## Ver funcionando
+
+| Opção | Para quem | Dados |
+|---|---|---|
+| **Claude Code no seu computador** (app Claude Desktop ou `claude remote-control` numa pasta local): peça "rode o app do MAIS i9 para eu testar" | quem não quer instalar nada além do Claude | ficam no seu computador enquanto o banco existir |
+| **Docker** (abaixo) | TI / quem tem Docker Desktop | persistentes no volume do Docker |
+| **Homologação na nuvem** (Azure ou similar, com login Microsoft 365) | a equipe toda, por um endereço https | persistentes, com backup |
+
+A sessão do Claude Code na nuvem (claude.ai/code) roda num container temporário sem endereço público:
+lá o app é executado e testado automaticamente, mas não dá para abrir no seu navegador.
+
+### Ver funcionando em 5 minutos (Docker)
 
 Pré-requisito: [Docker Desktop](https://www.docker.com/products/docker-desktop/) instalado.
 

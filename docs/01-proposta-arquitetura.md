@@ -1,299 +1,318 @@
 # MAIS i9 — Gestão de Projetos, Portfólio e Recursos
-## Proposta de Arquitetura (Etapa 1 — para aprovação)
+## Proposta de Arquitetura (Etapa 1 — para aprovação) · v2
 
-> **Base desta proposta:** o material descrito no chat (estrutura do CTRL-001, abas da planilha de
-> Gestão de Recursos / Portfólio, colunas do cronograma e da alocação semanal, regras de capacidade).
-> As planilhas em si ainda não foram anexadas ao repositório. Pontos marcados com **[validar]** são
-> hipóteses que serão conferidas quando os arquivos estiverem disponíveis; nenhum deles muda a
-> arquitetura, apenas campos e regras de detalhe.
+> **Base desta versão:** análise célula a célula (valores, fórmulas, validações, formatações condicionais e nomes definidos) de:
+> - `CTRL-001_Kover_Implantação_WMS_v1.9.xlsx` (12 abas)
+> - `CTRL-001_Sulmedic_Projeto_Reforma_Tributária_v1.9.xlsx` (12 abas — mesmo template)
+> - `CTRL-003_Gestao_Recursos_v5.3.xlsx` (14 abas, 3 ocultas/legado)
+>
+> Datas de referência das planilhas: semana S40/2026 (28/09/2026).
 
 ---
 
-## A. Diagnóstico do processo atual
+## A. Diagnóstico dos arquivos atuais
 
-### A.1 O que existe hoje
+### A.1 CTRL-001 — Controle Operacional do Projeto (1 arquivo por projeto)
 
-| Artefato | Granularidade | Conteúdo principal |
+| Aba | O que é | Campos / regras encontradas |
 |---|---|---|
-| **CTRL-001 — Controle Operacional do Projeto** | 1 arquivo por projeto | Dashboard, Complexidade, Pré-Projeto, Backlog, Cronograma, Controle Operacional, Testes Internos, UAT, Deployment, Status Report |
-| **Gestão de Recursos / Portfólio** | 1 arquivo consolidado | Portfólio, Planejamento de Recursos, Projeto x Recursos, Carga por Projeto, Capacidade, Indisponibilidades, Utilização semanal, Previsto x Realizado, Disponibilidade, Sobrecarga, Dashboard de Recursos |
+| **Dashboard** | Visão executiva (100% fórmulas, exceto 2 textos livres) | Projeto, Status (vem do Status Report), Progresso, Go Live (vem do Pré-Projeto); Horas Previstas / Realizadas / Forecast / Atividades Atrasadas; **Próximos 3 marcos** (marco = Sim, não concluído, ordenado por Fim Previsto); Progresso e horas **por fase**; **Horas por Recurso MAIS i9 — "base para o CTRL-003"** com contagem de linhas com alerta; campos livres "Resumo para status do cliente" e "Pontos de atenção" |
+| **Pré-Projeto \| Complexidade** | Avaliação de complexidade e baseline de abertura | Projeto, Cliente, Avaliador, Data, Horas estimadas; **12 critérios** em 4 dimensões (Esforço, Prazo, Complexidade, Risco), nota 0–3 com descrição de cada nota, e flag "Gatilho crítico?"; Score = soma; Nível base **N1 ≤ 8 · N2 ≤ 16 · N3 ≤ 24 · N4 > 24**; 1 gatilho crítico (nota 3 + Sim) ⇒ mínimo N3, 2+ ⇒ N4; Nível final = maior dos dois; **Governança: N1 Execução Direta · N2 Gestão Leve · N3 Gestão Parcial · N4 Gestão Integral** |
+| **Pré-Projeto** | Checklist de prontidão para o kickoff | GP, Início previsto, **Go Live alvo**, Status Pré-Projeto (Pronto para iniciar / Pronto com ressalvas / Bloqueado); 7 itens padrão (Equipe, Acessos, Ambiente, Governança, Agenda, Escopo, Liberação) com Responsável, Informação/Contato, Validação, Status (Pendente/Concluído/Bloqueado/N/A), Prazo, Observação. O título da aba diz "conteúdo a ser absorvido em Pré-Projeto \| Complexidade" — já há intenção de unificar |
+| **Backlog** | Requisitos/entregas (`REQ-001…`) | Módulo\|Processo, Requisito, Tipo, Prioridade (Baixa/Média/Alta/Crítica), Aderência ao Padrão, Solução Proposta, Customização?, Critério de Aceite, Estimativa h, Responsável, Status, Validação Cliente (Pendente/Aprovado/Reprovado/N/A), Observação |
+| **Cronograma** | Atividades (`CRON-001…`) + Gantt semanal por formatação condicional | As 23 colunas descritas por você. Detalhes relevantes: **a coluna "Atividade" guarda o código do requisito (`REQ-00x`)** — é o vínculo cronograma ↔ backlog; quando uma tarefa tem vários recursos, ela é **duplicada em linhas `CRON-006`, `CRON-006.2`, `CRON-006.3`** (uma por recurso); Status inclui "Atrasado" como valor digitável; Duração Útil = `NETWORKDAYS` (sem feriados); Forecast = Realizado + Para Concluir; Desvio = Forecast − Previsto |
+| **Operacional** | Registro RAID unificado | Tipo (**Pendência, Decisão, Dependência, Problema, Risco, Change Request**), Descrição, Origem/Causa, Impacto/Consequência, Responsável, Abertura, Prazo, Status (Aberto, Em andamento, Aguardando, Bloqueado, Aprovado, Reprovado, Fechado, Cancelado), Impacto em Escopo / Prazo / Horas (Não/Baixo/Médio/Alto), Ação/Resposta, Decisão/Aprovador, Evidência. Vazio nos dois projetos |
+| **Teste Interno** | Casos de teste MAIS i9 (`TI-…`) | Requisito, Módulo, Pré-condição, Cenário\|Passos, Resultado Esperado, Responsável MAIS i9, Data, Resultado, Defeito\|Pendência (texto), Evidência, Validação MAIS i9 |
+| **Teste Cliente \| UAT** | Homologação (`UAT-…`) | Requisito, Módulo, Cenário\|Passos, Resultado Esperado, Key User\|Cliente, Data, Resultado, Defeito\|Pendência, Evidência, **Aceite Cliente**, Observação |
+| **Deployment** | Checklist de Go Live | 12 itens padrão em 8 categorias (Escopo\|Qualidade, Dados\|Acessos, Integrações, Infraestrutura, Deploy, Comunicação, Suporte, Decisão), Obrigatório? (Sim/Não/**Condicional**), Status, Responsável, Evidência, Risco\|Observação, Aprovação; último item = "Go/No-Go aprovado" |
+| **Status Report** | **Um único** status (sobrescrito a cada ciclo) | Período, Status Executivo (Verde/Amarelo/Vermelho), Fase Atual, Resumo Executivo, Entregas Concluídas, Próximas Entregas; indicadores automáticos (progresso, horas, atrasadas, pendências vencidas, riscos/problemas abertos, nº de CRs) |
+| **Auditoria CTRL-003** | Validação de cada linha do cronograma antes de consolidar no CTRL-003 | **14 regras de qualidade** (ver A.3) e coluna "Pronta p/ CTRL-003" |
+| **Parâmetros** | Listas | Status, Fases (as 4 oficiais), Prioridade, **12 Recursos MAIS i9 copiados em cada arquivo**, Recursos Cliente, Resultado de teste, Status operacional/executivo/checklist, Validação |
 
-### A.2 Como os dados se relacionam hoje
+### A.2 CTRL-003 — Gestão de Recursos / Portfólio (consolidado)
 
-```
-Portfólio (1 linha por projeto) ─────┐
-                                     │  (ligação manual por nome/código do projeto)
-CTRL-001 do projeto X ───────────────┤
-  └─ Cronograma: atividade + recurso + período + esforço
-                                     │  (redigitado manualmente)
-Gestão de Recursos ──────────────────┘
-  └─ Projeto + Recurso + Semana → horas previstas / realizadas
-  └─ Recurso → capacidade semanal − indisponibilidades
-```
-
-A ligação entre os arquivos é **por texto** (nome do projeto, nome do recurso), sem chave única.
-O cronograma do CTRL-001 e a alocação semanal da Gestão de Recursos descrevem **o mesmo fato**
-(quem trabalha em quê, quando e quanto) em granularidades diferentes, e hoje são mantidos à mão
-nos dois lugares.
-
-### A.3 Regras e cálculos identificados
-
-| Regra | Origem | Fórmula / lógica |
+| Aba | O que é | Observações da análise |
 |---|---|---|
-| Duração útil | Cronograma | dias úteis entre Início e Fim Previsto (descontando feriados) |
-| Forecast | Cronograma | Esforço Realizado + Horas para Concluir |
-| Desvio Forecast | Cronograma | Forecast − Esforço Previsto (h e %) |
-| Situação do prazo | Cronograma | Concluída / No prazo / Em risco / Atrasada (comparando hoje, Fim Previsto, % e Data Real) |
-| % conclusão do projeto | Dashboard | média ponderada pelo esforço previsto das atividades **[validar se ponderada ou simples]** |
-| Saldo semanal | Recursos | Horas Previstas − Horas Realizadas |
-| Capacidade líquida | Capacidade | Capacidade Bruta − Indisponibilidade |
-| Utilização | Capacidade | Horas Planejadas ÷ Capacidade Líquida |
-| Faixa de utilização | Capacidade | Disponível / Adequado / Atenção / Sobrecarregado (limites a confirmar — ver J) |
-| Complexidade | Complexidade | pontuação por critérios → nível **[validar critérios e pesos]** |
-| Saúde do projeto | Dashboard / Status | combinação de prazo, esforço e riscos (hoje subjetiva) |
+| **Portfólio Projetos** | Cadastro mestre — 24 projetos, 13 clientes | Id, Cliente, Projeto, Status (Em Andamento, Bloqueado, Aprovação Cliente, Não Aprovado, Projeto Identificado, Concluído, Cancelado), Notas\|Bloqueios\|Ações, **Funcional**, **Técnico**, Horas Projeto, Kick-off, Go Live, Encerramento. **Horas e datas vazias em todos os 24 projetos**; não há coluna GP, prioridade, complexidade nem código que ligue ao CTRL-001 |
+| **Planejamento Recursos** | **1 linha = projeto + recurso + semana** (S40–S53) | 33 linhas preenchidas. Status (Planejado, Em Andamento, Bloqueado, Aguardando Cliente, Concluído, Cancelado), Prioridade (Alta/Média/Baixa — "Crítica" usada fora da lista), Observação descreve o trabalho da semana. **Horas Realizadas vazias** em todas as linhas |
+| **Capacidade** | Matriz recurso × semana | 40h/sem (Miguel Barater e Diego Bonilha 30h; Adilson Elias sem valor). **Não é usada pelo dashboard** |
+| **Indisponibilidades** | Férias, ausências, bloqueios | Recurso, Tipo, Início, Fim, Horas, Semana, Observação, **Status (Pendente → aprovação)**. **Não é usada em nenhum cálculo** |
+| **Dashboard Recursos** | Utilização por recurso/semana | Utilização = planejado ÷ capacidade (coluna fixa no próprio dashboard); faixa calculada sobre a **média das 14 semanas**: **> 100% Sobrecarregado · ≥ 85% Atenção · < 50% Disponível · senão Adequado**; capacidade total fixa em 460h/semana |
+| **Projeto vs. Recursos** | Prev × Real por projeto/recurso/semana | Lista **fixa** de 24 combinações — **apenas 1 recurso por projeto** (o "Funcional") |
+| **Carga por Projeto** | Horas por projeto × semana | 336 linhas fixas (24 projetos × 14 semanas) |
+| **Calendário \| Gantt** | Linha do tempo do portfólio | Usa as datas do Portfólio — que estão vazias, portanto o Gantt fica vazio |
+| Parâmetros / Dados Projetos / 3 abas LEGADO | Listas e apoio | Lista de recursos repetida em 4 lugares; **Tipo de projeto** já previsto (Projeto, Suporte, Sustentação, Interno) mas não usado |
 
-### A.4 Problemas que o aplicativo resolve
+### A.3 Regras e cálculos identificados (serão implementados no sistema)
 
-1. **Dupla digitação** cronograma ↔ alocação semanal → inconsistência entre o que o GP planejou e o que a gestão de recursos enxerga.
-2. **Sem visão consolidada em tempo real**: o portfólio depende de alguém copiar dados de cada CTRL-001.
-3. **Chaves por texto**: renomear projeto/recurso quebra fórmulas e PROCVs.
-4. **Sem histórico confiável**: status reports e mudanças sobrescrevem a versão anterior; não se sabe quem alterou o quê.
-5. **Concorrência**: uma pessoa por vez edita o arquivo; versões em e-mail/OneDrive divergem.
-6. **Cópia do template**: cada novo projeto copia o CTRL-001; melhorias no template não chegam aos projetos antigos.
-7. **Drill-down difícil**: descobrir *por que* um recurso está sobrecarregado exige abrir vários arquivos.
+| Regra | Fórmula atual | No sistema |
+|---|---|---|
+| Duração útil | `NETWORKDAYS(Início, Fim)` | Dias úteis descontando **feriados** (hoje não desconta) |
+| Forecast | Realizado + Horas para Concluir | Igual |
+| Desvio Forecast | Forecast − Esforço Previsto | Igual (h e %) |
+| Situação do Prazo | Concluído → "Concluído"; Cancelado → vazio; Status = Atrasado **ou** hoje > Fim → "Atrasado"; Fim − hoje ≤ 3 dias → "Atenção"; senão "No prazo" | Igual, mas **"Atrasado" deixa de ser status digitável** — passa a ser só situação calculada (hoje é possível ter status "Atrasado" em tarefa no prazo, e vice-versa) |
+| Progresso do projeto/fase | **Média simples** do % das atividades não canceladas | Proposta: **média ponderada pelo esforço previsto** (uma tarefa de 2h e outra de 40h hoje pesam igual) — ver J |
+| Próximos marcos | 3 primeiros marcos não concluídos por Fim Previsto | Igual, sem limite e clicável |
+| Horas por recurso no projeto | `SUMIFS` por nome do recurso | Agregação por `recurso_id` |
+| Complexidade | Score, gatilhos, nível base/mínimo/final, governança | Igual, parametrizável |
+| Utilização semanal | Planejado ÷ capacidade (fixa) | Planejado ÷ **capacidade líquida** (capacidade − indisponibilidades − feriados) |
+| Faixas | > 100% / ≥ 85% / < 50% / resto — sobre a **média** do período | Mesmas faixas, avaliadas **semana a semana** (a média de 14 semanas esconde a sobrecarga pontual) |
+| **Qualidade do cronograma** (aba Auditoria) | 14 regras: sem fase · fase fora das 4 oficiais · mais de 1 recurso na célula · recurso fora da lista · esforço sem recurso · recurso sem esforço · sem datas · data em fim de semana · fim antes do início · **atravessa semanas: definir distribuição** · concluída sem realizado · responsável ≠ recurso sem explicação · possível duplicidade · concluída com % < 100 / 100% sem status concluído | Viram **validações em tempo real** no formulário (impedem ou alertam) e um painel "Qualidade do cronograma" no projeto. Várias deixam de existir por construção (recurso fora da lista, mais de 1 recurso na célula, fase inválida) |
 
-### A.5 Duplicidades que serão eliminadas
+### A.4 Problemas concretos encontrados nos arquivos
 
-| Hoje digitado em… | Passa a ser… |
+1. **O dashboard do CTRL-003 está zerado.** As horas do Planejamento foram digitadas como texto (`"4h"`, `"20h"`), então todo `SUMIFS` retorna 0: Horas Planejadas S40 = 0, todos os recursos aparecem "Disponível" com 100% de disponibilidade.
+2. **A sobrecarga real não aparece em lugar nenhum.** Somando o CTRL-003 com o que está nos CTRL-001 (distribuído por dia útil):
+
+   | Recurso | Semana | CTRL-003 | + CTRL-001 | Total | Capacidade | Utilização |
+   |---|---|---|---|---|---|---|
+   | Luiz Dornelles | S40 | 59h | Kover 14h | **73h** | 40h | **183%** |
+   | Luiz Dornelles | S41 | 30h | Kover 24h | **54h** | 40h | **135%** |
+   | Luiz Dornelles | S42 | 41h | Kover 20h | **61h** | 40h | **153%** |
+   | Julis Felipe | S40 | 40h | Sulmedic 16h | **56h** | 40h | **140%** |
+   | Julis Felipe | S42 | 0h | Sulmedic 24h | 24h | 40h | 60% (invisível no CTRL-003) |
+
+   Kover (140h) e Sulmedic Reforma Tributária (88h) **não têm nenhuma linha** no Planejamento Recursos: a consolidação manual CTRL-001 → CTRL-003 não aconteceu, mesmo com a aba Auditoria preparada para isso.
+3. **Atividades com vários recursos viram linhas duplicadas** (`CRON-006`, `.2`, `.3`), com o mesmo esforço repetido em cada linha e uma linha sem recurso (só cliente). Isso infla o total do projeto e gera 6 alertas "Esforço sem Recurso MAIS i9" no Kover.
+4. **Nomes de pessoas sem padrão:** "Diego / Dornelles", "Dornelles / Diego", "Diego / Murilo / Dornelles" nos testes (e existem **dois Diegos**: Fortunato e Bonilha); "Laura Iris" é GP do Sulmedic e aparece nas Indisponibilidades, mas não está na lista de recursos (que tem "Laura Camargo"); GP do Kover = "GP MAIS i9"; cliente "DIPIL" × "Dipil".
+5. **Recurso Cliente mistura empresa e pessoa** ("Kover", "Sulmedic", "Leondil Ribeiro").
+6. **Testes:** no Kover, o mesmo ID (`TI-001`…`TI-009`) existe duas vezes — 9 casos gerados automaticamente a partir do backlog + 55 casos detalhados, cuja coluna "Requisito" contém o nome do cenário (não o `REQ`), portanto **sem vínculo com o backlog**. Não existe coluna "Resultado obtido"; defeitos são texto livre e não viram pendência; o valor "Planejado" é usado sem constar da lista.
+7. **Datas inconsistentes:** atividade de 09/10 a **10/10 (sábado)** e Sulmedic 16/10 a 17/10 (sábado, duração útil = 1).
+8. **Status Report sem histórico:** um único quadro sobrescrito; "Progresso Planejado" usa a mesma fórmula do "Realizado" (não existe linha de base).
+9. **Datas e horas do projeto em 3 lugares** (Pré-Projeto do CTRL-001, Portfólio, Gantt) — o Go Live do Kover (03/11) está no CTRL-001 e vazio no Portfólio.
+10. **Complexidade não preenchida** nos dois projetos (score 0 ⇒ classificados como N1 por padrão, embora o Kover tenha 140h, 3+ integrações e Go Live com rollback).
+11. **Semana sem ano** (`S40`): o calendário quebra na virada de ano (S53 → S01).
+12. **Horas de gestão** (Carlos Camargo: "GP \| acompanhamento…") e projetos que não são de implantação (Agricopel "Alocação DEV") só existem no CTRL-003 — corretamente, pois não vêm de cronograma.
+
+### A.5 Duplicidades que o sistema elimina
+
+| Hoje mantido em… | Passa a ser… |
 |---|---|
-| Dados do projeto no Portfólio **e** no CTRL-001 | um único cadastro de Projeto |
-| Recurso + período + esforço no Cronograma **e** na alocação semanal | alocação **derivada** do cronograma (com override) |
-| % conclusão / datas no Dashboard do CTRL-001 **e** no Portfólio | calculados a partir das atividades |
-| Lista de recursos em cada CTRL-001 | cadastro único de Recursos |
-| Riscos repetidos no Status Report | Registro de riscos; o status report referencia/fotografa |
-| Marcos no cronograma **e** no status report | atividades com flag `marco`; o status report lista automaticamente |
+| Lista de 12 recursos em cada CTRL-001 + 4 lugares do CTRL-003 | Cadastro único de Recursos |
+| Projeto/Cliente/GP/Go Live no Pré-Projeto, no Portfólio e no Gantt | Cadastro único de Projeto |
+| Cronograma (recurso × período × esforço) **e** Planejamento Recursos | Alocação semanal **derivada** do cronograma + override manual |
+| Aba Auditoria CTRL-003 + Dashboard "base para o CTRL-003" | Desnecessárias — a integração é automática; as regras viram validação |
+| Capacidade em 3 lugares (Capacidade, Dados Projetos, coluna fixa do Dashboard) | Capacidade do recurso com vigência |
+| Abas Projeto vs. Recursos, Carga por Projeto, Gantt do portfólio (linhas fixas) | Consultas dinâmicas sobre a alocação |
+| Casos de UAT/TI gerados copiando tarefas do cronograma | Casos ligados a requisito/atividade por FK |
+| Indicadores do Status Report recalculados à mão | Fotografados automaticamente ao publicar |
 
-### A.6 Informações que devem continuar independentes
+### A.6 O que deve continuar independente
 
-- **Alocação sem atividade** (gestão do projeto, suporte, pré-venda, horas internas): continua sendo lançada direto na alocação semanal.
-- **Override semanal**: o planejamento de capacidade pode divergir do rateio automático — por decisão explícita.
-- **Snapshot do Status Report**: é uma fotografia; não deve mudar quando o cronograma mudar depois.
-- **Testes Internos x UAT**: mesmo formato, responsabilidades e aprovações diferentes (tipo distinto, mesma tabela).
-- **Indisponibilidades**: pertencem ao recurso, não ao projeto.
-- **Backlog**: requisito do cliente existe independentemente de ter atividade ou teste associado.
+- **Alocação sem atividade** (gestão do GP, sustentação, alocação de DEV, interno) — lançada direto no planejamento semanal.
+- **Override semanal** — o planejamento pode divergir do rateio automático por decisão do gestor.
+- **Status Report publicado** — fotografia imutável.
+- **Teste Interno × UAT** — mesmo formato, responsáveis e aceite diferentes.
+- **Indisponibilidades** — pertencem ao recurso, não ao projeto.
+- **Responsável × Recurso executor** — hoje já são colunas diferentes (o GP responde, o consultor executa).
+- **Registro Operacional (RAID)** — itens com ciclo de vida próprio, ligados ou não a atividades.
 
 ---
 
 ## B. Modelo conceitual
 
 ```
-                         ┌──────────────┐
-                         │   CLIENTE    │
-                         └──────┬───────┘
-                                │1:N
-┌──────────┐  N:1 (GP)   ┌──────▼───────┐
-│ USUÁRIO  ├────────────►│   PROJETO    │◄──────────── Complexidade, Pré-Projeto
-└────┬─────┘             └──┬───┬───┬───┘
-     │0..1               1:N│   │   │1:N
-┌────▼─────┐                │   │   └──► STATUS REPORT (snapshot)
-│ RECURSO  │◄───────┐       │   └──────► RISCO / PENDÊNCIA
-└────┬─────┘        │       │
-     │1:N           │  ┌────▼─────┐  N:N  ┌──────────┐
-     ├─► CAPACIDADE │  │ ATIVIDADE├───────┤ BACKLOG  │
-     ├─► INDISPONIB.│  │(cronogr.)│       └────┬─────┘
-     │              │  └────┬─────┘            │N:N
-     │              │       │ rateio           ▼
-     │      ┌───────┴───────▼──┐          ┌──────────┐     ┌────────────┐
-     └─────►│ ALOCAÇÃO SEMANAL │          │  TESTE   ├────►│ DEFEITO /  │
-            │ projeto+recurso+ │          │ (INT/UAT)│     │ PENDÊNCIA  │
-            │     semana       │          └──────────┘     └────────────┘
-            └──────────────────┘
-                                  PROJETO 1:N ─► DEPLOYMENT (checklist, Go/No-Go, Hypercare)
-                                  PROJETO 1:N ─► DOCUMENTO
-                       Todas as entidades ─► AUDITORIA
+                          ┌──────────────┐
+                          │   CLIENTE    │──1:N── CONTATO CLIENTE (key users)
+                          └──────┬───────┘
+                                 │1:N
+ ┌──────────┐  GP / Funcional ┌──▼──────────┐── Complexidade (12 critérios → N1..N4)
+ │ USUÁRIO  │───────────────►│   PROJETO   │── Pré-Projeto (checklist de prontidão)
+ └────┬─────┘  / Técnico     └─┬──┬──┬──┬──┘
+      │0..1                    │  │  │  └──► STATUS REPORT (snapshots, histórico)
+ ┌────▼─────┐                  │  │  └─────► REGISTRO OPERACIONAL (Pendência, Decisão,
+ │ RECURSO  │                  │  │           Dependência, Problema, Risco, Change Request)
+ └──┬───┬───┘                  │  └────────► DEPLOYMENT (checklist, Go/No-Go, Hypercare)
+    │   │                      │1:N
+    │   │        ┌─────────────▼───┐  N:1  ┌──────────────┐  1:N  ┌──────────────┐
+    │   │        │   ATIVIDADE     ├──────►│ BACKLOG (REQ)│◄──────┤ CASO DE TESTE│
+    │   │        │   (CRON)        │       └──────────────┘       │  (TI / UAT)  │
+    │   │        └──────┬──────────┘                              └──────┬───────┘
+    │   │               │1:N                                             │1:N
+    │   └──────────────►│ ATRIBUIÇÃO (atividade × recurso × esforço)     ▼
+    │                   │      │ rateio por dia útil              EXECUÇÃO ──► DEFEITO
+    │                   ▼      ▼                                  (vira item do Registro
+    ├─► CAPACIDADE   ALOCAÇÃO SEMANAL  (projeto + recurso + semana)  Operacional)
+    └─► INDISPONIBILIDADE      ▲ override manual / horas avulsas
+                               └─ APONTAMENTO (horas realizadas)
+                   Todas as entidades ──► AUDITORIA
 ```
-
-**Módulos**
 
 | Módulo | Responsabilidade |
 |---|---|
-| Portfólio | clientes, projetos, filtros, dashboard executivo |
-| Projeto (execução) | pré-projeto, complexidade, backlog, cronograma, operacional, testes, deployment, riscos, status reports, documentos |
-| Recursos | cadastro, capacidade, indisponibilidades, alocação semanal, utilização |
-| Motor de planejamento | rateio atividade → semanas, cálculo de capacidade/utilização, saúde |
-| Importação | staging, validação, conciliação e efetivação das planilhas |
-| Administração | usuários, perfis, calendário de feriados, parâmetros (faixas, critérios), auditoria |
+| **Portfólio** | Clientes, projetos, tipos, filtros, Gantt do portfólio, dashboard executivo |
+| **Projeto** | Pré-projeto + complexidade, backlog, cronograma, operacional (RAID), testes, UAT, deployment, status reports, documentos |
+| **Recursos** | Cadastro, capacidade, indisponibilidades (com aprovação), planejamento semanal, utilização |
+| **Motor de planejamento** | Rateio atividade → semanas, capacidade líquida, faixas, saúde, regras de qualidade |
+| **Importação** | Staging, validação, De-Para e efetivação dos CTRL-001 e CTRL-003 |
+| **Administração** | Usuários/perfis, feriados, parâmetros, templates (checklists, critérios), auditoria |
 
 ---
 
 ## C. Modelo de dados
 
 Banco relacional (PostgreSQL). Convenções:
-- PK `id` (UUID); códigos legíveis separados (`codigo`), únicos.
-- Todas as tabelas de negócio têm `criado_em`, `criado_por_id`, `atualizado_em`, `atualizado_por_id`.
-- Exclusão lógica (`arquivado_em`) em Cliente, Projeto, Recurso; demais com exclusão física auditada.
-- Domínios (status, fases, tipos) como **enums** ou tabelas de domínio quando o usuário precisar editar a lista.
-- `origem_importacao_id` (FK opcional para `import_linha`) nas entidades migradas → rastreabilidade.
+- PK `id` (UUID); códigos legíveis (`CRON-001`, `REQ-001`, `TI-001`) únicos **por projeto**, gerados pelo sistema.
+- Tabelas de negócio com `criado_em`, `criado_por_id`, `atualizado_em`, `atualizado_por_id`.
+- Exclusão lógica (`arquivado_em`) em Cliente, Projeto, Recurso.
+- Listas de valores do Excel (status, tipos) viram **enums**; listas que o usuário edita viram **tabelas de domínio**.
+- `import_linha_id` (FK opcional) nas entidades migradas → rastreabilidade até arquivo/aba/linha.
 
 ### C.1 Cadastros e segurança
 
-**usuario** — `id`, `nome`, `email` (único), `perfil` (ADMIN | GESTOR | CONSULTOR | VISUALIZADOR), `ativo`, `ultimo_acesso`
-**recurso** — `id`, `usuario_id` (FK, opcional e único — recurso pode não ter login), `nome`, `email`, `cargo`, `area`, `tipo` (INTERNO | TERCEIRO), `capacidade_semanal_padrao` (h), `custo_hora` (opcional), `ativo`, `data_entrada`, `data_saida`
-**recurso_capacidade** — `id`, `recurso_id` FK, `vigencia_inicio`, `vigencia_fim`, `horas_semanais` → histórico de mudança de capacidade (ex.: meio período)
-**cliente** — `id`, `codigo`, `nome`, `razao_social`, `segmento`, `ativo`
-**contato_cliente** — `id`, `cliente_id` FK, `nome`, `email`, `telefone`, `funcao` → usado como "Recurso Cliente" no cronograma e responsável no UAT
-**feriado** — `id`, `data`, `descricao`, `abrangencia` (NACIONAL | LOCAL), `localidade`
+| Tabela | Campos principais |
+|---|---|
+| **usuario** | id, nome, email (único), perfil (ADMIN · GESTOR · CONSULTOR · VISUALIZADOR), ativo, ultimo_acesso |
+| **recurso** | id, usuario_id (FK, único, opcional), nome, apelidos (para importação: "Dornelles"), email, cargo, area, tipo (INTERNO · TERCEIRO), ativo, data_entrada, data_saida |
+| **recurso_capacidade** | id, recurso_id FK, vigencia_inicio, vigencia_fim (nula = vigente), horas_semanais, horas_dia (padrão = semanais ÷ 5) |
+| **cliente** | id, codigo, nome, razao_social, segmento, ativo |
+| **contato_cliente** | id, cliente_id FK, nome, email, telefone, funcao (Sponsor, Key User, TI, GP Cliente) |
+| **feriado** | id, data, descricao, abrangencia (NACIONAL · ESTADUAL · MUNICIPAL), uf, municipio |
+| **semana** | id (`2026-W40`), ano_iso, numero, inicio (seg), fim (dom), rotulo (`S40/26`) |
 
-### C.2 Projeto
+### C.2 Projeto, pré-projeto e complexidade
 
-**projeto** — `id`, `codigo` (ex.: PRJ-2026-014), `cliente_id` FK, `nome`, `descricao`, `gp_id` FK→usuario, `status` (PROSPECCAO | PLANEJAMENTO | EM_ANDAMENTO | PAUSADO | CONCLUIDO | CANCELADO), `prioridade` (ALTA | MEDIA | BAIXA), `fase_atual` (ENVISIONING | DEVELOPMENT | DEPLOYMENT | POST_DEPLOY), `complexidade_nivel` (calculado/armazenado), `data_inicio`, `data_go_live_prevista`, `data_go_live_real`, `data_encerramento_prevista`, `data_encerramento_real`, `horas_vendidas`, `saude_manual` (override opcional), `saude_justificativa`, `arquivado_em`
-> % conclusão, horas previstas/realizadas, forecast e saúde calculada são **derivados** (views/consultas), não colunas digitadas.
-
-**projeto_membro** — `id`, `projeto_id` FK, `recurso_id` FK, `papel_no_projeto` (GP, Consultor Funcional, Técnico, …), `inicio`, `fim` · UNIQUE(projeto, recurso, papel)
-
-**criterio_complexidade** — `id`, `nome`, `peso`, `ordem`, `ativo` **[validar com aba Complexidade]**
-**projeto_complexidade** — `id`, `projeto_id` FK, `criterio_id` FK, `nota`, `observacao` · UNIQUE(projeto, criterio)
-**faixa_complexidade** — `nivel` (BAIXA | MEDIA | ALTA | MUITO_ALTA), `pontuacao_min`, `pontuacao_max`
-
-**pre_projeto_item** — `id`, `projeto_id` FK, `categoria` (ESCOPO | PREMISSA | RESTRICAO | STAKEHOLDER | CHECKLIST_KICKOFF | INFORMACAO), `descricao`, `responsavel_id`, `status`, `data_conclusao`, `observacao` **[validar campos da aba Pré-Projeto]**
+| Tabela | Campos principais |
+|---|---|
+| **projeto** | id, codigo, cliente_id FK, nome, tipo (PROJETO · SUPORTE · SUSTENTACAO · ALOCACAO · INTERNO), status (PROJETO_IDENTIFICADO · APROVACAO_CLIENTE · NAO_APROVADO · EM_ANDAMENTO · BLOQUEADO · CONCLUIDO · CANCELADO), prioridade (BAIXA · MEDIA · ALTA · CRITICA), gp_id FK→recurso, funcional_id FK→recurso, tecnico_id FK→recurso, data_kickoff, data_go_live_alvo, data_go_live_real, data_encerramento_prevista, data_encerramento_real, horas_vendidas, notas (Notas\|Bloqueios\|Ações), status_executivo (VERDE · AMARELO · VERMELHO — último publicado), fase_atual (derivada, editável) |
+| **projeto_membro** | id, projeto_id, recurso_id, papel (GP · FUNCIONAL · TECNICO · DEV · APOIO), inicio, fim |
+| **projeto_contato** | projeto_id, contato_cliente_id, papel (SPONSOR · GP_CLIENTE · KEY_USER · TI) |
+| **criterio_complexidade** | id, dimensao (ESFORCO · PRAZO · COMPLEXIDADE · RISCO), nome, descricao_0, descricao_1, descricao_2, descricao_3, ordem, ativo — *seed com os 12 critérios atuais* |
+| **projeto_complexidade** | id, projeto_id, criterio_id, nota (0–3), gatilho_critico (bool), observacao · UNIQUE(projeto, criterio) |
+| **avaliacao_complexidade** | projeto_id (PK), avaliador_id, data, horas_estimadas, score, gatilhos, nivel_base, nivel_minimo, nivel_final (N1–N4), governanca — *derivados gravados ao salvar, para histórico e filtro* |
+| **pre_projeto** | projeto_id (PK), status (PRONTO · PRONTO_COM_RESSALVAS · BLOQUEADO), observacao |
+| **pre_projeto_item** | id, projeto_id, categoria (EQUIPE · ACESSOS · AMBIENTE · GOVERNANCA · AGENDA · ESCOPO · LIBERACAO · OUTRO), item, responsavel_texto, informacao_contato, validacao_esperada (Confirmado · Testado · Definido · Validado), status (PENDENTE · CONCLUIDO · BLOQUEADO · NA), prazo, observacao, ordem |
+| **template_item** | id, tipo (PRE_PROJETO · DEPLOYMENT), categoria, item, validacao/obrigatoriedade padrão, ordem — *os 7 itens de pré-projeto e os 12 de deployment atuais viram template copiado ao criar o projeto* |
 
 ### C.3 Backlog e cronograma
 
-**backlog_item** — `id`, `projeto_id` FK, `codigo` (BL-001), `titulo`, `descricao`, `tipo` (REQUISITO | ENTREGA | MELHORIA | MUDANCA_ESCOPO), `modulo_processo`, `prioridade` (MoSCoW ou A/M/B), `status` (NOVO | APROVADO | EM_ANDAMENTO | ENTREGUE | CANCELADO), `solicitante`, `estimativa_horas`, `criterio_aceite`, `data_solicitacao`, `ordem`
+| Tabela | Campos principais |
+|---|---|
+| **backlog_item** | id, projeto_id, codigo (`REQ-001`), modulo_processo, requisito, tipo (ENTREGA · REQUISITO · MELHORIA · INTEGRACAO · RELATORIO · CUSTOMIZACAO), prioridade, aderencia_padrao (ADERENTE · PARCIAL · GAP · A_VALIDAR), solucao_proposta, customizacao (SIM · NAO · A_CONFIRMAR), criterio_aceite, estimativa_horas, responsavel_id, status (NAO_INICIADO · EM_ANDAMENTO · BLOQUEADO · CONCLUIDO · CANCELADO), validacao_cliente (PENDENTE · APROVADO · REPROVADO · NA), observacao, ordem |
+| **atividade** | id, projeto_id, codigo (`CRON-001`), fase (ENVISIONING · DEVELOPMENT · DEPLOYMENT · POST_DEPLOY), **backlog_item_id** FK (hoje coluna "Atividade"), tarefa, modulo_processo, contato_cliente_id FK (Recurso Cliente — pessoa) ou `cliente_responsavel` (bool, quando é "o cliente" genericamente), responsavel_id FK→recurso, inicio_previsto, fim_previsto, percentual_conclusao, status (NAO_INICIADO · EM_ANDAMENTO · BLOQUEADO · CONCLUIDO · CANCELADO), marco (bool), data_real_conclusao, observacao, ordem |
+| **atividade_atribuicao** | id, atividade_id, recurso_id, esforco_previsto, esforco_realizado (derivado dos apontamentos), horas_para_concluir, modo_rateio (UNIFORME · MANUAL) · UNIQUE(atividade, recurso) — **substitui as linhas `.2`/`.3`** |
+| **atribuicao_semana** | atribuicao_id, semana_id, horas_calculadas, horas_ajustadas (override opcional) · PK composta |
+| **atividade_predecessora** | atividade_id, predecessora_id, tipo (FS) · PK composta |
 
-**atividade** — `id`, `projeto_id` FK, `codigo` (ID visível, sequencial por projeto), `fase` (ENVISIONING | DEVELOPMENT | DEPLOYMENT | POST_DEPLOY), `atividade` (agrupador), `tarefa`, `modulo_processo`, `recurso_id` FK (Recurso MAIS i9), `contato_cliente_id` FK (Recurso Cliente), `responsavel_tipo` (MAIS_I9 | CLIENTE | AMBOS), `inicio_previsto`, `fim_previsto`, `esforco_previsto` (h), `esforco_realizado` (h, ver C.5), `horas_para_concluir` (h), `percentual_conclusao`, `status` (NAO_INICIADA | EM_ANDAMENTO | CONCLUIDA | BLOQUEADA | CANCELADA), `marco` (bool), `data_real_conclusao`, `observacao`, `ordem`, `modo_rateio` (UNIFORME_DIAS_UTEIS | MANUAL)
-> **Derivados:** `duracao_util`, `forecast`, `desvio_forecast`, `situacao_prazo`.
-> Hierarquia "Atividade → Tarefa" mantida como no Excel (agrupador textual). **[validar se existe WBS com mais níveis]**
+> **Derivados (não armazenados):** duração útil, esforço previsto/realizado/para concluir da atividade (soma das atribuições), forecast, desvio, situação do prazo, progresso por fase/projeto.
 
-**atividade_predecessora** — `atividade_id` FK, `predecessora_id` FK, `tipo` (FS por padrão) · PK composta → permite N predecessoras
-**backlog_atividade** — `backlog_item_id` FK, `atividade_id` FK · PK composta (N:N)
+### C.4 Registro Operacional (RAID), testes e deployment
 
-**controle_operacional** **[validar aba Controle Operacional]** — proposta: `id`, `projeto_id`, `data`, `tipo` (REUNIAO | ACAO | DECISAO | OCORRENCIA), `descricao`, `responsavel_id`, `prazo`, `status`, `atividade_id` (opcional). Se a aba for, na prática, acompanhamento de pendências, ela é absorvida por **Pendência** (C.6).
+| Tabela | Campos principais |
+|---|---|
+| **item_operacional** | id, projeto_id, codigo, tipo (PENDENCIA · DECISAO · DEPENDENCIA · PROBLEMA · RISCO · CHANGE_REQUEST · DEFEITO), descricao, origem_causa, impacto_consequencia, responsavel_id / responsavel_contato_id, data_abertura, prazo, status (ABERTO · EM_ANDAMENTO · AGUARDANDO · BLOQUEADO · APROVADO · REPROVADO · FECHADO · CANCELADO), impacto_escopo / impacto_prazo / impacto_horas (NAO · BAIXO · MEDIO · ALTO), acao_resposta, decisao_aprovador, evidencia_observacao, **probabilidade (1–5), impacto (1–5), severidade** (só RISCO), **horas_cr, dias_cr** (só CHANGE_REQUEST), atividade_id / backlog_item_id / execucao_teste_id (vínculos opcionais), data_fechamento |
 
-### C.4 Testes e deployment
+> **Por que uma tabela só?** O CTRL-001 já usa um registro único com 6 tipos e o mesmo ciclo de vida — e o Status Report conta "riscos/problemas abertos", "pendências vencidas" e "CRs" sobre ela. Na interface, Riscos, Pendências e Change Requests aparecem como **abas filtradas** com os campos específicos de cada tipo. Um defeito encontrado em teste vira item tipo DEFEITO ligado à execução.
 
-**caso_teste** — `id`, `projeto_id` FK, `tipo` (INTERNO | UAT), `codigo`, `cenario`, `pre_condicao`, `passos`, `resultado_esperado`, `modulo_processo`, `backlog_item_id` FK (opcional), `atividade_id` FK (opcional)
-**execucao_teste** — `id`, `caso_teste_id` FK, `ciclo` (1, 2, 3…), `data`, `responsavel_recurso_id` / `responsavel_contato_id` (um dos dois), `resultado_obtido`, `status` (PENDENTE | PASSOU | FALHOU | BLOQUEADO | NAO_APLICAVEL), `observacao`
-> Separar *caso* de *execução* preserva o histórico de reteste sem duplicar o cenário.
+| Tabela | Campos principais |
+|---|---|
+| **caso_teste** | id, projeto_id, tipo (INTERNO · UAT), codigo (`TI-001` / `UAT-001`), backlog_item_id FK, atividade_id FK (opcional), modulo_processo, cenario, pre_condicao, passos, resultado_esperado, responsavel_id (INTERNO) / contato_cliente_id (UAT), ordem |
+| **execucao_teste** | id, caso_teste_id, ciclo (1, 2, 3…), data, executor, **resultado_obtido** (novo), resultado (PLANEJADO · NAO_EXECUTADO · APROVADO · REPROVADO · BLOQUEADO · NA), validacao (PENDENTE · APROVADO · REPROVADO · NA — "Validação MAIS i9" ou "Aceite Cliente"), observacao |
+| **deployment** | id, projeto_id, nome ("Go Live", "Go Live Fase 2"), janela_inicio, janela_fim, data_go_live_real, decisao_go_nogo (PENDENTE · GO · NO_GO · GO_COM_RESSALVAS), data_decisao, aprovadores, justificativa, hypercare_inicio, hypercare_fim, status |
+| **deployment_item** | id, deployment_id, categoria, item, obrigatorio (SIM · NAO · CONDICIONAL), status (NAO_INICIADO · EM_ANDAMENTO · BLOQUEADO · CONCLUIDO · NA), responsavel_id, data_prevista, data_real, evidencia, risco_observacao, aprovacao (PENDENTE · APROVADO · REPROVADO · NA), atividade_id (opcional), ordem |
+| **deployment_item_dependencia** | item_id, depende_de_id |
 
-**pendencia** (defeitos e pendências gerais) — `id`, `projeto_id` FK, `codigo`, `tipo` (DEFEITO | PENDENCIA | AJUSTE | DUVIDA), `titulo`, `descricao`, `severidade`, `responsavel_id`, `prazo`, `status` (ABERTA | EM_ANDAMENTO | RESOLVIDA | CANCELADA), `origem_execucao_teste_id` FK (opcional), `atividade_id` FK (opcional), `resolucao`, `data_resolucao`
-
-**deployment** — `id`, `projeto_id` FK, `nome` (ex.: "Go Live Fase 1"), `data_prevista`, `data_real`, `decisao_go_nogo` (PENDENTE | GO | NO_GO | GO_COM_RESSALVAS), `data_decisao`, `decisor`, `justificativa`, `hypercare_inicio`, `hypercare_fim`, `status`
-**deployment_item** — `id`, `deployment_id` FK, `tipo` (ATIVIDADE | CHECKLIST), `descricao`, `responsavel_id`, `data_prevista`, `data_real`, `status`, `obrigatorio_para_go` (bool), `ordem`, `observacao`
-**deployment_item_dependencia** — `item_id`, `depende_de_id` · PK composta
+> Regra Go/No-Go: o sistema indica "Pronto para Go" quando todos os itens **Sim** estão Concluídos/Aprovados e os **Condicional** estão Concluídos ou N/A; defeitos críticos abertos e UAT reprovado bloqueiam.
 
 ### C.5 Recursos, capacidade e alocação
 
-**indisponibilidade** — `id`, `recurso_id` FK, `tipo` (FERIAS | FERIADO | AUSENCIA | TREINAMENTO | BLOQUEIO | OUTROS), `inicio`, `fim`, `horas_por_dia` (padrão = jornada; permite meio período), `descricao`
-> Feriados nacionais vêm de **feriado** (aplicados a todos); indisponibilidade tipo FERIADO cobre os locais/individuais.
+| Tabela | Campos principais |
+|---|---|
+| **indisponibilidade** | id, recurso_id, tipo (FERIAS · FERIADO_LOCAL · AUSENCIA · TREINAMENTO · BLOQUEIO · OUTROS), inicio, fim, horas_por_dia (padrão = jornada), observacao, status (PENDENTE · APROVADA · RECUSADA) — só APROVADA reduz capacidade |
+| **alocacao_semanal** | **Projeto + Recurso + Semana** — id, projeto_id, recurso_id, semana_id, horas_calculadas (soma das atribuições, mantida pelo sistema), horas_manuais (override, nulo = sem override), horas_avulsas (gestão, sustentação, alocação), horas_realizadas (soma dos apontamentos), status (PLANEJADO · EM_ANDAMENTO · BLOQUEADO · AGUARDANDO_CLIENTE · CONCLUIDO · CANCELADO), prioridade, observacao · UNIQUE(projeto, recurso, semana) |
+| **apontamento** | id, recurso_id, projeto_id, semana_id, atividade_id (opcional), data (opcional), horas, descricao |
 
-**semana** (tabela calendário) — `id` (ex.: 2026-W40), `inicio` (segunda), `fim` (domingo), `ano`, `numero`, `dias_uteis`
+> **Horas previstas** = `coalesce(horas_manuais, horas_calculadas) + horas_avulsas` · **Saldo** = previstas − realizadas.
+> **Capacidade líquida(semana)** = horas_semanais vigentes − feriados nacionais/locais × horas_dia − indisponibilidades aprovadas.
+> **Utilização** = Σ horas previstas do recurso na semana ÷ capacidade líquida.
 
-**alocacao_semanal** — unidade principal: **Projeto + Recurso + Semana**
-`id`, `projeto_id` FK, `recurso_id` FK, `semana_id` FK, `horas_calculadas` (vindas do cronograma, mantidas pelo sistema), `horas_manuais` (override, nulo = sem override), `horas_avulsas` (horas sem atividade: gestão, suporte), `horas_realizadas`, `status` (PLANEJADA | CONFIRMADA | ENCERRADA), `prioridade` (herdada do projeto, editável), `observacao`
-UNIQUE(`projeto_id`, `recurso_id`, `semana_id`)
-> **Horas previstas** = `coalesce(horas_manuais, horas_calculadas) + horas_avulsas`. **Saldo** = previstas − realizadas.
-> Cliente, Início/Fim de semana vêm por join — não são duplicados.
+### C.6 Status Report, documentos e auditoria
 
-**atividade_semana** (detalhe do rateio) — `atividade_id` FK, `semana_id` FK, `horas_calculadas`, `horas_ajustadas` (override por atividade, opcional) · PK composta
-> Permite explicar "de onde vêm" as horas de uma célula da alocação e ajustar o rateio de uma atividade específica.
-
-**apontamento** (horas realizadas) — `id`, `recurso_id` FK, `projeto_id` FK, `atividade_id` FK (opcional), `semana_id` FK, `horas`, `descricao`
-> Fonte única de "realizado": soma por atividade → `esforco_realizado`; soma por projeto+recurso+semana → `alocacao_semanal.horas_realizadas`.
-> **[decisão em J]** se o realizado hoje é lançado por semana (planilha de recursos) ou por atividade (CTRL-001).
-
-### C.6 Governança
-
-**risco** — `id`, `projeto_id` FK, `codigo`, `descricao`, `tipo` (PRAZO | ESCOPO | CUSTO | QUALIDADE | RECURSO | CLIENTE | TECNICO), `probabilidade` (1–5), `impacto` (1–5), `severidade` (derivada = P×I → BAIXA/MEDIA/ALTA/CRITICA), `responsavel_id`, `plano_acao`, `prazo`, `status` (ABERTO | MITIGANDO | FECHADO | MATERIALIZADO), `data_identificacao`
-> Pendências usam a tabela **pendencia** (C.4) — riscos são eventos futuros; pendências, problemas presentes.
-
-**status_report** — `id`, `projeto_id` FK, `periodo_inicio`, `periodo_fim`, `data_emissao`, `status_geral` (VERDE | AMARELO | VERMELHO), `status_prazo`, `status_escopo`, `status_esforco`, `percentual_conclusao` (fotografado), `horas_previstas`, `horas_realizadas` (fotografadas), `resumo`, `comentarios`, `publicado` (bool; após publicar, fica somente leitura)
-**status_report_item** — `id`, `status_report_id` FK, `secao` (ENTREGA | PROXIMO_PASSO | IMPEDIMENTO | DECISAO_NECESSARIA), `descricao`, `responsavel`, `prazo`, `ordem`
-**status_report_risco** — `status_report_id`, `risco_id`, `severidade_na_data`, `status_na_data` (fotografia)
-**status_report_marco** — `status_report_id`, `atividade_id`, `data_prevista_na_data`, `data_real_na_data`, `situacao_na_data`
-
-**documento** — `id`, `projeto_id` FK, `entidade_tipo` + `entidade_id` (opcional: anexo a um teste, deployment_item etc.), `nome`, `categoria` (PROPOSTA | ESCOPO | ATA | EVIDENCIA | MANUAL | ACEITE | OUTROS), `storage_key`, `tamanho`, `mime`, `versao`, `url_externa` (para links do SharePoint)
-
-**auditoria** — `id`, `entidade`, `entidade_id`, `projeto_id` (para filtrar histórico do projeto), `acao` (CRIAR | ALTERAR | EXCLUIR | IMPORTAR | PUBLICAR), `usuario_id`, `data_hora`, `alteracoes` (JSONB `{campo: [antes, depois]}`)
-> Único lugar em que JSON é adequado: é um log imutável, não dado de negócio consultado relacionalmente.
+| Tabela | Campos principais |
+|---|---|
+| **status_report** | id, projeto_id, periodo_inicio, periodo_fim, data_emissao, status_executivo (VERDE · AMARELO · VERMELHO), fase_atual, resumo_executivo, comentarios, publicado_em, publicado_por — após publicar fica somente leitura |
+| **status_report_indicador** | status_report_id (PK), progresso_planejado (linha de base ou curva planejada), progresso_realizado, horas_previstas, horas_realizadas, forecast, atividades_atrasadas, pendencias_vencidas, riscos_problemas_abertos, change_requests — *fotografados* |
+| **status_report_item** | id, status_report_id, secao (ENTREGA_CONCLUIDA · PROXIMA_ENTREGA · PROXIMO_PASSO · IMPEDIMENTO · DECISAO_NECESSARIA · PONTO_ATENCAO), descricao, responsavel, prazo, ordem |
+| **status_report_marco** / **status_report_risco** | fotografia de marcos (data prevista, situação) e riscos (severidade, status) na data |
+| **documento** | id, projeto_id, entidade_tipo + entidade_id (anexo a teste, item de deployment, RAID…), nome, categoria, storage_key **ou** url_externa (SharePoint), tamanho, mime, versao |
+| **auditoria** | id, entidade, entidade_id, projeto_id, acao (CRIAR · ALTERAR · EXCLUIR · IMPORTAR · PUBLICAR), usuario_id, data_hora, alteracoes JSONB `{campo: [antes, depois]}` — único JSON do modelo de negócio: é log imutável |
 
 ### C.7 Importação
 
-**import_lote** — `id`, `tipo` (PORTFOLIO_RECURSOS | CTRL001), `arquivo_nome`, `arquivo_storage_key`, `projeto_id` (quando CTRL-001), `status` (CARREGADO | VALIDADO | COM_ERROS | EFETIVADO | DESCARTADO), `carregado_por`, `efetivado_por`, `efetivado_em`
-**import_linha** — `id`, `lote_id` FK, `aba`, `linha_origem`, `entidade_destino`, `dados_brutos` (JSONB — área de staging), `chave_natural`, `acao_proposta` (CRIAR | ATUALIZAR | IGNORAR), `entidade_id_destino`, `status` (OK | ALERTA | ERRO)
-**import_mensagem** — `id`, `linha_id` FK, `nivel` (ERRO | ALERTA), `campo`, `mensagem`
-**import_mapeamento** — `id`, `tipo` (CLIENTE | RECURSO | PROJETO), `texto_origem`, `entidade_id` → "De-Para" de nomes da planilha para cadastros (ex.: "João S." → recurso João Silva), reutilizado em todos os lotes.
+| Tabela | Campos principais |
+|---|---|
+| **import_lote** | id, tipo (CTRL003 · CTRL001), arquivo_nome, arquivo_storage_key, versao_template ("v1.9", "v5.3"), projeto_id, status (CARREGADO · VALIDADO · COM_ERROS · EFETIVADO · DESCARTADO), carregado_por/em, efetivado_por/em |
+| **import_linha** | id, lote_id, aba, linha_origem, entidade_destino, dados_brutos JSONB (staging), chave_natural, acao_proposta (CRIAR · ATUALIZAR · IGNORAR), entidade_id_destino, status (OK · ALERTA · ERRO) |
+| **import_mensagem** | id, linha_id, nivel, campo, mensagem |
+| **import_de_para** | id, tipo (RECURSO · CLIENTE · PROJETO · CONTATO), texto_origem, entidade_id — reaproveitado entre lotes ("Dornelles" → Luiz Dornelles; "DIPIL" → Dipil) |
 
 ---
 
 ## D. Arquitetura técnica
 
-### D.1 Stack escolhida
+### D.1 Stack
 
 | Camada | Tecnologia | Por quê |
 |---|---|---|
-| Aplicação (front + back) | **Next.js (App Router) + TypeScript** | Um único projeto, um único deploy; server actions/API routes evitam manter dois serviços; ecossistema enorme |
-| UI | **Tailwind CSS + shadcn/ui (Radix)** | Componentes acessíveis e limpos, fácil aplicar a identidade MAIS i9; código dos componentes fica no repo |
-| Tabelas | **TanStack Table** | Ordenação, filtro, agrupamento, edição inline, colunas configuráveis |
-| Gantt / calendário | **Frappe Gantt** (ou componente próprio em SVG) + **FullCalendar** | Maduros, leves, sem licença comercial |
-| Gráficos | **Recharts** | Simples, suficiente para dashboards |
-| ORM / migrações | **Prisma** | Esquema tipado, migrações versionadas no git |
-| Banco | **PostgreSQL 16** | Relacional, maduro, backup simples (`pg_dump`), roda em qualquer nuvem |
-| Validação | **Zod** | Mesmas regras no formulário e no servidor e na importação |
-| Leitura de Excel | **SheetJS (xlsx)** / ExcelJS | Importação das planilhas no próprio app |
-| Autenticação | **Auth.js** com **Microsoft Entra ID** (login com conta corporativa) + login por e-mail/senha como alternativa | Sem gestão de senhas se a MAIS i9 usa Microsoft 365 **[ver J]** |
-| Documentos | Abstração de storage: **disco local** no MVP → **S3 / Azure Blob / SharePoint** depois | Começa simples; troca sem mudar o modelo |
-| Testes | Vitest (regras de cálculo) + Playwright (fluxos críticos) | O motor de rateio/capacidade é o ponto que mais precisa de teste |
+| Aplicação (front + back) | **Next.js (App Router) + TypeScript** | Um projeto, um deploy; ecossistema amplo; fácil achar quem mantenha |
+| UI | **Tailwind CSS + shadcn/ui** | Visual limpo, acessível, identidade MAIS i9 aplicada por tokens de cor |
+| Tabelas | **TanStack Table** | Ordenação, filtros, agrupamento por fase, edição inline com teclado |
+| Gantt / calendário | **Frappe Gantt** + **FullCalendar** | Maduros e sem licença comercial |
+| Gráficos | **Recharts** | Suficiente para os dashboards |
+| ORM / migrações | **Prisma** | Esquema tipado e migrações versionadas no git |
+| Banco | **PostgreSQL 16** | Relacional, maduro, backup simples |
+| Validação | **Zod** | Mesmas regras no formulário, no servidor e na importação |
+| Leitura de Excel | **ExcelJS** | Lê valores e tipos (detecta `"4h"` como texto) |
+| Autenticação | **Auth.js** + Microsoft Entra ID (se houver M365) ou e-mail/senha | Ver J |
+| Documentos | Abstração de storage: disco local → S3/Azure Blob; links do SharePoint desde já | Os projetos já usam Teams/SharePoint como repositório oficial (item do Pré-Projeto) |
+| Testes | Vitest (motor de cálculo) + Playwright (fluxos críticos) | Rateio, capacidade e complexidade precisam de testes automatizados |
 
-**Alternativa descartada:** back-end separado (ex.: .NET/Java API + SPA React). Mais robusto para times grandes, mas dobra o número de projetos, deploys e camadas para uma equipe pequena. A estrutura modular proposta permite extrair uma API depois, se necessário.
+Alternativa descartada: API separada (.NET/Java) + SPA — dobra projetos e deploys para uma equipe pequena. A organização modular permite extrair uma API depois.
 
 ### D.2 Organização do código
 
 ```
-/app                 rotas e telas (portfolio, projetos/[id]/..., recursos, capacidade, admin)
-/components          UI compartilhada (DataTable, KpiCard, StatusBadge, Gantt, WeekGrid…)
-/lib/domain          regras puras e testáveis: rateio, capacidade, saúde, situação de prazo
-/lib/services        casos de uso (salvar atividade → recalcular alocação → auditar)
-/lib/auth            sessão e verificação de permissões (can(user, ação, recurso))
-/lib/import          parsers das planilhas, validação, conciliação
-/prisma              schema.prisma, migrações, seed
-/docs                esta documentação
+/app            telas (portfolio, projetos/[id]/*, recursos, capacidade, admin)
+/components     DataTable, KpiCard, StatusBadge, Gantt, WeekGrid, Heatmap…
+/lib/domain     regras puras e testadas: rateio, capacidade, faixas, situação do prazo,
+                complexidade, progresso, qualidade do cronograma (14 regras)
+/lib/services   casos de uso transacionais (salvar atividade → recalcular → auditar)
+/lib/auth       sessão e can(usuario, acao, recurso)
+/lib/import     leitores CTRL-001 v1.9 e CTRL-003 v5.3, validação, conciliação
+/prisma         schema, migrações, seed (fases, critérios, templates, feriados)
+/docs           documentação
 ```
 
 ### D.3 Regras transversais
+- **Recálculo síncrono e transacional:** salvar uma atividade/atribuição recalcula `atribuicao_semana` e `alocacao_semanal.horas_calculadas` dos pares projeto+recurso afetados.
+- **Auditoria** por extensão do Prisma em todas as entidades de negócio.
+- **Permissões** centralizadas em `can()`; MVP por módulo, preparado para escopo por projeto.
 
-- **Recálculo síncrono e transacional**: ao salvar uma atividade, na mesma transação recalcula `atividade_semana` e `alocacao_semanal.horas_calculadas` dos pares (projeto, recurso) afetados. Volume pequeno → sem filas.
-- **Auditoria** por middleware do Prisma: captura diffs dos campos alterados em todas as entidades de negócio.
-- **Permissões**: função central `can()` com matriz perfil × ação; no MVP aplicada em nível de módulo, preparada para nível de projeto via `projeto_membro`.
+### D.4 Deploy e backup
+- **Docker Compose**: `app` + `db` + volume de documentos. Local: `docker compose up`.
+- **Backup**: `pg_dump` diário + cópia do volume; retenção 30 dias; restauração testada.
+- **Hospedagem futura** sem mudar código: VM única, ou Azure App Service + Azure Database for PostgreSQL + Blob Storage.
+- **CI** (GitHub Actions): lint, typecheck, testes e build.
 
-### D.4 Deploy, backup e hospedagem
+### D.5 Integração Cronograma → Capacidade (requisito 11)
 
-- **Docker Compose** com 2 contêineres: `app` (Next.js) e `db` (PostgreSQL) + volume para documentos.
-- Executar localmente: `docker compose up` (ou `npm run dev` com Postgres local).
-- **Backup**: `pg_dump` diário agendado + cópia do volume de documentos; retenção 30 dias; restauração documentada e testada.
-- **Hospedagem futura** (sem mudar código): VM única (Azure/AWS/GCP/Hetzner), ou serviços gerenciados (Azure App Service + Azure Database for PostgreSQL + Blob Storage) — escolha natural se a empresa já usa Microsoft 365.
-- CI no GitHub Actions: lint, typecheck, testes e build a cada push.
+A própria aba "Auditoria CTRL-003" já sinaliza o problema: *"Atravessa S44–S45: definir distribuição semanal"*. Regra proposta:
 
-### D.5 Regra de integração Cronograma → Capacidade (requisito 11)
+1. Cada **atribuição** (atividade × recurso) tem esforço previsto e horas para concluir.
+2. **Base de rateio** = Horas para Concluir (ou Esforço Previsto se não iniciada).
+3. **Período** = de `max(início previsto, segunda-feira da semana atual)` até `fim previsto`.
+4. Conta os **dias úteis do recurso** em cada semana do período (descontando fins de semana, feriados e indisponibilidades aprovadas).
+5. Horas da semana = base × dias úteis da semana ÷ dias úteis do período; arredonda em 0,5h e ajusta a diferença na última semana.
+6. Soma por projeto + recurso + semana → `alocacao_semanal.horas_calculadas`.
+7. Semanas passadas não são redistribuídas: ficam com o planejado congelado e o realizado apontado.
 
-**Regra padrão — rateio uniforme por dia útil disponível:**
+**Exemplo real (Kover, CRON-023 "Executar Go Live", Luiz, 4h, 28/10 a 03/11):** 4 dias úteis em S44 (qua–sex = 3 dias → 2,4h ≈ 2,5h) e S45 (seg–ter = 2 dias → 1,6h ≈ 1,5h).
 
-1. Para cada atividade com `recurso`, `inicio_previsto`, `fim_previsto` e `esforco_previsto`:
-2. Base de rateio = **Horas para Concluir** (ou Esforço Previsto se ainda não iniciada) — assim o planejamento futuro reflete o que falta, e semanas passadas ficam com o realizado.
-3. Período de rateio = de `max(início previsto, hoje)` até `fim previsto`.
-4. Conta os **dias úteis** de cada semana dentro do período, descontando feriados e indisponibilidades do recurso.
-5. Horas da semana = base × (dias úteis da semana ÷ dias úteis totais).
-6. Arredonda em 0,5h; a diferença de arredondamento vai para a última semana.
-7. Soma por projeto + recurso + semana → `alocacao_semanal.horas_calculadas`.
-
-**Exemplo:** atividade de 40h, quarta 01/10 a terça 14/10, sem feriados → 10 dias úteis = 4h/dia → semana 40 (qua–sex, 3 dias) = 12h · semana 41 (5 dias) = 20h · semana 42 (seg–ter, 2 dias) = 8h.
-
-**Ajustes manuais, em dois níveis:**
-- **Por atividade** (`atividade_semana.horas_ajustadas`): "esta atividade concentra mais horas na 1ª semana". O total ajustado deve fechar com a base; o sistema mostra a diferença em alerta.
-- **Por semana** (`alocacao_semanal.horas_manuais`): override do planejamento de capacidade, independentemente do cronograma. Fica visível com ícone ✎ e o valor calculado ao lado; botão "voltar ao calculado".
-- Recálculo **nunca apaga override**; se o cronograma mudar e o override divergir muito (> 20%), a célula é sinalizada para revisão.
-
-**Atividades sem recurso ou sem esforço** não entram na capacidade e aparecem num aviso "atividades sem planejamento de recurso" no projeto.
+**Ajustes manuais em dois níveis:**
+- **Por atribuição** (`atribuicao_semana.horas_ajustadas`): "concentrar 3h na S45". O sistema mostra se a soma ajustada difere da base.
+- **Por semana** (`alocacao_semanal.horas_manuais`): o gestor de recursos define o valor final da célula projeto × recurso × semana. Ícone ✎ com o valor calculado ao lado e botão "voltar ao calculado".
+- Recalcular **nunca apaga override**; divergência > 20% entre override e calculado é sinalizada para revisão.
+- **Horas avulsas** (GP, sustentação, alocação) entram direto na alocação, sem atividade.
 
 ---
 
@@ -304,35 +323,36 @@ Login
 └─ Aplicação (navegação lateral)
    ├─ Início — Dashboard Executivo
    ├─ Portfólio
-   │   ├─ Lista de projetos (filtros, busca, visões salvas)
-   │   └─ Novo projeto (assistente curto)
-   ├─ Projeto [código — nome]
-   │   ├─ Visão Geral (KPIs, fases, marcos, riscos, pendências, carga da equipe)
-   │   ├─ Pré-Projeto (premissas, escopo, stakeholders, checklist kickoff, complexidade)
+   │   ├─ Lista (tabela | cartões | Gantt do portfólio) com filtros e visões salvas
+   │   └─ Novo projeto (assistente: dados → complexidade → pré-projeto → templates)
+   ├─ Projeto [CLIENTE · Projeto]
+   │   ├─ Visão Geral (KPIs, fases, próximos marcos, atrasos, RAID crítico, carga da equipe, qualidade do cronograma)
+   │   ├─ Pré-Projeto (prontidão + complexidade/governança)
    │   ├─ Backlog
-   │   ├─ Cronograma  [Tabela | Gantt | Calendário]
-   │   ├─ Operacional (pendências, ações, decisões)
-   │   ├─ Testes Internos (casos, execuções/ciclos, defeitos)
-   │   ├─ UAT (casos, execuções/ciclos, defeitos, aceite)
-   │   ├─ Deployment (checklist, atividades, Go/No-Go, Go Live, Hypercare)
-   │   ├─ Status Reports (histórico → novo → visualizar/exportar PDF)
+   │   ├─ Cronograma [Tabela | Gantt | Calendário]
+   │   ├─ Operacional (RAID: Pendências · Decisões · Dependências · Problemas · Change Requests)
+   │   ├─ Testes Internos (casos, ciclos de execução, defeitos)
+   │   ├─ UAT (casos, ciclos, aceite, defeitos)
+   │   ├─ Deployment (checklist, Go/No-Go, Go Live, Hypercare)
+   │   ├─ Status Reports (histórico → novo → publicar/exportar)
    │   ├─ Riscos (lista + matriz P×I)
    │   ├─ Equipe (membros, alocação semanal do projeto)
    │   ├─ Documentos
-   │   └─ Histórico (auditoria do projeto)
+   │   └─ Histórico (auditoria)
    ├─ Recursos
-   │   ├─ Lista de recursos
-   │   └─ Recurso [nome] (capacidade, indisponibilidades, projetos, carga semanal, próximas atividades, histórico)
+   │   ├─ Lista
+   │   └─ Recurso [nome]
    ├─ Capacidade
-   │   ├─ Mapa de carga (recurso × semana, heatmap) → drill-down
-   │   ├─ Planejamento semanal (projeto × recurso × semana, edição)
-   │   └─ Indisponibilidades (calendário da equipe)
-   ├─ Clientes (lista + página do cliente com seus projetos)
-   └─ Administração (somente Admin)
+   │   ├─ Mapa de carga (recurso × semana) → detalhe
+   │   ├─ Planejamento semanal (projeto × recurso × semana)
+   │   ├─ Indisponibilidades (calendário + aprovação)
+   │   └─ Apontamento de horas
+   ├─ Clientes (lista + página do cliente)
+   └─ Administração
        ├─ Usuários e perfis
        ├─ Feriados
-       ├─ Parâmetros (faixas de utilização, critérios de complexidade, jornada)
-       ├─ Importação de planilhas (lotes, validação, efetivação, De-Para)
+       ├─ Parâmetros (faixas, critérios de complexidade, templates de pré-projeto e deployment)
+       ├─ Importação (lotes, validação, De-Para, efetivação)
        └─ Auditoria geral
 ```
 
@@ -344,161 +364,173 @@ Login
 
 ```
 ┌────────┬──────────────────────────────────────────────────────────────────────┐
-│ MAIS i9│  Início                                  [Semana 40 ▾]  🔍  (JS)       │
+│ MAIS i9│  Início                                   Semana [S40/26 ▾]   (LC)     │
 │        ├──────────────────────────────────────────────────────────────────────┤
-│ Início │ ┌──────────┐┌──────────┐┌──────────┐┌──────────┐┌──────────┐┌────────┐│
-│Portfól.│ │ Ativos   ││ Atrasados││ Atenção  ││ Ativid.  ││ Pend.    ││ Riscos ││
-│Recursos│ │   14     ││   2 ●    ││   3 ●    ││ atrasadas││ críticas ││ altos  ││
-│Capacid.│ │          ││          ││          ││   17     ││    5     ││   4    ││
-│Clientes│ └──────────┘└──────────┘└──────────┘└──────────┘└──────────┘└────────┘│
-│        │ ┌─ Projetos por status ────────┐ ┌─ Equipe (semana) ────────────────┐ │
-│ ─────  │ │ ███████ Em andamento   9      │ │ Capacidade líquida   320h        │ │
-│ Admin  │ │ ███ Planejamento       3      │ │ Planejado            298h  93%   │ │
-│        │ │ ██ Pausado             2      │ │ Realizado (sem. ant.) 276h       │ │
-│        │ └───────────────────────────────┘ │ ● 2 sobrecarregados  ● 3 dispon. │ │
-│        │                                   └──────────────────────────────────┘ │
-│        │ ┌─ Próximos Go Lives / Marcos (30 dias) ─────────────────────────────┐ │
-│        │ │ 08/10  Cliente A · ERP Fase 2 · Go Live            ● no prazo       │ │
-│        │ │ 15/10  Cliente B · CRM · Aceite UAT                ● em risco       │ │
+│ Início │ ┌─────────┐┌─────────┐┌─────────┐┌─────────┐┌─────────┐┌─────────┐   │
+│Portfól.│ │ Ativos  ││Vermelho ││ Amarelo ││Ativid.  ││Pendênc. ││ Riscos  │   │
+│Recursos│ │   24    ││   1 ●   ││   3 ●   ││atrasadas││vencidas ││ altos   │   │
+│Capacid.│ │         ││         ││         ││   6     ││   2     ││   1     │   │
+│Clientes│ └─────────┘└─────────┘└─────────┘└─────────┘└─────────┘└─────────┘   │
+│        │ ┌─ Equipe · S40 ─────────────────────┐ ┌─ Projetos por status ──────┐ │
+│ ────── │ │ Capacidade líquida 420h            │ │ Em andamento   ██████ 24   │ │
+│ Admin  │ │ Planejado 195h (46%) · Real 0h     │ │ Aprov. cliente ▏ 0         │ │
+│        │ │ ● 2 sobrecarregados  ● 7 disponív. │ │ Bloqueado      ▏ 0         │ │
+│        │ │ Luiz D. 183% · Julis F. 140%  →    │ └────────────────────────────┘ │
+│        │ └────────────────────────────────────┘                                │
+│        │ ┌─ Próximos Go Lives e marcos (30 dias) ─────────────────────────────┐ │
+│        │ │ 06/10 Kover · Integração Protheus > WMS (marco)      ● no prazo     │ │
+│        │ │ 27/10 Sulmedic · Reforma Tributária · Go Live         ● no prazo    │ │
+│        │ │ 03/11 Kover · Implantação WMS · Go Live               ● no prazo    │ │
 │        │ └────────────────────────────────────────────────────────────────────┘ │
-│        │ ┌─ Projetos que precisam de atenção ─────────────────────────────────┐ │
-│        │ │ Projeto        GP     Saúde  %   Prazo    Desvio h  Motivo         │ │
+│        │ ┌─ Precisam de atenção ──────────────────────────────────────────────┐ │
+│        │ │ Projeto           GP     Status  %   Atrasadas  Desvio  Motivo      │ │
 │        │ └────────────────────────────────────────────────────────────────────┘ │
 └────────┴──────────────────────────────────────────────────────────────────────┘
- Cada cartão é clicável → lista já filtrada (ex.: "Atrasados" → Portfólio?saude=vermelho)
+ Números com os dados reais de S40/26 (CTRL-003 + CTRL-001 Kover e Sulmedic).
+ Cada número é um link para a lista já filtrada.
 ```
 
 ### F.2 Portfólio
 
 ```
- Portfólio                                              [+ Novo projeto]
- 🔍 Buscar…  [Cliente ▾][Status ▾][GP ▾][Recurso ▾][Prioridade ▾][Período ▾][Complex. ▾]
- Visões: (Todos) (Meus projetos) (Em atenção) (Go Live 30d)          [Tabela|Cartões]
- ┌─────────┬─────────────┬──────────┬──────┬──────┬───────┬────────┬─────┬───────┬──────┐
- │Código   │Projeto      │Cliente   │GP    │Status│Fase   │Go Live │ %   │Prev/Re│Saúde │
- ├─────────┼─────────────┼──────────┼──────┼──────┼───────┼────────┼─────┼───────┼──────┤
- │PRJ-014  │ERP Fase 2   │Cliente A │Ana   │Andam.│Develop│08/10/26│ 72% │600/410│ ●    │
- └─────────┴─────────────┴──────────┴──────┴──────┴───────┴────────┴─────┴───────┴──────┘
+ Portfólio                                       [Tabela | Cartões | Gantt]   [+ Novo]
+ 🔍 Buscar…  [Cliente▾][Status▾][Tipo▾][GP▾][Recurso▾][Prioridade▾][Período▾][Complex.▾]
+ Visões: (Todos) (Meus) (Em atenção) (Go Live 30d) (Sem planejamento)
+ ┌────────┬───────────────────┬──────────┬────────┬──────┬────┬────────┬────┬────────┬──┐
+ │Cliente │Projeto            │GP        │Funcion.│Status│Nív.│Go Live │ %  │Prev/Fc │● │
+ ├────────┼───────────────────┼──────────┼────────┼──────┼────┼────────┼────┼────────┼──┤
+ │Kover   │Implantação WMS    │—         │Luiz D. │Andam.│ N? │03/11/26│ 1% │140/140 │🟡│
+ │Sulmedic│Reforma Tributária │Laura I.  │Julis F.│Andam.│ N1 │27/10/26│ 1% │ 88/88  │⚪│
+ └────────┴───────────────────┴──────────┴────────┴──────┴────┴────────┴────┴────────┴──┘
+ "Sem planejamento" = projeto ativo sem cronograma e sem alocação (substitui a coluna
+ "Sem Planejamento?" do CTRL-003).
 ```
 
-### F.3 Página do Projeto — cabeçalho + Visão Geral
+### F.3 Projeto — cabeçalho e Visão Geral
 
 ```
- Portfólio › Cliente A › ERP Fase 2
+ Portfólio › Kover › Implantação WMS
  ┌──────────────────────────────────────────────────────────────────────────────┐
- │ ERP Fase 2  PRJ-014   [Em andamento] [Alta]   Saúde ● Amarelo         [⋯]    │
- │ Cliente A · GP Ana · Complexidade Alta                                        │
- │ Início 01/07 · Go Live 08/10 · Encerramento 30/11   ██████████░░░ 72%          │
- │ Horas: previstas 600 · realizadas 410 · forecast 640 (+40h / +6,7%)            │
+ │ Implantação WMS   [Em andamento] [Alta] [Complexidade não avaliada] 🟡 [⋯] │
+ │ Kover · GP — · Funcional Luiz Dornelles · Técnico Luiz Dornelles              │
+ │ Kickoff 28/09 · Go Live 03/11 · Encerramento 06/11     █░░░░░░░░░░ 1%          │
+ │ Horas: previstas 140 · realizadas 0 · forecast 140 (0h)   ⚠ 3 atrasadas        │
  └──────────────────────────────────────────────────────────────────────────────┘
  Visão Geral | Pré-Projeto | Backlog | Cronograma | Operacional | Testes Internos |
  UAT | Deployment | Status Reports | Riscos | Equipe | Documentos | Histórico
- ┌─ Fases ─────────────────────────────────────┐ ┌─ Próximos marcos ───────────┐
- │ Envisioning ✔ │ Development ▶ │ Deploy │ PD  │ │ 10/10 Fim testes internos  │
- └─────────────────────────────────────────────┘ │ 20/10 Aceite UAT ● risco   │
- ┌─ Atividades atrasadas (3) ──────────────────┐ └────────────────────────────┘
- ┌─ Riscos abertos (P×I) ─┐ ┌─ Pendências ─┐ ┌─ Carga da equipe (4 semanas) ─┐
+ ┌─ Fases ──────────────────────────────────────────┐ ┌─ Próximos marcos ───────┐
+ │ Envisioning — │ Development ▶ 1% │ Deploy │ PD    │ │ 06/10 Protheus > WMS    │
+ └──────────────────────────────────────────────────┘ │ 14/10 Abastecimento     │
+ ┌─ Qualidade do cronograma (3) ────────────────────┐ │ 15/10 Apontamento prod. │
+ │ ⚠ CRON-010 termina num sábado (10/10)            │ └─────────────────────────┘
+ │ ⚠ CRON-023 sem distribuição semanal revisada     │ ┌─ Carga da equipe ───────┐
+ └──────────────────────────────────────────────────┘ │ Luiz  S40 183% S41 135% │
+                                                      └─────────────────────────┘
 ```
 
 ### F.4 Cronograma (tabela com edição inline)
 
 ```
- Cronograma    [Tabela | Gantt | Calendário]   Fase[▾] Recurso[▾] Situação[▾]  [+ Atividade]
- ┌──┬────────────┬──────────────┬────────┬───────┬───────┬─────┬─────┬─────┬────┬────────┐
- │ID│Atividade   │Tarefa        │Recurso │Início │Fim    │Prev │Real │Falta│ %  │Situação│
- ├──┴────────────┴──────────────┴────────┴───────┴───────┴─────┴─────┴─────┴────┴────────┤
- │▼ ENVISIONING                                              80h   80h    0  100%         │
- │▼ DEVELOPMENT                                             320h  210h  130   62%         │
- │ 12│Parametriz.│Fiscal        │[João ▾]│[01/10]│[14/10]│ 40  │ 10  │[30] │[25]│● prazo │
- │ 13│Parametriz.│Financeiro ◆  │Maria   │ 25/09 │ 30/09 │ 24  │ 16  │  8  │ 60 │● atras.│
- └───────────────────────────────────────────────────────────────────────────────────────┘
-  Clique na célula para editar · Tab avança · Painel lateral abre detalhes (predecessoras,
-  backlog vinculado, rateio semanal editável, observações, histórico).  ◆ = marco
+ Cronograma   [Tabela | Gantt | Calendário]  Fase[▾] Recurso[▾] Situação[▾] REQ[▾]  [+ Atividade]
+ ┌────────┬───────┬──────────────────────────────┬──────────────┬──────┬──────┬────┬────┬────┬────────┐
+ │ID      │REQ    │Tarefa                        │Recursos      │Início│Fim   │Prev│Real│ %  │Situação│
+ ├────────┴───────┴──────────────────────────────┴──────────────┴──────┴──────┴────┴────┴────┴────────┤
+ │▼ DEVELOPMENT                                                              106h   0h   1%           │
+ │ CRON-006│REQ-002│Concluir integração SKP > Protheus│Luiz 4h·Murilo 4h│05/10│05/10│ 8 │ 0 │ 0 │● prazo │
+ │ CRON-007│REQ-002│Concluir integração Protheus>WMS ◆│Luiz 4h          │06/10│06/10│ 4 │ 0 │ 0 │● prazo │
+ └──────────────────────────────────────────────────────────────────────────────────────────────────────┘
+ Uma linha por tarefa; vários recursos na mesma linha (fim das linhas .2/.3).
+ Painel lateral: atribuições e rateio semanal editável, predecessoras, testes ligados, histórico.
 ```
 
 ### F.5 Capacidade — Mapa de carga
 
 ```
- Capacidade   Semanas [S40 ▸ S47]  Área[▾]  [Só sobrecarregados]
- ┌────────────┬──────┬──────┬──────┬──────┬──────┬──────┐
- │Recurso     │ S40  │ S41  │ S42  │ S43  │ S44  │ S45  │   ■ Disponível  ■ Adequado
- ├────────────┼──────┼──────┼──────┼──────┼──────┼──────┤   ■ Atenção     ■ Sobrecarregado
- │João Silva  │ 112% │  95% │  80% │  40% │ FÉR. │ FÉR. │
- │Maria Souza │  70% │  85% │  90% │  60% │  20% │   0% │
- └────────────┴──────┴──────┴──────┴──────┴──────┴──────┘
- Clique em "João · S40" →
- ┌─ João Silva · Semana 40 (29/09–05/10) ─────────────────────────────┐
- │ Capacidade 40h − Feriado 0h = 40h líquidas · Planejado 45h (112%)   │
- │ ERP Fase 2 (Cliente A)   28h  ← 3 atividades  (calc 28h)            │
- │ CRM (Cliente B)          12h  ✎ override (calc 8h)                   │
- │ Suporte interno           5h  avulsas                                │
- │ [Abrir planejamento] [Ver atividades]                               │
- └────────────────────────────────────────────────────────────────────┘
+ Capacidade   [S40/26 ▸ S47/26]   Área[▾]   [Só ≥ 85%]
+ ┌──────────────────┬──────┬──────┬──────┬──────┬──────┬──────┐  ■ Disponível < 50%
+ │Recurso           │ S40  │ S41  │ S42  │ S43  │ S44  │ S45  │  ■ Adequado 50–85%
+ ├──────────────────┼──────┼──────┼──────┼──────┼──────┼──────┤  ■ Atenção 85–100%
+ │Luiz Dornelles    │ 183% │ 135% │ 153% │  93% │  24% │  29% │  ■ Sobrecarregado > 100%
+ │Julis Felipe      │ 140% │  35% │  60% │  50% │  35% │   0% │
+ │Diego Fortunato   │  60% │  35% │  10% │  50% │   0% │   0% │
+ │Laura (?) treino  │      │      │      │ ▒ 8h │      │      │
+ └──────────────────┴──────┴──────┴──────┴──────┴──────┴──────┘
+ Clique em "Luiz · S40" →
+ ┌─ Luiz Dornelles · S40 (28/09–04/10) ─────────────────────────────────┐
+ │ Capacidade 40h − indisponível 0h = 40h · Planejado 73h (183%)        │
+ │ Dipil · WMS Expedição               33h  avulsa/manual               │
+ │ Alltech · Implantação PCP (WMS)     20h  avulsa/manual               │
+ │ Kover · Implantação WMS             14h  ← 5 atividades (calculado)  │
+ │ CCP · Recebimento NF                 4h  manual                      │
+ │ Sintex · Projeto Custos              2h  manual                      │
+ │ [Abrir planejamento] [Ver atividades]                                │
+ └──────────────────────────────────────────────────────────────────────┘
 ```
 
 ### F.6 Página do Recurso
 
 ```
- João Silva · Consultor Funcional · 40h/semana              [Nova indisponibilidade]
- ┌ Utilização 4 sem. ┐┌ Planejado/Realizado ┐┌ Projetos ativos ┐┌ Próx. ausência ┐
- │      92%          ││   152h / 140h       ││       3         ││ Férias 27/10    │
- └───────────────────┘└─────────────────────┘└─────────────────┘└─────────────────┘
- Carga semanal (barras empilhadas por projeto, linha = capacidade líquida)
-  S40 ███████████▓▓▓▒ |  S41 ██████████▓▓ |  S42 ████████ |  S43 ███ | S44 (férias)
- Próximas atividades (cronogramas de todos os projetos)   |  Indisponibilidades
- Histórico (planejado × realizado por semana)
+ Luiz Dornelles · Consultor · 40h/semana                 [+ Indisponibilidade]
+ ┌ Utilização 4 sem ┐┌ Planejado/Real 4 sem ┐┌ Projetos ativos ┐┌ Próx. ausência ┐
+ │      141%        ││     225h / 0h        ││       5         ││      —         │
+ └──────────────────┘└──────────────────────┘└─────────────────┘└────────────────┘
+ Carga semanal (barras empilhadas por projeto; linha = capacidade líquida)
+ S40 ████████████████████▓▓▓▓▓▒▒  73h | S41 ███████████▓▓▓▓ 54h | S42 ██████████▓▓▓ 61h
+ Próximas atividades (todos os projetos) · Indisponibilidades · Histórico prev × real
 ```
 
 ### F.7 Status Report
 
 ```
- Status Reports  [+ Novo status report]   (pré-preenchido com dados atuais do projeto)
- ┌───────────┬──────────────────┬────────┬─────┬───────────┐
- │Emissão    │Período           │Status  │ %   │Publicado  │
- │29/09/2026 │22/09 – 28/09     │● Amar. │ 68% │✔ Ana      │
- └───────────┴──────────────────┴────────┴─────┴───────────┘
- Edição: Status geral/prazo/escopo/esforço · Entregas · Próximos passos ·
- Impedimentos · Decisões necessárias · Riscos (selecionados do registro) ·
- Marcos (automáticos) · Comentários  →  [Salvar rascunho] [Publicar] [Exportar PDF]
+ Status Reports                                      [+ Novo (pré-preenchido)]
+ ┌──────────┬───────────────┬────────┬──────┬──────────────┐
+ │Emissão   │Período        │Status  │  %   │Publicado     │
+ │29/09/2026│22/09 – 28/09  │🟡      │  1%  │✔ 29/09 · GP  │
+ └──────────┴───────────────┴────────┴──────┴──────────────┘
+ Formulário: Status executivo · Fase atual · Resumo executivo · Entregas concluídas ·
+ Próximas entregas · Impedimentos · Decisões necessárias · Pontos de atenção (do RAID) ·
+ Marcos (automático) · Indicadores (automático, congelados ao publicar)
+ [Salvar rascunho] [Publicar] [Exportar PDF]
 ```
 
 ---
 
 ## G. MVP (Release 1)
 
-Objetivo do MVP: **a equipe deixar de usar a planilha de Gestão de Recursos e o CTRL-001 para o dia a dia** dos projetos novos e migrados.
+Objetivo: **substituir CTRL-001 e CTRL-003 no dia a dia**, sem voltar às planilhas.
 
 | # | Entra no MVP |
 |---|---|
-| 1 | Login (Entra ID ou e-mail/senha), 4 perfis com permissão por módulo |
-| 2 | Cadastros: clientes, contatos, recursos, capacidade, feriados, usuários, parâmetros |
+| 1 | Login, 4 perfis com permissão por módulo |
+| 2 | Cadastros: clientes, contatos, recursos, capacidade com vigência, feriados, usuários |
 | 3 | Dashboard executivo com indicadores clicáveis |
-| 4 | Portfólio com busca, ordenação e todos os filtros pedidos |
-| 5 | Página do projeto: cabeçalho, Visão Geral, Equipe, Histórico |
-| 6 | **Cronograma**: tabela com edição inline, agrupamento por fase, predecessoras, marcos, cálculos (duração, forecast, desvio, situação) e **Gantt** (visualização + arrastar datas) |
-| 7 | **Integração cronograma → capacidade** com rateio automático e override (D.5) |
-| 8 | Capacidade: mapa de carga com faixas, drill-down recurso × semana, planejamento semanal editável, indisponibilidades |
-| 9 | Página do recurso |
-| 10 | Lançamento de horas realizadas (forma definida em J) |
-| 11 | Backlog com vínculo a atividades |
-| 12 | Riscos e Pendências |
-| 13 | Testes Internos e UAT (casos, execuções, vínculo com defeitos) |
-| 14 | Deployment (checklist, Go/No-Go, Go Live, Hypercare) |
-| 15 | Status Reports com histórico e snapshot |
-| 16 | Documentos (upload local + links) |
-| 17 | Auditoria automática (quem/quando/o quê) |
-| 18 | **Importação** da Gestão de Recursos/Portfólio e do CTRL-001 com staging e validação |
-| 19 | Backup automatizado e Docker Compose |
+| 4 | Portfólio com busca, ordenação, todos os filtros e Gantt do portfólio |
+| 5 | Projeto: cabeçalho, Visão Geral, Equipe, Histórico |
+| 6 | Pré-Projeto + Complexidade (12 critérios, nível e governança automáticos) |
+| 7 | Backlog |
+| 8 | **Cronograma** em tabela com edição inline, **atribuição de vários recursos**, predecessoras, marcos, cálculos, painel de qualidade (14 regras) e **Gantt** |
+| 9 | **Integração cronograma → capacidade** com rateio e override (D.5) |
+| 10 | Capacidade: mapa de carga semanal com detalhe, planejamento semanal editável (inclui horas avulsas), indisponibilidades com aprovação |
+| 11 | Página do recurso |
+| 12 | Apontamento de horas realizadas (formato a confirmar em J) |
+| 13 | Operacional (RAID) com abas Riscos, Pendências e Change Requests |
+| 14 | Testes Internos e UAT (casos, execuções por ciclo, defeitos ligados ao RAID) |
+| 15 | Deployment (checklist por template, Go/No-Go, Go Live, Hypercare) |
+| 16 | Status Reports com histórico e indicadores congelados |
+| 17 | Documentos (upload + links SharePoint) |
+| 18 | Auditoria automática |
+| 19 | **Importação** de CTRL-003 v5.3 e CTRL-001 v1.9 com staging, De-Para e validação |
+| 20 | Docker Compose + backup automatizado |
 
-**Sequência de construção sugerida (incrementos entregáveis, ~2 semanas cada):**
-1. Fundação: projeto, banco, autenticação, layout, cadastros, auditoria
-2. Portfólio + Projeto (cabeçalho, visão geral) + Cronograma tabela
-3. Motor de rateio + Capacidade + Recurso + Indisponibilidades
-4. Gantt + Backlog + Riscos/Pendências + Dashboard executivo
-5. Testes/UAT + Deployment + Status Report + Documentos
-6. Importação + migração assistida dos dados reais + ajustes de uso
+**Ordem de construção (incrementos de ~2 semanas, cada um utilizável):**
+1. Fundação: banco, login, layout, cadastros, auditoria, calendário de semanas/feriados
+2. Portfólio + Projeto (cabeçalho, visão geral, equipe) + **importação do CTRL-003**
+3. Capacidade, planejamento semanal, indisponibilidades, página do recurso → **CTRL-003 aposentado**
+4. Backlog + Cronograma (tabela, atribuições, Gantt) + motor de rateio + **importação do CTRL-001**
+5. Pré-Projeto/Complexidade + Operacional/Riscos + Testes/UAT + Deployment
+6. Status Report + Documentos + Dashboard executivo final + ajustes do piloto → **CTRL-001 aposentado**
 
-Pré-Projeto, Complexidade e Operacional entram no incremento 5 em versão simples **[ajustar após validar as abas]**.
+> Começar pelo CTRL-003 entrega valor mais cedo: o dashboard de recursos hoje está zerado, e com os cronogramas importados no incremento 4 a sobrecarga real passa a aparecer.
 
 ---
 
@@ -506,48 +538,62 @@ Pré-Projeto, Complexidade e Operacional entram no incremento 5 em versão simpl
 
 | Versão | Itens |
 |---|---|
-| **1.1** | Visão calendário do cronograma · exportação Excel/PDF de todas as listas · visões salvas por usuário · notificações por e-mail (atividade atrasada, risco crítico, sobrecarga) |
-| **1.2** | Baseline do cronograma (planejado original × atual) · curva S · Gestão de mudanças de escopo (Change Requests ligadas ao backlog, com impacto em horas/prazo) |
-| **1.3** | Permissões por projeto (GP edita só os seus; consultor só lança horas e atualiza suas atividades) · templates de projeto (cronograma/checklists padrão por tipo de projeto) |
-| **2.0** | Integração de documentos com SharePoint/OneDrive · integração com Teams (avisos) · importação/exportação MS Project · indicadores financeiros (custo/hora, margem) · portal de consulta para o cliente (UAT e status report) |
-| **Futuro** | API pública, BI (Power BI conectado ao Postgres), previsão de capacidade (pipeline de propostas), app mobile para apontamento |
+| **1.1** | Calendário do cronograma · exportação Excel/PDF das listas · notificações por e-mail (atraso, pendência vencida, sobrecarga, indisponibilidade a aprovar) · visões salvas |
+| **1.2** | **Linha de base** do cronograma (planejado original × atual) e curva S — dá significado ao "Progresso Planejado" do Status Report · fluxo de Change Request com impacto em horas/prazo e aprovação |
+| **1.3** | Permissões por projeto (GP edita os seus; consultor atualiza suas atividades e aponta horas) · templates de cronograma por tipo de projeto (ex.: Reforma Tributária, WMS) |
+| **2.0** | SharePoint/OneDrive integrado · avisos no Teams · importação MS Project · custo/hora e margem · portal do cliente (UAT e status report) |
+| **Futuro** | Power BI sobre o PostgreSQL · pipeline comercial (projetos identificados consumindo capacidade prevista) · app mobile para apontamento |
 
 ---
 
 ## I. Estratégia de migração
 
-**Princípios:** não destrutiva · validar antes de efetivar · rastreável até a linha da planilha · repetível.
+**Princípios:** não destrutiva · validar antes de efetivar · rastreável até a linha da planilha · reexecutável.
 
-1. **Preparação**
-   - Cadastrar (ou importar) primeiro **recursos, clientes e feriados**.
-   - Montar a tabela **De-Para** (`import_mapeamento`) para nomes de recursos/clientes/projetos com grafias diferentes.
-2. **Carga em staging**
-   - Upload da planilha → cada linha de cada aba vira `import_linha` com os dados brutos; nada é gravado nas tabelas de negócio.
-   - O arquivo original fica armazenado e vinculado ao lote.
-3. **Validação** (Zod + regras de negócio), com tela de revisão:
-   - Erros: recurso/cliente não mapeado, data inválida, fase fora das 4 oficiais, horas negativas, semana fora do calendário.
-   - Alertas: atividade sem recurso, % inconsistente com status, soma do rateio ≠ esforço, projeto do CTRL-001 não encontrado no Portfólio.
-   - O usuário corrige no De-Para ou marca linhas para ignorar; revalida quantas vezes quiser.
-4. **Conciliação** — prévia do que será criado/atualizado, comparando com o que já existe pela chave natural (código do projeto; projeto+ID da atividade; projeto+recurso+semana).
-5. **Efetivação** — em transação única por lote; registros recebem `origem_importacao_id`; auditoria com ação IMPORTAR. Lote pode ser reimportado (atualiza, não duplica).
-6. **Ordem sugerida**
-   1. Portfólio → clientes e projetos
-   2. Gestão de Recursos → capacidade, indisponibilidades, alocações semanais **históricas** (horas previstas e realizadas viram `horas_manuais` e `horas_realizadas` — preservando o histórico exatamente como estava)
-   3. CTRL-001 de cada projeto → cronograma, backlog, testes, deployment, riscos, status reports anteriores (como snapshots publicados)
-   4. Para semanas **futuras**, o rateio automático passa a valer; onde a planilha divergir do cálculo, o valor da planilha entra como override e é sinalizado para o GP revisar.
-7. **Paralelo** — 2 a 4 semanas usando app e planilhas juntos em 1–2 projetos piloto; depois congelar as planilhas (somente leitura, arquivadas como documento do projeto).
+### I.1 Etapas
+1. **Cadastros e De-Para** — importar os recursos (lista dos Parâmetros) e clientes; resolver no De-Para os nomes divergentes (*Dornelles, Diego, Laura Iris, GP MAIS i9, DIPIL*) e os textos de "Recurso Cliente" (empresa → `cliente_responsavel`; pessoa → contato).
+2. **Carga em staging** — cada linha de cada aba vira `import_linha`; o arquivo original fica guardado no lote.
+3. **Validação** — erros e alertas exibidos por linha; o usuário corrige o De-Para ou ignora a linha e revalida.
+4. **Conciliação** — prévia do que será criado/atualizado pela chave natural.
+5. **Efetivação** — transação única por lote, auditada (ação IMPORTAR). Reimportar o mesmo arquivo atualiza, não duplica.
+6. **Paralelo** — 2 a 4 semanas com 2 projetos piloto (sugestão: Kover e Sulmedic) antes de congelar as planilhas como documento somente leitura.
+
+### I.2 Mapeamento aba → tabela
+
+| Origem | Destino | Tratamentos específicos |
+|---|---|---|
+| CTRL-003 · Parâmetros / Capacidade / Dados Projetos | recurso, recurso_capacidade, cliente | Capacidade por semana vira vigência (40h; 30h Miguel/Diego Bonilha); Adilson sem capacidade → alerta |
+| CTRL-003 · Portfólio Projetos | projeto, projeto_membro (Funcional/Técnico) | Status mapeado 1:1; projetos sem datas/horas → alerta; Notas → `projeto.notas` |
+| CTRL-003 · Planejamento Recursos | alocacao_semanal (`horas_manuais` ou `horas_avulsas`) | **Converter `"4h"` → 4**; `S40` + data de início → `2026-W40`; prioridade "Crítica" aceita; observação "GP \| …" → horas avulsas de gestão |
+| CTRL-003 · Indisponibilidades | indisponibilidade | Status Pendente preservado; recurso inexistente → De-Para |
+| CTRL-003 · Dashboard, Projeto vs Recursos, Carga, Gantt | — | Não importadas (derivadas) |
+| CTRL-001 · Pré-Projeto \| Complexidade | avaliacao_complexidade, projeto_complexidade | Score 0 em todos os critérios → importar como "não avaliado", não como N1 |
+| CTRL-001 · Pré-Projeto | pre_projeto, pre_projeto_item; Go Live alvo → projeto | Conflito de datas com o Portfólio → alerta para escolher |
+| CTRL-001 · Backlog | backlog_item | Chave: projeto + REQ |
+| CTRL-001 · Cronograma | atividade, atividade_atribuicao, atividade_predecessora | **Linhas `CRON-xxx.n` são agrupadas na atividade `CRON-xxx`** como atribuições; linha sem recurso MAIS i9 com esforço → alerta (provável participação do cliente); "Atividade" (`REQ-…`) → `backlog_item_id`; status "Atrasado" → EM_ANDAMENTO/NAO_INICIADO + situação calculada; data em fim de semana → alerta |
+| CTRL-001 · Operacional | item_operacional | Tipo mapeado 1:1 |
+| CTRL-001 · Teste Interno / UAT | caso_teste + execucao_teste (ciclo 1) | IDs duplicados → renumerar com De-Para de ID; "Requisito" que não é `REQ-…` → vira cenário, sem vínculo, com alerta; responsáveis múltiplos ("Diego / Dornelles") → principal + observação; "Defeito \| Pendência" preenchido → item_operacional tipo DEFEITO |
+| CTRL-001 · Deployment | deployment + deployment_item | 12 itens; "Go/No-Go aprovado" → decisão do deployment |
+| CTRL-001 · Status Report | status_report (publicado, com data da importação) | Vira o 1º registro do histórico |
+| CTRL-001 · Dashboard / Auditoria / Parâmetros | — | Derivadas; resumo e pontos de atenção do Dashboard → comentários do 1º status report |
+
+### I.3 Após a importação
+- Para semanas **futuras**, o rateio automático passa a valer para projetos com cronograma; onde o CTRL-003 tinha valor manual para o mesmo projeto+recurso+semana, ele entra como **override** sinalizado para revisão do GP.
+- Para os demais projetos (sem CTRL-001), o planejamento manual continua sendo a fonte.
 
 ---
 
 ## J. Perguntas (decisões de negócio necessárias)
 
-1. **Horas realizadas** — hoje são lançadas por **semana por projeto** (planilha de recursos) ou por **atividade** (CTRL-001)? Proposta: o consultor lança por semana e projeto, escolhendo a atividade opcionalmente. Quem lança: o próprio consultor ou o GP?
-2. **Faixas de utilização** — confirma os limites? Proposta: **Disponível < 70% · Adequado 70–90% · Atenção 90–100% · Sobrecarregado > 100%**.
-3. **Rateio** — aprova a regra "uniforme por dia útil, considerando o que falta (horas para concluir) a partir de hoje", com override por atividade e por semana?
-4. **Saúde do projeto** — calculada automaticamente (prazo, desvio de horas, riscos críticos) com possibilidade de o GP sobrescrever com justificativa? Ou sempre definida manualmente pelo GP?
-5. **Login** — a MAIS i9 usa Microsoft 365? Se sim, login com a conta corporativa é o padrão.
-6. **Consultores no sistema** — todos os recursos terão acesso para atualizar suas atividades e lançar horas, ou somente GPs operam o sistema no MVP?
-7. **Hospedagem** — há preferência (Azure, AWS, servidor próprio)? Documentos devem ficar no SharePoint desde o início ou podemos começar com armazenamento próprio?
-8. **Terceiros / recursos do cliente** — recursos do cliente entram na gestão de capacidade ou apenas como responsáveis em atividades/UAT? (Proposta: apenas como contatos.)
-9. **Projetos internos / não faturáveis** (pré-venda, suporte, treinamento) — devem existir como "projetos" para consumir capacidade? (Proposta: sim, com tipo INTERNO.)
-10. **Planilhas reais** — para fechar os itens **[validar]** (Complexidade, Pré-Projeto, Controle Operacional, fórmulas de % e saúde), preciso de **1 CTRL-001 preenchido** e da **planilha de Gestão de Recursos**. Podem ser enviadas com dados reais ou anonimizados.
+1. **Horas realizadas** — hoje ninguém lança (coluna vazia no CTRL-003 e 0h nos CTRL-001). Quem vai apontar e com que granularidade? Proposta: o consultor aponta **por semana e projeto**, escolhendo a atividade opcionalmente; o GP revisa.
+2. **Faixas de utilização** — manter as atuais (**< 50% Disponível · 50–85% Adequado · 85–100% Atenção · > 100% Sobrecarregado**), avaliadas semana a semana em vez da média do período?
+3. **Rateio** — aprova a regra "uniforme por dia útil do recurso, sobre as horas que faltam, a partir da semana atual", com ajuste por atribuição e override por semana?
+4. **Atividades com vários recursos** — o esforço das linhas `.2`/`.3` (ex.: 4h para Luiz e 4h para Murilo no CRON-006) é **individual** (8h no total) ou é o mesmo esforço repetido (4h no total)? A observação "A validar: esforço individual" sugere individual.
+5. **Progresso** — trocar a média simples por **média ponderada pelo esforço**?
+6. **GP do projeto** — quem é o GP de cada projeto? O Portfólio só tem Funcional/Técnico; o Sulmedic indica "Laura Iris" e o Kover "GP MAIS i9"; no planejamento, Carlos Camargo aparece com horas de "GP". **Laura Iris e Laura Camargo são a mesma pessoa?**
+7. **Status Executivo** — continua manual (Verde/Amarelo/Vermelho) definido pelo GP, com o sistema apenas **sugerindo** com base em atrasos, desvio de horas e RAID crítico?
+8. **Login** — a MAIS i9 usa Microsoft 365? Se sim, login com a conta corporativa.
+9. **Acesso dos consultores** — no MVP todos os recursos acessam (para atualizar % e apontar horas) ou só GPs e gestão?
+10. **Indisponibilidades** — quem aprova (status "Pendente" já existe na planilha)?
+11. **Hospedagem e documentos** — preferência de nuvem? Evidências e documentos ficam no SharePoint (só links) ou o sistema também armazena arquivos?
+12. **Tipos de projeto** — confirmar a lista Projeto · Suporte · Sustentação · Alocação · Interno (o CTRL-003 tem "Tipo" nos parâmetros e "Alocação DEV" no portfólio).

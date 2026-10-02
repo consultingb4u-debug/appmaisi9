@@ -47,7 +47,7 @@ export function Formulario({
       }}
       className={clsx("space-y-4", className)}
     >
-      <fieldset disabled={somenteLeitura} className="space-y-4">
+      <fieldset disabled={somenteLeitura} className="min-w-0 space-y-4">
         {children}
       </fieldset>
       <div className={clsx("flex flex-wrap items-center gap-3", somenteLeitura && "hidden")}>

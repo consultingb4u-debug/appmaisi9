@@ -30,7 +30,7 @@ export default async function PaginaAuditoria({ searchParams }: PageProps<"/admi
       <Cartao
         titulo="Registros"
         acoes={
-          <form className="flex gap-2">
+          <form className="flex flex-wrap gap-2">
             <select name="entidade" defaultValue={filtroEntidade ?? ""} className="campo w-auto py-1.5">
               <option value="">Todas as entidades</option>
               {entidades.map((e) => (

@@ -39,14 +39,14 @@ export function LinkBotao({
 
 export function Cartao({ titulo, acoes, children, className }: { titulo?: ReactNode; acoes?: ReactNode; children: ReactNode; className?: string }) {
   return (
-    <section className={clsx("rounded-lg border border-ardosia-100 bg-white shadow-xs", className)}>
+    <section className={clsx("min-w-0 rounded-lg border border-ardosia-100 bg-white shadow-xs", className)}>
       {(titulo || acoes) && (
-        <header className="flex items-center justify-between gap-3 border-b border-ardosia-100 px-4 py-3">
+        <header className="flex flex-wrap items-center justify-between gap-3 border-b border-ardosia-100 px-4 py-3">
           <h2 className="text-sm font-semibold text-navy-900">{titulo}</h2>
           {acoes}
         </header>
       )}
-      <div className="p-4">{children}</div>
+      <div className="overflow-x-auto p-4">{children}</div>
     </section>
   );
 }
@@ -54,7 +54,7 @@ export function Cartao({ titulo, acoes, children, className }: { titulo?: ReactN
 export function Cabecalho({ titulo, subtitulo, trilha, acoes }: { titulo: ReactNode; subtitulo?: ReactNode; trilha?: { rotulo: string; href: string }[]; acoes?: ReactNode }) {
   return (
     <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
-      <div>
+      <div className="min-w-0 break-words">
         {trilha && (
           <nav className="mb-1 text-xs text-ardosia-500">
             {trilha.map((t) => (

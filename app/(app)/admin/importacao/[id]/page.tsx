@@ -137,7 +137,7 @@ export default async function PaginaLote({ params, searchParams }: PageProps<"/a
           titulo="Efetivar importação"
           className="mb-6"
           acoes={
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               <BotaoAcao acao={revalidar.bind(null, id)} variante="secundario">
                 Revalidar
               </BotaoAcao>

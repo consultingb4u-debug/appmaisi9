@@ -65,7 +65,7 @@ export default async function PaginaPortfolio({ searchParams }: PageProps<"/port
         }
       />
 
-      <form className="mb-4 grid gap-2 rounded-lg border border-ardosia-100 bg-white p-3 sm:grid-cols-4 lg:grid-cols-9">
+      <form className="mb-4 grid grid-cols-1 gap-2 rounded-lg border border-ardosia-100 bg-white p-3 sm:grid-cols-4 lg:grid-cols-9 [&>*]:min-w-0">
         <input type="hidden" name="visao" value={visao} />
         <input name="q" defaultValue={p.q} placeholder="Buscar projeto, cliente, nota…" className="campo py-1.5 sm:col-span-2" />
         <select name="cliente" defaultValue={p.cliente ?? ""} className="campo py-1.5">
@@ -126,8 +126,8 @@ export default async function PaginaPortfolio({ searchParams }: PageProps<"/port
             </option>
           ))}
         </select>
-        <div className="flex gap-2 sm:col-span-4 lg:col-span-9">
-          <label className="flex items-center gap-2 text-xs text-ardosia-600">
+        <div className="flex flex-wrap gap-2 sm:col-span-4 lg:col-span-9">
+          <label className="flex flex-wrap items-center gap-2 text-xs text-ardosia-600">
             Período
             <input type="date" name="de" defaultValue={p.de} className="campo w-auto py-1" />
             a

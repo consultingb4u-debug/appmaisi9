@@ -160,7 +160,7 @@ export default async function PaginaRecurso({ params }: PageProps<"/recursos/[id
         </Cartao>
       )}
 
-      <div className="grid gap-6 lg:grid-cols-[380px_1fr]">
+      <div className="grid gap-6 lg:grid-cols-[380px_1fr] [&>*]:min-w-0">
         <Cartao titulo="Dados do recurso">
           <Formulario acao={atualizarRecurso.bind(null, recurso.id)} somenteLeitura={!editavel}>
             <Campo rotulo="Nome">

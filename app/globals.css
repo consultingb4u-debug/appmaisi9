@@ -33,7 +33,7 @@ body {
 @layer components {
   /* Campos de formulário padronizados */
   .campo {
-    @apply w-full rounded-md border border-ardosia-200 bg-white px-3 py-2 text-sm text-navy-950 shadow-xs outline-none transition placeholder:text-ardosia-400 focus:border-navy-700 focus:ring-2 focus:ring-navy-700/15 disabled:bg-fundo;
+    @apply w-full min-w-0 rounded-md border border-ardosia-200 bg-white px-3 py-2 text-sm text-navy-950 shadow-xs outline-none transition placeholder:text-ardosia-400 focus:border-navy-700 focus:ring-2 focus:ring-navy-700/15 disabled:bg-fundo;
   }
 
   .rotulo {

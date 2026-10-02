@@ -22,6 +22,7 @@ Substituir as planilhas CTRL-001 (uma por projeto) e CTRL-003 (gestão de recurs
 | 5 | Pré-projeto/complexidade, RAID, matriz de riscos, testes internos, UAT, deployment/Go-No-Go, importação das demais abas do CTRL-001 | ✅ |
 | 6 | Status reports (indicadores congelados), documentos, painel executivo | ✅ |
 | 1.1 | Exportação Excel, calendário, alertas (app + e-mail SMTP com rotina diária), visões salvas | ✅ |
+| 1.2 | Linha de base, curva S, progresso planejado, fluxo de change request | ✅ |
 
 Números atuais: 35 tabelas, 35 enums, 6 migrações, 30 telas, 95 testes unitários.
 
@@ -186,6 +187,20 @@ Status Report ("[Resumo…]") são ignorados.
   Transporte SMTP (`lib/email.ts`, nodemailer); no Microsoft 365 use `smtp.office365.com:587` com SMTP AUTH. A rotina
   é protegida por `CRON_SECRET` (comparação em tempo constante) e disparada pelo serviço `agendador` do compose.
 - **Visões salvas:** tabela `visao_salva` (por usuário; gestores podem compartilhar) para portfólio, capacidade e calendário.
+
+## 6d. Versão 1.2
+
+- **Linha de base:** `linha_base` + `linha_base_item` congelam datas, esforço (soma das atribuições) e marcos de cada atividade,
+  além das horas vendidas e do Go Live da época. Pode haver várias (rebaseline); a mais recente é a vigente.
+- **Comparação** (`lib/domain/linha-base.ts`, pura): por código de atividade — igual, alterada (desvio de início/fim em dias
+  e de esforço), nova ou removida; resumo com deslizamento do fim, esforço base × atual e marcos atrasados.
+- **Curva S:** horas acumuladas por semana ISO — planejado (esforço da base distribuído por dia útil, sem feriados),
+  realizado (apontamentos) e forecast (realizado + previsto das semanas seguintes, da alocação semanal). Gráfico SVG próprio
+  com cursor e tabela equivalente.
+- **Progresso planejado:** % da base que deveria estar feito hoje; entra no status report ao lado do progresso real e na
+  sugestão de status (15 p.p. abaixo = vermelho; 5 p.p. = amarelo).
+- **Change request:** decisão registrada no item do Operacional (aprovador e data). Aprovado com "aplicar", soma as horas do CR
+  às horas vendidas e desloca o Go Live alvo pelos dias úteis do CR, uma única vez (`cr_aplicado_em`), com auditoria.
 
 ## 7. Segurança
 

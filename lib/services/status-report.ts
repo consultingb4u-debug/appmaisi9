@@ -1,6 +1,7 @@
 import { carregarCronograma } from "./cronograma";
 import { carregarProjeto } from "./projeto";
 import { resumoExecucao } from "./execucao";
+import { progressoPlanejadoDoProjeto } from "./linha-base";
 import { FASE, FASES } from "@/lib/domain/rotulos";
 import { chaveDia } from "@/lib/domain/datas";
 import type { Indicadores } from "@/lib/domain/status";
@@ -8,7 +9,7 @@ import type { Indicadores } from "@/lib/domain/status";
 export type { Indicadores };
 
 export async function fotografarIndicadores(projetoId: string): Promise<Indicadores> {
-  const [p, crono, ex] = await Promise.all([carregarProjeto(projetoId), carregarCronograma(projetoId), resumoExecucao(projetoId)]);
+  const [p, crono, ex, planejado] = await Promise.all([carregarProjeto(projetoId), carregarCronograma(projetoId), resumoExecucao(projetoId), progressoPlanejadoDoProjeto(projetoId)]);
   if (!p) throw new Error("Projeto não encontrado.");
   const ativas = crono.atividades.filter((a) => a.status !== "CANCELADO");
   // Fase atual: a primeira fase (na ordem oficial) que ainda tem atividade não concluída.
@@ -17,6 +18,7 @@ export async function fotografarIndicadores(projetoId: string): Promise<Indicado
   return {
     geradoEm: new Date().toISOString(),
     progresso: crono.progresso,
+    progressoPlanejado: planejado,
     faseAtual: fase ? FASE[fase] : ativas.length ? "Concluído" : null,
     goLive: (p.dataGoLiveReal ?? p.dataGoLiveAlvo) ? chaveDia((p.dataGoLiveReal ?? p.dataGoLiveAlvo)!) : null,
     horas: {

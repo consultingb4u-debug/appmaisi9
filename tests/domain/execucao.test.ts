@@ -110,5 +110,8 @@ describe("status executivo sugerido", () => {
     expect(sugerirStatusExecutivo({ ...base, pendenciasVencidas: 1 })).toBe("AMARELO");
     expect(sugerirStatusExecutivo({ ...base, atividades: { ...base.atividades, atrasadas: 3 } })).toBe("VERMELHO");
     expect(sugerirStatusExecutivo({ ...base, horas: { ...base.horas, forecast: 120 } })).toBe("VERMELHO");
+    expect(sugerirStatusExecutivo({ ...base, progressoPlanejado: 60 })).toBe("AMARELO");
+    expect(sugerirStatusExecutivo({ ...base, progressoPlanejado: 70 })).toBe("VERMELHO");
+    expect(sugerirStatusExecutivo({ ...base, progressoPlanejado: 52 })).toBe("VERDE");
   });
 });

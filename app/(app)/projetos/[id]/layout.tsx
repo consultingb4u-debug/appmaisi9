@@ -114,6 +114,7 @@ export default async function LayoutProjeto({ children, params }: LayoutProps<"/
           { href: `${base}/pre-projeto`, rotulo: "Pré-Projeto" },
           { href: `${base}/backlog`, rotulo: "Backlog" },
           { href: `${base}/cronograma`, rotulo: "Cronograma" },
+          { href: `${base}/linha-base`, rotulo: "Linha de base" },
           { href: `${base}/calendario`, rotulo: "Calendário" },
           { href: `${base}/operacional`, rotulo: "Operacional" },
           { href: `${base}/testes`, rotulo: "Testes Internos" },

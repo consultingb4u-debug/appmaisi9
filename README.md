@@ -53,6 +53,7 @@ Para parar: `docker compose down` (os dados ficam guardados; `docker compose dow
 | 5 · Execução | Pré-projeto e complexidade (N1–N4), registro operacional (RAID), matriz de riscos, testes internos e UAT com ciclos e defeitos, deployment com prontidão Go/No-Go e hypercare, importação das demais abas do CTRL-001 | ✅ |
 | 6 · Status | Status reports com indicadores congelados e histórico, documentos (links SharePoint ou arquivos), painel executivo na tela inicial | ✅ |
 | 1.1 | Exportação Excel (portfólio, capacidade, cronograma, backlog, operacional, testes, UAT), calendário mensal (geral e por projeto), alertas no app e por e-mail, visões salvas de filtros | ✅ |
+| 1.2 | Linha de base do cronograma (comparação planejado original × atual), curva S (base × realizado × forecast), progresso planejado no status report, fluxo de change request com aprovação que aplica horas e prazo ao projeto | ✅ |
 
 ## Stack
 

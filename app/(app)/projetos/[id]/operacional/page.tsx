@@ -11,6 +11,7 @@ import { severidadeDe } from "@/lib/services/execucao";
 import { Campo, Cartao, LinkBotao, opcoes, Selo, valorData, Vazio, BotaoExportar } from "@/components/ui";
 import { BotaoAcao, Formulario } from "@/components/formulario";
 import { excluirItemOperacional, salvarItemOperacional } from "../../execucao-acoes";
+import { decidirChangeRequest } from "../../linha-base-acoes";
 
 const SITUACOES = { abertos: "Abertos", vencidos: "Vencidos", todos: "Todos" } as const;
 type Situacao = keyof typeof SITUACOES;
@@ -266,6 +267,62 @@ export default async function Operacional({ params, searchParams }: PageProps<"/
             </div>
             {sel?.dataFechamento && <p className="text-xs text-ardosia-500">Fechado em {formatarData(sel.dataFechamento)}.</p>}
           </Formulario>
+        </Cartao>
+      )}
+
+      {sel?.tipo === "CHANGE_REQUEST" && !itemAberto(sel.status) && (
+        <Cartao titulo={`Decisão do ${sel.codigo}`}>
+          <p className="text-sm">
+            <Selo tom={TOM_OPERACIONAL[sel.status]}>{STATUS_OPERACIONAL[sel.status]}</Selo> {sel.decisaoAprovador && <span className="text-ardosia-600">· {sel.decisaoAprovador}</span>}
+          </p>
+          <p className="mt-2 text-sm text-ardosia-600">
+            {sel.crAplicadoEm
+              ? `Impacto aplicado ao projeto em ${sel.crAplicadoEm.toLocaleDateString("pt-BR", { timeZone: "America/Sao_Paulo" })}: ${sel.horasCr ? `+${sel.horasCr.toNumber()}h vendidas` : "sem horas"}${sel.diasCr ? `, Go Live deslocado ${sel.diasCr} dia(s) útil(eis)` : ""}. Considere criar uma nova linha de base.`
+              : "Impacto não aplicado ao projeto."}
+          </p>
+        </Cartao>
+      )}
+
+      {editavel && sel?.tipo === "CHANGE_REQUEST" && itemAberto(sel.status) && (
+        <Cartao titulo={`Decisão do ${sel.codigo}`}>
+          <p className="mb-3 text-sm text-ardosia-600">
+            Impacto informado: {sel.horasCr ? `${sel.horasCr.toNumber()}h` : "sem horas"} · {sel.diasCr ? `${sel.diasCr} dia(s) útil(eis) de prazo` : "sem prazo"}. Aprovado com
+            “aplicar”, as horas entram nas horas vendidas do projeto e o Go Live alvo é deslocado.
+          </p>
+          <Formulario key={`cr-${sel.id}`} acao={decidirChangeRequest.bind(null, sel.id)} rotuloEnviar="Registrar decisão">
+            <div className="grid gap-3 sm:grid-cols-3">
+              <Campo rotulo="Decisão">
+                <select name="decisao" defaultValue="APROVADO" className="campo">
+                  <option value="APROVADO">Aprovar</option>
+                  <option value="REPROVADO">Reprovar</option>
+                </select>
+              </Campo>
+              <Campo rotulo="Aprovador(es)" className="sm:col-span-2">
+                <input name="aprovador" required placeholder="Ex.: sponsor do cliente e Carlos Camargo" className="campo" />
+              </Campo>
+            </div>
+            <label className="flex items-center gap-2 text-sm">
+              <input type="checkbox" name="aplicar" defaultChecked /> Aplicar o impacto ao projeto (horas vendidas e Go Live)
+            </label>
+          </Formulario>
+        </Cartao>
+      )}
+
+      {tipo === "CHANGE_REQUEST" && (
+        <Cartao titulo="Resumo dos change requests">
+          <dl className="grid grid-cols-2 gap-3 text-sm sm:grid-cols-4">
+            {[
+              ["Aprovados", todos.filter((i) => i.tipo === "CHANGE_REQUEST" && i.status === "APROVADO").length],
+              ["Horas aprovadas", `${todos.filter((i) => i.tipo === "CHANGE_REQUEST" && i.status === "APROVADO").reduce((t, i) => t + (i.horasCr?.toNumber() ?? 0), 0)}h`],
+              ["Dias aprovados", todos.filter((i) => i.tipo === "CHANGE_REQUEST" && i.status === "APROVADO").reduce((t, i) => t + (i.diasCr ?? 0), 0)],
+              ["Em análise", todos.filter((i) => i.tipo === "CHANGE_REQUEST" && itemAberto(i.status)).length],
+            ].map(([r, v]) => (
+              <div key={r as string} className="rounded-md bg-fundo px-3 py-2">
+                <dt className="text-[11px] font-medium tracking-wide text-ardosia-500 uppercase">{r}</dt>
+                <dd className="font-semibold tabular-nums">{v}</dd>
+              </div>
+            ))}
+          </dl>
         </Cartao>
       )}
     </div>

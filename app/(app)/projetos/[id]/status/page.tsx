@@ -28,7 +28,7 @@ function QuadroIndicadores({ i }: { i: Partial<Indicadores> }) {
   if (!i.geradoEm) return <Vazio>Indicadores ainda não calculados.</Vazio>;
   const h = (n: number | null | undefined) => (n === null || n === undefined ? "—" : `${n}h`);
   const linhas: [string, string, boolean?][] = [
-    ["Progresso (ponderado)", `${i.progresso ?? 0}%`],
+    ["Progresso real × planejado", i.progressoPlanejado == null ? `${i.progresso ?? 0}% · sem linha de base` : `${i.progresso ?? 0}% · ${i.progressoPlanejado}%`, i.progressoPlanejado != null && (i.progresso ?? 0) < i.progressoPlanejado],
     ["Fase atual", i.faseAtual ?? "—"],
     ["Go Live", formatarData(i.goLive ? new Date(i.goLive) : null)],
     ["Horas vendidas", h(i.horas?.vendidas)],

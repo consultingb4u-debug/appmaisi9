@@ -244,6 +244,7 @@ model Projeto {
   casosTeste                CasoTeste[]
   deployments               Deployment[]
   statusReports             StatusReport[]
+  linhasBase                LinhaBase[]
   documentos                Documento[]
 
   @@unique([clienteId, nome])
@@ -621,6 +622,7 @@ model ItemOperacional {
   atividadeId         String?             @map("atividade_id") @db.Uuid
   backlogItemId       String?             @map("backlog_item_id") @db.Uuid
   execucaoTesteId     String?             @unique @map("execucao_teste_id") @db.Uuid
+  crAplicadoEm        DateTime?           @map("cr_aplicado_em")
   dataFechamento      DateTime?           @map("data_fechamento") @db.Date
   importLinhaId       String?             @map("import_linha_id") @db.Uuid
   criadoEm            DateTime            @default(now()) @map("criado_em")
@@ -1071,4 +1073,42 @@ model VisaoSalva {
 
   @@unique([usuarioId, tela, nome])
   @@map("visao_salva")
+}
+
+// ───────────────────────────── Linha de base (1.2) ─────────────────────────────
+
+/// Fotografia do cronograma aprovado (datas e esforço por atividade) para comparar com o atual.
+model LinhaBase {
+  id          String          @id @default(uuid()) @db.Uuid
+  projetoId   String          @map("projeto_id") @db.Uuid
+  nome        String
+  observacao  String?
+  horasVendidas Decimal?      @map("horas_vendidas") @db.Decimal(8, 1)
+  goLive      DateTime?       @map("go_live") @db.Date
+  criadaEm    DateTime        @default(now()) @map("criada_em")
+  criadaPorId String?         @map("criada_por_id") @db.Uuid
+
+  projeto     Projeto         @relation(fields: [projetoId], references: [id], onDelete: Cascade)
+  itens       LinhaBaseItem[]
+
+  @@index([projetoId, criadaEm])
+  @@map("linha_base")
+}
+
+model LinhaBaseItem {
+  id          String    @id @default(uuid()) @db.Uuid
+  linhaBaseId String    @map("linha_base_id") @db.Uuid
+  atividadeId String?   @map("atividade_id") @db.Uuid
+  codigo      String
+  fase        String
+  tarefa      String
+  inicio      DateTime? @db.Date
+  fim         DateTime? @db.Date
+  esforco     Decimal   @default(0) @db.Decimal(8, 1)
+  marco       Boolean   @default(false)
+
+  linhaBase   LinhaBase @relation(fields: [linhaBaseId], references: [id], onDelete: Cascade)
+
+  @@unique([linhaBaseId, codigo])
+  @@map("linha_base_item")
 }

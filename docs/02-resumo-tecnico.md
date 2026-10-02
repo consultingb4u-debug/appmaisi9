@@ -23,6 +23,7 @@ Substituir as planilhas CTRL-001 (uma por projeto) e CTRL-003 (gestão de recurs
 | 6 | Status reports (indicadores congelados), documentos, painel executivo | ✅ |
 | 1.1 | Exportação Excel, calendário, alertas (app + e-mail SMTP com rotina diária), visões salvas | ✅ |
 | 1.2 | Linha de base, curva S, progresso planejado, fluxo de change request | ✅ |
+| 1.3 | Permissões por projeto, modelos de cronograma | ✅ |
 
 Números atuais: 35 tabelas, 35 enums, 6 migrações, 30 telas, 95 testes unitários.
 
@@ -202,11 +203,22 @@ Status Report ("[Resumo…]") são ignorados.
 - **Change request:** decisão registrada no item do Operacional (aprovador e data). Aprovado com "aplicar", soma as horas do CR
   às horas vendidas e desloca o Go Live alvo pelos dias úteis do CR, uma única vez (`cr_aplicado_em`), com auditoria.
 
+## 6e. Versão 1.3
+
+- **Escopo por projeto** (`lib/auth/escopo.ts`): toda Server Action de projeto chama `exigirProjeto(projetoId)` ou
+  `exigirRegistro(entidade, id)`. O projeto é sempre lido do banco a partir do registro; para ações com `(projetoId, id)`,
+  o registro precisa pertencer ao projeto (os argumentos de `.bind()` chegam do navegador e não são confiáveis).
+  Administrador edita tudo; Gestor, os projetos em que é GP; Consultor, status/% das atividades em que tem atribuição
+  (`atualizarCampoAtividade`). As telas usam `podeEditarProjeto` para mostrar ou esconder a edição.
+- **Modelos de cronograma** (`modelo_cronograma`, `modelo_cronograma_item`): posições em dias úteis relativas ao início
+  (`lib/domain/modelo-cronograma.ts`, pura e testada), atribuições e esforço, predecessoras, marcos e o backlog do projeto
+  de origem. Aplicar exige cronograma vazio, cria backlog, atividades, atribuições, membros e recalcula a capacidade.
+
 ## 7. Segurança
 
 - Login Microsoft 365 via Entra ID (OIDC). No primeiro acesso a pessoa entra como **Visualização**; e-mails em `ADMIN_EMAILS` entram como Administrador.
 - O perfil é conferido no banco a cada requisição: desativar um usuário tem efeito imediato.
-- Hoje a permissão é por módulo (`lib/auth/permissoes.ts`). A função `pode()` já está pronta para restringir por projeto na versão 1.3.
+- Permissão por módulo (`lib/auth/permissoes.ts`) e, dentro de Projetos, por projeto (`lib/auth/escopo.ts`, ver 6e).
 - Consultor: consulta tudo, aponta as próprias horas e atualiza falta/% das suas atividades em **Minhas horas**, e solicita indisponibilidade apenas para si. Inputs de edição não são renderizados para ele, e as Server Actions recusam a escrita.
 - `AUTH_DEV_LOGIN=true` habilita login sem senha. **Nunca em produção**: o seed só cria o administrador de desenvolvimento quando essa variável está ligada.
 

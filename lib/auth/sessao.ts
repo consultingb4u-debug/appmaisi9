@@ -16,8 +16,8 @@ export async function usuarioAtual(): Promise<UsuarioAtual> {
 }
 
 export class SemPermissao extends Error {
-  constructor() {
-    super("Você não tem permissão para esta ação.");
+  constructor(mensagem = "Você não tem permissão para esta ação.") {
+    super(mensagem);
   }
 }
 

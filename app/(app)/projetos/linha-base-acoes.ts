@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { db } from "@/lib/db";
-import { exigir } from "@/lib/auth/sessao";
+import { exigirProjeto, exigirRegistro } from "@/lib/auth/escopo";
 import { ErroNegocio, executarAcao, lerFormulario } from "@/lib/acoes";
 import { auditar } from "@/lib/services/auditoria";
 import { criarLinhaBase } from "@/lib/services/linha-base";
@@ -21,7 +21,7 @@ const zLinhaBase = z.object({ nome: z.string({ error: "Dê um nome (ex.: Baselin
 
 export async function salvarLinhaBase(projetoId: string, _: EstadoAcao, dados: FormData): Promise<EstadoAcao> {
   return executarAcao(async () => {
-    const u = await exigir("editar", "PROJETOS");
+    const u = await exigirProjeto(projetoId);
     const v = zLinhaBase.parse(lerFormulario(dados));
     if (!(await db.atividade.count({ where: { projetoId, status: { not: "CANCELADO" } } }))) throw new ErroNegocio("O cronograma está vazio: não há o que congelar.");
     await db.$transaction(async (tx) => {
@@ -36,7 +36,7 @@ export async function salvarLinhaBase(projetoId: string, _: EstadoAcao, dados: F
 
 export async function excluirLinhaBase(id: string): Promise<EstadoAcao> {
   return executarAcao(async () => {
-    const u = await exigir("editar", "PROJETOS");
+    const u = await exigirRegistro("linhaBase", id);
     const lb = await db.$transaction(async (tx) => {
       const lb = await tx.linhaBase.delete({ where: { id } });
       await auditar(tx, { entidade: "LinhaBase", entidadeId: id, projetoId: lb.projetoId, acao: "EXCLUIR", usuarioId: u.id, resumo: `Linha de base "${lb.nome}"` });
@@ -58,7 +58,7 @@ const zDecisao = z.object({
  */
 export async function decidirChangeRequest(id: string, _: EstadoAcao, dados: FormData): Promise<EstadoAcao> {
   return executarAcao(async () => {
-    const u = await exigir("editar", "PROJETOS");
+    const u = await exigirRegistro("itemOperacional", id);
     const v = zDecisao.parse(lerFormulario(dados));
     const cr = await db.itemOperacional.findUniqueOrThrow({ where: { id } });
     if (cr.tipo !== "CHANGE_REQUEST") throw new ErroNegocio("Este item não é um change request.");

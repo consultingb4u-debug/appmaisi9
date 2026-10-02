@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { db } from "@/lib/db";
-import { exigir } from "@/lib/auth/sessao";
+import { exigirProjeto, exigirRegistro } from "@/lib/auth/escopo";
 import { ErroNegocio, executarAcao, lerFormulario } from "@/lib/acoes";
 import { auditar } from "@/lib/services/auditoria";
 import { fotografarIndicadores } from "@/lib/services/status-report";
@@ -37,7 +37,7 @@ function revalidar(projetoId: string) {
 export async function novoStatusReport(projetoId: string): Promise<EstadoAcao> {
   let id = "";
   const r = await executarAcao(async () => {
-    const u = await exigir("editar", "PROJETOS");
+    const u = await exigirProjeto(projetoId);
     const rascunho = await db.statusReport.findFirst({ where: { projetoId, publicado: false } });
     if (rascunho) throw new ErroNegocio("Já existe um rascunho: publique ou exclua antes de criar outro.");
     const indicadores = await fotografarIndicadores(projetoId);
@@ -88,7 +88,7 @@ async function rascunho(id: string) {
 
 export async function salvarStatusReport(id: string, _: EstadoAcao, dados: FormData): Promise<EstadoAcao> {
   return executarAcao(async () => {
-    const u = await exigir("editar", "PROJETOS");
+    const u = await exigirRegistro("statusReport", id);
     const v = zReport.parse(lerFormulario(dados));
     if (v.periodoInicio && v.periodoFim && v.periodoFim < v.periodoInicio) throw new ErroNegocio("Fim do período anterior ao início.");
     const antes = await rascunho(id);
@@ -103,7 +103,7 @@ export async function salvarStatusReport(id: string, _: EstadoAcao, dados: FormD
 
 export async function atualizarIndicadores(id: string): Promise<EstadoAcao> {
   return executarAcao(async () => {
-    await exigir("editar", "PROJETOS");
+    await exigirRegistro("statusReport", id);
     const sr = await rascunho(id);
     await db.statusReport.update({ where: { id }, data: { indicadores: (await fotografarIndicadores(sr.projetoId)) as Prisma.InputJsonValue } });
     revalidar(sr.projetoId);
@@ -114,7 +114,7 @@ export async function atualizarIndicadores(id: string): Promise<EstadoAcao> {
 /** Publica: congela o report e leva o status executivo para o cabeçalho do projeto. */
 export async function publicarStatusReport(id: string): Promise<EstadoAcao> {
   return executarAcao(async () => {
-    const u = await exigir("editar", "PROJETOS");
+    const u = await exigirRegistro("statusReport", id);
     const sr = await rascunho(id);
     if (!sr.resumo) throw new ErroNegocio("Escreva o resumo executivo antes de publicar.");
     await db.$transaction(async (tx) => {
@@ -133,7 +133,7 @@ export async function publicarStatusReport(id: string): Promise<EstadoAcao> {
 
 export async function excluirStatusReport(id: string): Promise<EstadoAcao> {
   const r = await executarAcao(async () => {
-    const u = await exigir("editar", "PROJETOS");
+    const u = await exigirRegistro("statusReport", id);
     const sr = await rascunho(id);
     await db.$transaction(async (tx) => {
       await tx.statusReport.delete({ where: { id } });
@@ -159,7 +159,7 @@ const zDocumento = z.object({
 
 export async function salvarDocumento(projetoId: string, _: EstadoAcao, dados: FormData): Promise<EstadoAcao> {
   return executarAcao(async () => {
-    const u = await exigir("editar", "PROJETOS");
+    const u = await exigirProjeto(projetoId);
     const v = zDocumento.parse(lerFormulario(dados));
     const arquivo = dados.get("arquivo");
     const temArquivo = arquivo instanceof File && arquivo.size > 0;
@@ -187,7 +187,7 @@ export async function salvarDocumento(projetoId: string, _: EstadoAcao, dados: F
 /** Exclui o registro; o arquivo físico fica no armazenamento (recuperável pelo backup). */
 export async function excluirDocumento(id: string): Promise<EstadoAcao> {
   return executarAcao(async () => {
-    const u = await exigir("editar", "PROJETOS");
+    const u = await exigirRegistro("documento", id);
     const d = await db.$transaction(async (tx) => {
       const d = await tx.documento.delete({ where: { id } });
       await auditar(tx, { entidade: "Documento", entidadeId: id, projetoId: d.projetoId, acao: "EXCLUIR", usuarioId: u.id, resumo: `${d.categoria}: ${d.titulo}`, antes: d });

@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import clsx from "clsx";
 import { db } from "@/lib/db";
 import { usuarioAtual } from "@/lib/auth/sessao";
-import { pode } from "@/lib/auth/permissoes";
+import { podeEditarProjeto } from "@/lib/auth/escopo";
 import { itemAberto, severidade, type Severidade } from "@/lib/domain/execucao";
 import { formatarData } from "@/lib/domain/datas";
 import { SEVERIDADE, STATUS_OPERACIONAL, TOM_OPERACIONAL, TOM_SEVERIDADE } from "@/lib/domain/rotulos";
@@ -19,7 +19,7 @@ const COR_CELULA: Record<Severidade, string> = {
 export default async function Riscos({ params }: PageProps<"/projetos/[id]/riscos">) {
   const { id } = await params;
   const usuario = await usuarioAtual();
-  const editavel = pode(usuario.perfil, "editar", "PROJETOS");
+  const editavel = await podeEditarProjeto(usuario, id);
   const projeto = await db.projeto.findUnique({ where: { id }, select: { id: true } });
   if (!projeto) notFound();
   const riscos = await db.itemOperacional.findMany({

@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
 import { usuarioAtual } from "@/lib/auth/sessao";
-import { pode } from "@/lib/auth/permissoes";
+import { podeEditarProjeto } from "@/lib/auth/escopo";
 import { ADERENCIA, PRIORIDADE, SIM_NAO, STATUS_ITEM, TIPO_BACKLOG, TOM_PRIORIDADE, TOM_STATUS_ITEM, TOM_VALIDACAO, VALIDACAO } from "@/lib/domain/rotulos";
 import { Campo, Cartao, LinkBotao, Selo, Vazio, BotaoExportar } from "@/components/ui";
 import { BotaoAcao, Formulario } from "@/components/formulario";
@@ -19,7 +19,7 @@ export default async function Backlog({ params, searchParams }: PageProps<"/proj
   const { id } = await params;
   const { editar, novo } = await searchParams;
   const usuario = await usuarioAtual();
-  const editavel = pode(usuario.perfil, "editar", "PROJETOS");
+  const editavel = await podeEditarProjeto(usuario, id);
   const projeto = await db.projeto.findUnique({ where: { id }, select: { id: true } });
   if (!projeto) notFound();
   const [itens, recursos] = await Promise.all([

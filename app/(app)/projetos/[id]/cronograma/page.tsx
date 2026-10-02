@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import clsx from "clsx";
 import { db } from "@/lib/db";
 import { usuarioAtual } from "@/lib/auth/sessao";
-import { pode } from "@/lib/auth/permissoes";
+import { podeEditarProjeto, recursoDoUsuario } from "@/lib/auth/escopo";
 import { chaveDia } from "@/lib/domain/datas";
 import { FASE, SITUACAO_PRAZO, STATUS_ITEM } from "@/lib/domain/rotulos";
 import { rotuloSemana, semanaPorId } from "@/lib/domain/semanas";
@@ -14,6 +14,8 @@ import { EditorAtribuicoes } from "@/components/editor-atribuicoes";
 import { TabelaCronograma } from "@/components/cronograma/tabela";
 import { GanttCronograma } from "@/components/cronograma/gantt";
 import { excluirAtividade, salvarAtividade } from "../../cronograma-acoes";
+import { aplicarModeloCronograma, salvarModelo } from "../../modelo-acoes";
+import { listarModelos } from "@/lib/services/modelos";
 
 const h = (n: number) => `${Math.round(n * 10) / 10}h`;
 
@@ -23,8 +25,8 @@ export default async function Cronograma({ params, searchParams }: PageProps<"/p
   const visao = sp.visao === "gantt" ? "gantt" : "tabela";
   const req = typeof sp.req === "string" ? sp.req : undefined;
   const usuario = await usuarioAtual();
-  const editavel = pode(usuario.perfil, "editar", "PROJETOS");
-  const projeto = await db.projeto.findUnique({ where: { id }, select: { id: true, clienteId: true } });
+  const editavel = await podeEditarProjeto(usuario, id);
+  const projeto = await db.projeto.findUnique({ where: { id }, select: { id: true, clienteId: true, dataKickoff: true } });
   if (!projeto) notFound();
 
   const { atividades, progresso, alertas } = await carregarCronograma(id);
@@ -46,9 +48,16 @@ export default async function Cronograma({ params, searchParams }: PageProps<"/p
     sel ? db.atribuicaoSemana.findMany({ where: { atribuicao: { atividadeId: sel.id } }, include: { atribuicao: { include: { recurso: { select: { nome: true } } } } }, orderBy: { semanaId: "asc" } }) : [],
   ]);
   const reqSel = req ? backlog.find((b) => b.id === req) : undefined;
+  const modelos = editavel ? await listarModelos() : [];
 
+  const criadoDoModelo = typeof sp.modelo === "string" ? sp.modelo.split("-") : null;
   return (
     <div className="space-y-6">
+      {criadoDoModelo && (
+        <div className="rounded-md border border-ok/30 bg-ok/10 px-4 py-3 text-sm text-ok">
+          Cronograma criado do modelo: {criadoDoModelo[0]} atividade(s) e {criadoDoModelo[1]} requisito(s). As horas já foram distribuídas na Capacidade; revise recursos e datas.
+        </div>
+      )}
       <div className="grid gap-4 sm:grid-cols-3 lg:grid-cols-6">
         <Indicador rotulo="Progresso" valor={`${progresso}%`} detalhe="ponderado pelo esforço" />
         <Indicador rotulo="Previsto" valor={h(soma("previsto"))} />
@@ -104,10 +113,60 @@ export default async function Cronograma({ params, searchParams }: PageProps<"/p
         ) : visao === "gantt" ? (
           <GanttCronograma atividades={filtradas} base={base} />
         ) : (
-          <TabelaCronograma atividades={filtradas} editavel={editavel} base={base} selecionada={sel?.id} />
+          <TabelaCronograma atividades={filtradas} editavel={editavel} base={base} selecionada={sel?.id} meuRecursoId={editavel ? null : await recursoDoUsuario(usuario.id)} />
         )}
         {editavel && visao === "tabela" && filtradas.length > 0 && <p className="mt-6 text-xs text-ardosia-500">Datas, % e status podem ser alterados direto na tabela. Clique no ID para editar recursos, esforço, predecessoras e demais campos. Toda alteração redistribui as horas na Capacidade.</p>}
       </Cartao>
+
+      {editavel && atividades.length === 0 && (
+        <Cartao titulo="Começar de um modelo">
+          {modelos.length === 0 ? (
+            <p className="text-sm text-ardosia-500">
+              Nenhum modelo cadastrado. Em um projeto parecido, use “Salvar como modelo” no fim da tela do cronograma.{" "}
+              <Link href="/modelos" className="underline">
+                Ver modelos
+              </Link>
+            </p>
+          ) : (
+            <Formulario acao={aplicarModeloCronograma.bind(null, id)} rotuloEnviar="Criar cronograma do modelo">
+              <div className="grid gap-3 sm:grid-cols-3">
+                <Campo rotulo="Modelo">
+                  <select name="modeloId" required className="campo">
+                    {modelos.map((m) => (
+                      <option key={m.id} value={m.id}>
+                        {m.nome} · {m.atividades} atividades · {m.esforco}h
+                      </option>
+                    ))}
+                  </select>
+                </Campo>
+                <Campo rotulo="Início do projeto" ajuda="As datas do modelo são deslocadas em dias úteis, sem feriados.">
+                  <input name="inicio" type="date" required defaultValue={chaveDia(projeto.dataKickoff ?? new Date())} className="campo" />
+                </Campo>
+                <label className="flex items-center gap-2 self-center text-sm">
+                  <input type="checkbox" name="manterRecursos" defaultChecked /> Manter os recursos e o esforço do modelo
+                </label>
+              </div>
+            </Formulario>
+          )}
+        </Cartao>
+      )}
+
+      {editavel && atividades.length > 0 && !sel && !nova && (
+        <details className="rounded-lg border border-ardosia-100 bg-white px-4 py-3 shadow-xs">
+          <summary className="cursor-pointer text-sm font-semibold text-navy-900">Salvar como modelo</summary>
+          <p className="mt-2 mb-3 text-sm text-ardosia-600">Guarda este backlog e este cronograma (datas relativas em dias úteis, recursos e esforço) para criar projetos parecidos.</p>
+          <Formulario acao={salvarModelo.bind(null, id)} limparAoSalvar rotuloEnviar="Salvar modelo">
+            <div className="grid gap-3 sm:grid-cols-3">
+              <Campo rotulo="Nome do modelo">
+                <input name="nome" required placeholder="Ex.: Implantação WMS" className="campo" />
+              </Campo>
+              <Campo rotulo="Descrição" className="sm:col-span-2">
+                <input name="descricao" className="campo" />
+              </Campo>
+            </div>
+          </Formulario>
+        </details>
+      )}
 
       {editavel && (sel || nova) && (
         <Cartao

@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
 import { usuarioAtual } from "@/lib/auth/sessao";
-import { pode } from "@/lib/auth/permissoes";
+import { podeEditarProjeto } from "@/lib/auth/escopo";
 import { avaliarComplexidade, sugestaoPreProjeto } from "@/lib/domain/execucao";
 import { formatarData } from "@/lib/domain/datas";
 import { DIMENSAO, STATUS_CHECKLIST, STATUS_PRE_PROJETO, TOM_CHECKLIST, TOM_NIVEL, TOM_PRE_PROJETO } from "@/lib/domain/rotulos";
@@ -14,7 +14,7 @@ export default async function PreProjeto({ params, searchParams }: PageProps<"/p
   const { id } = await params;
   const { editar, novo } = await searchParams;
   const usuario = await usuarioAtual();
-  const editavel = pode(usuario.perfil, "editar", "PROJETOS");
+  const editavel = await podeEditarProjeto(usuario, id);
   const projeto = await db.projeto.findUnique({ where: { id }, select: { id: true, gp: { select: { nome: true } } } });
   if (!projeto) notFound();
   const [criterios, notas, aval, pre, itens] = await Promise.all([

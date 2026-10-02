@@ -12,7 +12,20 @@ const h = (n: number) => (Number.isInteger(n) ? `${n}` : n.toFixed(1));
 const OPCOES_STATUS = Object.entries(STATUS_ITEM) as [string, string][];
 
 /** Tabela do cronograma agrupada pelas 4 fases oficiais, com subtotais e edição inline de %, status e datas. */
-export function TabelaCronograma({ atividades, editavel, base, selecionada }: { atividades: AtividadeCarregada[]; editavel: boolean; base: string; selecionada?: string }) {
+export function TabelaCronograma({
+  atividades,
+  editavel,
+  base,
+  selecionada,
+  meuRecursoId,
+}: {
+  atividades: AtividadeCarregada[];
+  editavel: boolean;
+  base: string;
+  selecionada?: string;
+  /** Recurso do usuário: sem edição do projeto, ele ainda atualiza % e status das atividades em que está alocado. */
+  meuRecursoId?: string | null;
+}) {
   return (
     <div className="-m-4 overflow-x-auto">
       <table className="tabela [&_td]:px-2 [&_th]:px-2">
@@ -90,8 +103,8 @@ export function TabelaCronograma({ atividades, editavel, base, selecionada }: { 
                       {a.totais.desvio > 0 ? "+" : ""}
                       {h(a.totais.desvio)}
                     </td>
-                    <td className="text-right">{editavel ? <CampoInline atividadeId={a.id} campo="percentual" valor={String(a.percentualConclusao)} /> : `${a.percentualConclusao}%`}</td>
-                    <td>{editavel ? <CampoInline atividadeId={a.id} campo="status" valor={a.status} opcoes={OPCOES_STATUS} /> : <Selo tom={TOM_STATUS_ITEM[a.status]}>{STATUS_ITEM[a.status]}</Selo>}</td>
+                    <td className="text-right">{editavel || (meuRecursoId && a.atrib.some((x) => x.recursoId === meuRecursoId)) ? <CampoInline atividadeId={a.id} campo="percentual" valor={String(a.percentualConclusao)} /> : `${a.percentualConclusao}%`}</td>
+                    <td>{editavel || (meuRecursoId && a.atrib.some((x) => x.recursoId === meuRecursoId)) ? <CampoInline atividadeId={a.id} campo="status" valor={a.status} opcoes={OPCOES_STATUS} /> : <Selo tom={TOM_STATUS_ITEM[a.status]}>{STATUS_ITEM[a.status]}</Selo>}</td>
                     <td>{a.situacao ? <Selo tom={tomSit}>{rotSit}</Selo> : <span className="text-ardosia-400">—</span>}</td>
                   </tr>
                   {/* Uma linha por recurso: cada uma é uma alocação individual com seus números. */}

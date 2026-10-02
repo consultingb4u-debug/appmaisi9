@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
 import { usuarioAtual } from "@/lib/auth/sessao";
-import { pode } from "@/lib/auth/permissoes";
+import { podeEditarProjeto } from "@/lib/auth/escopo";
 import { PAPEL_PROJETO, STATUS_ALOCACAO } from "@/lib/domain/rotulos";
 import { semanasEntre } from "@/lib/domain/semanas";
 import { carregarProjeto } from "@/lib/services/projeto";
@@ -17,7 +17,7 @@ export default async function Equipe({ params }: PageProps<"/projetos/[id]/equip
   const usuario = await usuarioAtual();
   const p = await carregarProjeto(id);
   if (!p) notFound();
-  const editavel = pode(usuario.perfil, "editar", "PROJETOS");
+  const editavel = await podeEditarProjeto(usuario, id);
   const [membros, recursos] = await Promise.all([
     db.projetoMembro.findMany({ where: { projetoId: id }, include: { recurso: { select: { id: true, nome: true, cargo: true } } }, orderBy: [{ papel: "asc" }] }),
     db.recurso.findMany({ where: { ativo: true }, orderBy: { nome: "asc" }, select: { id: true, nome: true } }),

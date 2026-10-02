@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
 import { usuarioAtual } from "@/lib/auth/sessao";
-import { pode } from "@/lib/auth/permissoes";
+import { podeEditarProjeto } from "@/lib/auth/escopo";
 import { formatarData } from "@/lib/domain/datas";
 import { Campo, Cartao, Selo, Vazio } from "@/components/ui";
 import { BotaoAcao, Formulario } from "@/components/formulario";
@@ -14,7 +14,7 @@ const tamanho = (n: number | null) => (n === null ? "" : n > 1024 * 1024 ? `${(n
 export default async function Documentos({ params }: PageProps<"/projetos/[id]/documentos">) {
   const { id } = await params;
   const usuario = await usuarioAtual();
-  const editavel = pode(usuario.perfil, "editar", "PROJETOS");
+  const editavel = await podeEditarProjeto(usuario, id);
   const projeto = await db.projeto.findUnique({ where: { id }, select: { id: true } });
   if (!projeto) notFound();
   const docs = await db.documento.findMany({ where: { projetoId: id }, orderBy: [{ categoria: "asc" }, { criadoEm: "desc" }] });

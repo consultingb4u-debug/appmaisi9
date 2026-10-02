@@ -13,8 +13,8 @@ export type Modulo =
 
 export type Acao = "ver" | "editar";
 
-// MVP: permissão por módulo. O escopo por projeto (GP edita só os seus,
-// consultor atualiza só suas atividades) entra na versão 1.3 usando a mesma função.
+// Permissão por módulo. Dentro de Projetos há ainda o escopo por projeto (lib/auth/escopo.ts):
+// Gestor edita só os projetos em que é GP; consultor atualiza status/% das atividades em que está alocado.
 const MATRIZ: Record<Perfil, Partial<Record<Modulo, Acao[]>>> = {
   ADMIN: {
     PORTFOLIO: ["ver", "editar"],

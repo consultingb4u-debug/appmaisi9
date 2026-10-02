@@ -1112,3 +1112,45 @@ model LinhaBaseItem {
   @@unique([linhaBaseId, codigo])
   @@map("linha_base_item")
 }
+
+// ───────────────────────────── Modelos de cronograma (1.3) ─────────────────────────────
+
+/// Cronograma-padrão por tipo de projeto (ex.: Reforma Tributária, WMS), com datas relativas em dias úteis.
+model ModeloCronograma {
+  id              String                 @id @default(uuid()) @db.Uuid
+  nome            String                 @unique
+  descricao       String?
+  /// Requisitos do backlog do projeto de origem: [{ codigo, requisito, tipo, prioridade, moduloProcesso, estimativaHoras }]
+  backlog         Json                   @default("[]")
+  origemProjetoId String?                @map("origem_projeto_id") @db.Uuid
+  criadoEm        DateTime               @default(now()) @map("criado_em")
+  criadoPorId     String?                @map("criado_por_id") @db.Uuid
+
+  itens           ModeloCronogramaItem[]
+
+  @@map("modelo_cronograma")
+}
+
+model ModeloCronogramaItem {
+  id               String           @id @default(uuid()) @db.Uuid
+  modeloId         String           @map("modelo_id") @db.Uuid
+  codigo           String
+  fase             FaseProjeto
+  tarefa           String
+  moduloProcesso   String?          @map("modulo_processo")
+  backlogCodigo    String?          @map("backlog_codigo")
+  /// Dias úteis a partir do início do projeto (0 = primeiro dia); nulo quando a atividade não tinha datas.
+  inicioDia        Int?             @map("inicio_dia")
+  duracaoDias      Int?             @map("duracao_dias")
+  /// [{ recursoId, esforco }]
+  atribuicoes      Json             @default("[]")
+  marco            Boolean          @default(false)
+  clienteParticipa Boolean          @default(false) @map("cliente_participa")
+  predecessoras    String[]         @default([])
+  ordem            Int              @default(0)
+
+  modelo           ModeloCronograma @relation(fields: [modeloId], references: [id], onDelete: Cascade)
+
+  @@unique([modeloId, codigo])
+  @@map("modelo_cronograma_item")
+}

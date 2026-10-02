@@ -3,7 +3,8 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { db } from "@/lib/db";
-import { exigir } from "@/lib/auth/sessao";
+import { SemPermissao, usuarioAtual } from "@/lib/auth/sessao";
+import { exigirRegistro, exigirRegistroDoProjeto, podeAtualizarAtividade, podeEditarProjeto } from "@/lib/auth/escopo";
 import { ErroNegocio, executarAcao, lerFormulario } from "@/lib/acoes";
 import { auditar } from "@/lib/services/auditoria";
 import { recalcularProjeto, sincronizarRealizadas } from "@/lib/services/cronograma";
@@ -51,7 +52,7 @@ const zBacklog = z.object({
 
 export async function salvarBacklog(projetoId: string, id: string | null, _: EstadoAcao, dados: FormData): Promise<EstadoAcao> {
   return executarAcao(async () => {
-    const u = await exigir("editar", "PROJETOS");
+    const u = await exigirRegistroDoProjeto("backlogItem", id, projetoId);
     const v = zBacklog.parse(lerFormulario(dados));
     const data = {
       ...v,
@@ -81,7 +82,7 @@ export async function salvarBacklog(projetoId: string, id: string | null, _: Est
 
 export async function excluirBacklog(id: string): Promise<EstadoAcao> {
   return executarAcao(async () => {
-    const u = await exigir("editar", "PROJETOS");
+    const u = await exigirRegistro("backlogItem", id);
     const b = await db.$transaction(async (tx) => {
       const b = await tx.backlogItem.delete({ where: { id } });
       await auditar(tx, { entidade: "BacklogItem", entidadeId: id, projetoId: b.projetoId, acao: "EXCLUIR", usuarioId: u.id, resumo: `${b.codigo} ${b.requisito}` });
@@ -175,7 +176,7 @@ async function ajustarRealizado(tx: Tx, projetoId: string, atividadeId: string, 
 
 export async function salvarAtividade(projetoId: string, id: string | null, _: EstadoAcao, dados: FormData): Promise<EstadoAcao> {
   return executarAcao(async () => {
-    const u = await exigir("editar", "PROJETOS");
+    const u = await exigirRegistroDoProjeto("atividade", id, projetoId);
     const f = lerFormulario(dados);
     const v = zAtividade.parse({ ...f, clienteParticipa: f.clienteParticipa === "on", marco: f.marco === "on" });
     if (v.inicioPrevisto && v.fimPrevisto && v.fimPrevisto < v.inicioPrevisto) throw new ErroNegocio("Fim previsto anterior ao início.");
@@ -249,7 +250,11 @@ export async function salvarAtividade(projetoId: string, id: string | null, _: E
 /** Edição inline na tabela do cronograma: %, status e datas. */
 export async function atualizarCampoAtividade(id: string, campo: "percentual" | "status" | "inicio" | "fim", valor: string): Promise<{ ok: boolean; erro?: string }> {
   const r = await executarAcao(async () => {
-    const u = await exigir("editar", "PROJETOS");
+    // Status e % também podem ser atualizados por quem está alocado na atividade; datas, só o GP/administrador.
+    const u = await usuarioAtual();
+    const alvo = await db.atividade.findUniqueOrThrow({ where: { id }, select: { id: true, projetoId: true } });
+    const permitido = campo === "percentual" || campo === "status" ? await podeAtualizarAtividade(u, alvo) : await podeEditarProjeto(u, alvo.projetoId);
+    if (!permitido) throw new SemPermissao(campo === "percentual" || campo === "status" ? "Só quem está alocado na atividade, o GP ou um administrador pode atualizá-la." : "Só o GP do projeto ou um administrador pode alterar datas.");
     await db.$transaction(
       async (tx) => {
         const antes = await tx.atividade.findUniqueOrThrow({ where: { id } });
@@ -280,7 +285,7 @@ export async function atualizarCampoAtividade(id: string, campo: "percentual" | 
 
 export async function excluirAtividade(id: string): Promise<EstadoAcao> {
   return executarAcao(async () => {
-    const u = await exigir("editar", "PROJETOS");
+    const u = await exigirRegistro("atividade", id);
     const a = await db.atividade.findUniqueOrThrow({ where: { id } });
     if (await db.apontamento.count({ where: { atividadeId: id } })) throw new ErroNegocio("A atividade tem horas apontadas; cancele-a em vez de excluir.");
     await db.$transaction(async (tx) => {

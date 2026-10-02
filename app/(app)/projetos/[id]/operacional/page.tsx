@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import clsx from "clsx";
 import { db } from "@/lib/db";
 import { usuarioAtual } from "@/lib/auth/sessao";
-import { pode } from "@/lib/auth/permissoes";
+import { podeEditarProjeto } from "@/lib/auth/escopo";
 import { itemAberto, itemVencido } from "@/lib/domain/execucao";
 import { formatarData } from "@/lib/domain/datas";
 import { NIVEL_IMPACTO, SEVERIDADE, STATUS_OPERACIONAL, TIPO_OPERACIONAL, TOM_OPERACIONAL, TOM_SEVERIDADE } from "@/lib/domain/rotulos";
@@ -22,7 +22,7 @@ export default async function Operacional({ params, searchParams }: PageProps<"/
   const tipo = typeof sp.tipo === "string" && sp.tipo in TIPO_OPERACIONAL ? (sp.tipo as keyof typeof TIPO_OPERACIONAL) : null;
   const situacao: Situacao = typeof sp.situacao === "string" && sp.situacao in SITUACOES ? (sp.situacao as Situacao) : "abertos";
   const usuario = await usuarioAtual();
-  const editavel = pode(usuario.perfil, "editar", "PROJETOS");
+  const editavel = await podeEditarProjeto(usuario, id);
   const projeto = await db.projeto.findUnique({ where: { id }, select: { id: true } });
   if (!projeto) notFound();
   const hoje = new Date();

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import clsx from "clsx";
 import { usuarioAtual } from "@/lib/auth/sessao";
-import { pode } from "@/lib/auth/permissoes";
+import { podeEditarProjeto } from "@/lib/auth/escopo";
 import { formatarData } from "@/lib/domain/datas";
 import { semanaDe } from "@/lib/domain/semanas";
 import { painelLinhaBase } from "@/lib/services/linha-base";
@@ -17,7 +17,7 @@ export default async function LinhaDeBase({ params, searchParams }: PageProps<"/
   const { id } = await params;
   const { lb, todas } = await searchParams;
   const usuario = await usuarioAtual();
-  const editavel = pode(usuario.perfil, "editar", "PROJETOS");
+  const editavel = await podeEditarProjeto(usuario, id);
   const d = await painelLinhaBase(id, typeof lb === "string" ? lb : undefined);
   const atual = semanaDe(new Date()).id;
   const r = d.comparacao?.resumo;

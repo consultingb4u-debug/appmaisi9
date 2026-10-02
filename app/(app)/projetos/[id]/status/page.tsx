@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import clsx from "clsx";
 import { db } from "@/lib/db";
 import { usuarioAtual } from "@/lib/auth/sessao";
-import { pode } from "@/lib/auth/permissoes";
+import { podeEditarProjeto } from "@/lib/auth/escopo";
 import { formatarData } from "@/lib/domain/datas";
 import { sugerirStatusExecutivo, type Indicadores } from "@/lib/domain/status";
 import { DECISAO_GO, STATUS_EXECUTIVO } from "@/lib/domain/rotulos";
@@ -74,7 +74,7 @@ export default async function StatusReports({ params, searchParams }: PageProps<
   const { id } = await params;
   const sp = await searchParams;
   const usuario = await usuarioAtual();
-  const editavel = pode(usuario.perfil, "editar", "PROJETOS");
+  const editavel = await podeEditarProjeto(usuario, id);
   const projeto = await db.projeto.findUnique({ where: { id }, select: { id: true } });
   if (!projeto) notFound();
   const reports = await db.statusReport.findMany({ where: { projetoId: id }, orderBy: [{ dataReferencia: "desc" }, { criadoEm: "desc" }] });

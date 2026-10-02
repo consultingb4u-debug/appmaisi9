@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { db } from "@/lib/db";
-import { exigir } from "@/lib/auth/sessao";
+import { exigirProjeto, exigirRegistro, exigirRegistroDoProjeto } from "@/lib/auth/escopo";
 import { ErroNegocio, executarAcao, lerFormulario } from "@/lib/acoes";
 import { auditar } from "@/lib/services/auditoria";
 import { avaliarComplexidade, PREFIXO_OPERACIONAL } from "@/lib/domain/execucao";
@@ -41,7 +41,7 @@ function revalidar(projetoId: string) {
 /** Notas vêm como nota_<criterioId> (0–3 ou vazio), gatilho_<criterioId> e obs_<criterioId>. */
 export async function salvarComplexidade(projetoId: string, _: EstadoAcao, dados: FormData): Promise<EstadoAcao> {
   return executarAcao(async () => {
-    const u = await exigir("editar", "PROJETOS");
+    const u = await exigirProjeto(projetoId);
     const f = lerFormulario(dados);
     const cab = z
       .object({ avaliador: zTexto(120), data: zData, horasEstimadas: z.coerce.number().min(0).max(100000).optional() })
@@ -85,7 +85,7 @@ export async function salvarComplexidade(projetoId: string, _: EstadoAcao, dados
 
 export async function salvarStatusPreProjeto(projetoId: string, _: EstadoAcao, dados: FormData): Promise<EstadoAcao> {
   return executarAcao(async () => {
-    const u = await exigir("editar", "PROJETOS");
+    const u = await exigirProjeto(projetoId);
     const v = z.object({ status: z.enum(["EM_PREPARACAO", "PRONTO", "PRONTO_COM_RESSALVAS", "BLOQUEADO"]), observacao: zTexto() }).parse(lerFormulario(dados));
     await db.$transaction(async (tx) => {
       const antes = await tx.preProjeto.findUnique({ where: { projetoId } });
@@ -109,7 +109,7 @@ const zItemPre = z.object({
 
 export async function salvarItemPreProjeto(projetoId: string, id: string | null, _: EstadoAcao, dados: FormData): Promise<EstadoAcao> {
   return executarAcao(async () => {
-    const u = await exigir("editar", "PROJETOS");
+    const u = await exigirRegistroDoProjeto("preProjetoItem", id, projetoId);
     const v = zItemPre.parse(lerFormulario(dados));
     await db.$transaction(async (tx) => {
       if (id) {
@@ -129,7 +129,7 @@ export async function salvarItemPreProjeto(projetoId: string, id: string | null,
 
 export async function excluirItemPreProjeto(id: string): Promise<EstadoAcao> {
   return executarAcao(async () => {
-    const u = await exigir("editar", "PROJETOS");
+    const u = await exigirRegistro("preProjetoItem", id);
     const i = await db.$transaction(async (tx) => {
       const i = await tx.preProjetoItem.delete({ where: { id } });
       await auditar(tx, { entidade: "PreProjetoItem", entidadeId: id, projetoId: i.projetoId, acao: "EXCLUIR", usuarioId: u.id, resumo: i.item });
@@ -142,7 +142,7 @@ export async function excluirItemPreProjeto(id: string): Promise<EstadoAcao> {
 /** Inclui os itens do checklist-modelo que ainda não existem no projeto. */
 export async function aplicarModeloPreProjeto(projetoId: string): Promise<EstadoAcao> {
   return executarAcao(async () => {
-    const u = await exigir("editar", "PROJETOS");
+    const u = await exigirProjeto(projetoId);
     const n = await db.$transaction(async (tx) => {
       const existentes = new Set((await tx.preProjetoItem.findMany({ where: { projetoId }, select: { item: true } })).map((i) => i.item));
       const novos = MODELO_PRE_PROJETO.filter((m) => !existentes.has(m.item));
@@ -195,7 +195,7 @@ async function codigoOperacional(tx: Tx, projetoId: string, tipo: z.infer<typeof
 
 export async function salvarItemOperacional(projetoId: string, id: string | null, _: EstadoAcao, dados: FormData): Promise<EstadoAcao> {
   return executarAcao(async () => {
-    const u = await exigir("editar", "PROJETOS");
+    const u = await exigirRegistroDoProjeto("itemOperacional", id, projetoId);
     const { dataAbertura, ...v } = zItemOp.parse(lerFormulario(dados));
     if (v.prazo && dataAbertura && v.prazo < dataAbertura) throw new ErroNegocio("Prazo anterior à abertura.");
     if (v.tipo === "RISCO" && (!v.probabilidade || !v.impacto)) throw new ErroNegocio("Risco precisa de probabilidade e impacto (1 a 5).");
@@ -230,7 +230,7 @@ export async function salvarItemOperacional(projetoId: string, id: string | null
 
 export async function excluirItemOperacional(id: string): Promise<EstadoAcao> {
   return executarAcao(async () => {
-    const u = await exigir("editar", "PROJETOS");
+    const u = await exigirRegistro("itemOperacional", id);
     const i = await db.$transaction(async (tx) => {
       const i = await tx.itemOperacional.delete({ where: { id } });
       await auditar(tx, { entidade: "ItemOperacional", entidadeId: id, projetoId: i.projetoId, acao: "EXCLUIR", usuarioId: u.id, resumo: `${i.codigo} ${i.descricao.slice(0, 80)}` });
@@ -255,7 +255,7 @@ const zCaso = z.object({
 
 export async function salvarCaso(projetoId: string, tipo: "INTERNO" | "UAT", id: string | null, _: EstadoAcao, dados: FormData): Promise<EstadoAcao> {
   return executarAcao(async () => {
-    const u = await exigir("editar", "PROJETOS");
+    const u = await exigirRegistroDoProjeto("casoTeste", id, projetoId);
     const v = zCaso.parse(lerFormulario(dados));
     const codigo = await db.$transaction(async (tx) => {
       if (id) {
@@ -278,7 +278,7 @@ export async function salvarCaso(projetoId: string, tipo: "INTERNO" | "UAT", id:
 
 export async function excluirCaso(id: string): Promise<EstadoAcao> {
   return executarAcao(async () => {
-    const u = await exigir("editar", "PROJETOS");
+    const u = await exigirRegistro("casoTeste", id);
     const c = await db.$transaction(async (tx) => {
       const c = await tx.casoTeste.delete({ where: { id } });
       await auditar(tx, { entidade: "CasoTeste", entidadeId: id, projetoId: c.projetoId, acao: "EXCLUIR", usuarioId: u.id, resumo: `${c.codigo} ${c.cenario.slice(0, 80)}` });
@@ -306,7 +306,7 @@ const zExecucao = z.object({
  */
 export async function registrarExecucao(casoId: string, _: EstadoAcao, dados: FormData): Promise<EstadoAcao> {
   return executarAcao(async () => {
-    const u = await exigir("editar", "PROJETOS");
+    const u = await exigirRegistro("casoTeste", casoId);
     const { abrirDefeito, gravidade, ...v } = zExecucao.parse(lerFormulario(dados));
     const caso = await db.casoTeste.findUniqueOrThrow({ where: { id: casoId }, include: { execucoes: { select: { ciclo: true } } } });
     const ciclo = Math.max(0, ...caso.execucoes.map((e) => e.ciclo)) + 1;
@@ -344,7 +344,7 @@ export async function registrarExecucao(casoId: string, _: EstadoAcao, dados: Fo
 
 export async function excluirExecucao(id: string): Promise<EstadoAcao> {
   return executarAcao(async () => {
-    const u = await exigir("editar", "PROJETOS");
+    const u = await exigirRegistro("execucaoTeste", id);
     const e = await db.$transaction(async (tx) => {
       const e = await tx.execucaoTeste.delete({ where: { id }, include: { caso: true } });
       await auditar(tx, { entidade: "ExecucaoTeste", entidadeId: id, projetoId: e.caso.projetoId, acao: "EXCLUIR", usuarioId: u.id, resumo: `${e.caso.codigo} ciclo ${e.ciclo}` });
@@ -372,7 +372,7 @@ const zDeployment = z.object({
 
 export async function salvarDeployment(projetoId: string, id: string | null, _: EstadoAcao, dados: FormData): Promise<EstadoAcao> {
   return executarAcao(async () => {
-    const u = await exigir("editar", "PROJETOS");
+    const u = await exigirRegistroDoProjeto("deployment", id, projetoId);
     const { atualizarProjeto, ...v } = zDeployment.parse(lerFormulario(dados));
     if (v.janelaInicio && v.janelaFim && v.janelaFim < v.janelaInicio) throw new ErroNegocio("Fim da janela anterior ao início.");
     if (v.hypercareInicio && v.hypercareFim && v.hypercareFim < v.hypercareInicio) throw new ErroNegocio("Fim do hypercare anterior ao início.");
@@ -403,7 +403,7 @@ export async function salvarDeployment(projetoId: string, id: string | null, _: 
 
 export async function excluirDeployment(id: string): Promise<EstadoAcao> {
   return executarAcao(async () => {
-    const u = await exigir("editar", "PROJETOS");
+    const u = await exigirRegistro("deployment", id);
     const d = await db.$transaction(async (tx) => {
       const d = await tx.deployment.delete({ where: { id } });
       await auditar(tx, { entidade: "Deployment", entidadeId: id, projetoId: d.projetoId, acao: "EXCLUIR", usuarioId: u.id, resumo: d.nome });
@@ -429,7 +429,7 @@ const zItemDep = z.object({
 
 export async function salvarItemDeployment(deploymentId: string, id: string | null, _: EstadoAcao, dados: FormData): Promise<EstadoAcao> {
   return executarAcao(async () => {
-    const u = await exigir("editar", "PROJETOS");
+    const u = await exigirRegistro("deployment", deploymentId);
     const v = zItemDep.parse(lerFormulario(dados));
     const dep = await db.deployment.findUniqueOrThrow({ where: { id: deploymentId }, select: { projetoId: true } });
     const data = { ...v, dataReal: v.status === "CONCLUIDO" ? (v.dataReal ?? paraDia(new Date())) : v.dataReal };
@@ -451,7 +451,7 @@ export async function salvarItemDeployment(deploymentId: string, id: string | nu
 
 export async function excluirItemDeployment(id: string): Promise<EstadoAcao> {
   return executarAcao(async () => {
-    const u = await exigir("editar", "PROJETOS");
+    const u = await exigirRegistro("deploymentItem", id);
     const i = await db.$transaction(async (tx) => {
       const i = await tx.deploymentItem.delete({ where: { id }, include: { deployment: { select: { projetoId: true } } } });
       await auditar(tx, { entidade: "DeploymentItem", entidadeId: id, projetoId: i.deployment.projetoId, acao: "EXCLUIR", usuarioId: u.id, resumo: i.item });

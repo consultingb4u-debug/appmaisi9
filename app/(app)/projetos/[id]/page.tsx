@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
 import { usuarioAtual } from "@/lib/auth/sessao";
-import { pode } from "@/lib/auth/permissoes";
+import { podeEditarProjeto } from "@/lib/auth/escopo";
 import { somarDias } from "@/lib/domain/datas";
 import { semanaDe, semanasEntre } from "@/lib/domain/semanas";
 import { carregarProjeto } from "@/lib/services/projeto";
@@ -26,7 +26,7 @@ export default async function VisaoGeral({ params }: PageProps<"/projetos/[id]">
   const usuario = await usuarioAtual();
   const p = await carregarProjeto(id);
   if (!p) notFound();
-  const editavel = pode(usuario.perfil, "editar", "PROJETOS");
+  const editavel = await podeEditarProjeto(usuario, id);
 
   const atual = semanaDe(new Date());
   const semanas = semanasEntre(atual.inicio, somarDias(atual.inicio, 7 * 7));

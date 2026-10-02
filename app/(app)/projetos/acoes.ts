@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { db } from "@/lib/db";
 import { exigir } from "@/lib/auth/sessao";
+import { exigirProjeto, exigirRegistro, recursoDoUsuario } from "@/lib/auth/escopo";
 import { ErroNegocio, executarAcao, lerFormulario } from "@/lib/acoes";
 import { auditar } from "@/lib/services/auditoria";
 import { proximoCodigoProjeto } from "@/lib/services/projeto";
@@ -50,6 +51,8 @@ export async function criarProjeto(_: EstadoAcao, dados: FormData): Promise<Esta
   const r = await executarAcao(async () => {
     const u = await exigir("editar", "PORTFOLIO");
     const v = normalizar(zProjeto.parse(lerFormulario(dados)));
+    // Gestor que cria um projeto sem GP vira o GP (senão perderia a edição do próprio projeto).
+    if (!v.gpId && u.perfil === "GESTOR") v.gpId = (await recursoDoUsuario(u.id)) ?? v.gpId;
     const p = await db.$transaction(async (tx) => {
       const p = await tx.projeto.create({
         data: {
@@ -71,7 +74,7 @@ export async function criarProjeto(_: EstadoAcao, dados: FormData): Promise<Esta
 
 export async function atualizarProjeto(id: string, _: EstadoAcao, dados: FormData): Promise<EstadoAcao> {
   return executarAcao(async () => {
-    const u = await exigir("editar", "PROJETOS");
+    const u = await exigirProjeto(id);
     const v = normalizar(zProjeto.parse(lerFormulario(dados)));
     await db.$transaction(async (tx) => {
       const antes = await tx.projeto.findUniqueOrThrow({ where: { id } });
@@ -93,7 +96,7 @@ export async function atualizarProjeto(id: string, _: EstadoAcao, dados: FormDat
 
 export async function adicionarMembro(projetoId: string, _: EstadoAcao, dados: FormData): Promise<EstadoAcao> {
   return executarAcao(async () => {
-    const u = await exigir("editar", "PROJETOS");
+    const u = await exigirProjeto(projetoId);
     const v = z
       .object({ recursoId: z.uuid("Escolha o recurso."), papel: z.enum(["GP", "FUNCIONAL", "TECNICO", "DEV", "ANALISTA", "APOIO"]) })
       .parse(lerFormulario(dados));
@@ -109,7 +112,7 @@ export async function adicionarMembro(projetoId: string, _: EstadoAcao, dados: F
 
 export async function removerMembro(id: string): Promise<EstadoAcao> {
   return executarAcao(async () => {
-    const u = await exigir("editar", "PROJETOS");
+    const u = await exigirRegistro("projetoMembro", id);
     const m = await db.$transaction(async (tx) => {
       const m = await tx.projetoMembro.delete({ where: { id }, include: { recurso: true } });
       await auditar(tx, { entidade: "ProjetoMembro", entidadeId: id, projetoId: m.projetoId, acao: "EXCLUIR", usuarioId: u.id, resumo: `${m.recurso.nome} (${m.papel})` });

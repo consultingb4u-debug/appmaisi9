@@ -17,6 +17,7 @@ export default async function LayoutApp({ children }: LayoutProps<"/">) {
     { href: "/clientes", rotulo: "Clientes", icone: "◆" },
   ];
   const admin: ItemMenu[] = [
+    pode(usuario.perfil, "editar", "PROJETOS") && { href: "/modelos", rotulo: "Modelos", icone: "❏" },
     pode(usuario.perfil, "ver", "USUARIOS") && { href: "/admin/usuarios", rotulo: "Usuários", icone: "☺" },
     pode(usuario.perfil, "ver", "FERIADOS") && { href: "/admin/feriados", rotulo: "Feriados", icone: "✦" },
     pode(usuario.perfil, "ver", "IMPORTACAO") && { href: "/admin/importacao", rotulo: "Importação", icone: "⇪" },

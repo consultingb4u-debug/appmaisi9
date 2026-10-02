@@ -54,6 +54,7 @@ Para parar: `docker compose down` (os dados ficam guardados; `docker compose dow
 | 6 · Status | Status reports com indicadores congelados e histórico, documentos (links SharePoint ou arquivos), painel executivo na tela inicial | ✅ |
 | 1.1 | Exportação Excel (portfólio, capacidade, cronograma, backlog, operacional, testes, UAT), calendário mensal (geral e por projeto), alertas no app e por e-mail, visões salvas de filtros | ✅ |
 | 1.2 | Linha de base do cronograma (comparação planejado original × atual), curva S (base × realizado × forecast), progresso planejado no status report, fluxo de change request com aprovação que aplica horas e prazo ao projeto | ✅ |
+| 1.3 | Permissões por projeto (Gestor edita os projetos em que é GP; consultor atualiza status e % das atividades em que está alocado) e modelos de cronograma (salvar um projeto como modelo e aplicar em outro, com datas em dias úteis) | ✅ |
 
 ## Stack
 
@@ -100,6 +101,18 @@ Pré-Projeto | Complexidade, Pré-Projeto, Backlog, Cronograma, Operacional, Tes
 Teste Cliente | UAT, Deployment e Status Report. As abas calculadas (Dashboard, Auditoria) são
 recalculadas pelo sistema. Reimportar não duplica nada: um resultado de teste diferente vira um
 novo ciclo de execução, e o histórico é mantido.
+
+## Perfis e permissões
+
+| Perfil | Pode |
+|---|---|
+| Administrador | tudo, inclusive editar qualquer projeto e administrar usuários |
+| Gestor | portfólio, capacidade, cadastros e importação; edita **os projetos em que é GP** (campo GP ou membro com papel GP) e cria projetos (sem GP informado, vira o GP) |
+| Consultor | consulta tudo, aponta as próprias horas e atualiza status e % das atividades em que está alocado |
+| Visualização | só consulta |
+
+A diretoria que aprova e acompanha todos os projetos deve ter perfil **Administrador**. Para o escopo funcionar,
+o usuário precisa estar ligado ao seu recurso (Administração → Usuários).
 
 ## Alertas por e-mail
 

@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
 import { usuarioAtual } from "@/lib/auth/sessao";
-import { pode } from "@/lib/auth/permissoes";
+import { podeEditarProjeto } from "@/lib/auth/escopo";
 import { resumoTestes, type Resultado } from "@/lib/domain/execucao";
 import { formatarData } from "@/lib/domain/datas";
 import { NIVEL_IMPACTO, RESULTADO_TESTE, STATUS_OPERACIONAL, TOM_RESULTADO, TOM_VALIDACAO, VALIDACAO } from "@/lib/domain/rotulos";
@@ -14,7 +14,7 @@ import { excluirCaso, excluirExecucao, registrarExecucao, salvarCaso } from "@/a
 /** Tela compartilhada por "Testes Internos" (TI-xxx) e "UAT" (UAT-xxx): casos + ciclos de execução. */
 export async function PaginaTestes({ projetoId, tipo, sp }: { projetoId: string; tipo: "INTERNO" | "UAT"; sp: Record<string, string | string[] | undefined> }) {
   const usuario = await usuarioAtual();
-  const editavel = pode(usuario.perfil, "editar", "PROJETOS");
+  const editavel = await podeEditarProjeto(usuario, projetoId);
   const projeto = await db.projeto.findUnique({ where: { id: projetoId }, select: { id: true, cliente: { select: { nome: true } } } });
   if (!projeto) notFound();
   const [casos, recursos, backlog] = await Promise.all([

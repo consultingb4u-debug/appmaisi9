@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import clsx from "clsx";
 import { db } from "@/lib/db";
 import { usuarioAtual } from "@/lib/auth/sessao";
-import { pode } from "@/lib/auth/permissoes";
+import { podeEditarProjeto } from "@/lib/auth/escopo";
 import { prontidaoGoLive } from "@/lib/domain/execucao";
 import { formatarData } from "@/lib/domain/datas";
 import { DECISAO_GO, OBRIGATORIEDADE, STATUS_CHECKLIST, TOM_CHECKLIST, TOM_DECISAO_GO, TOM_VALIDACAO, VALIDACAO } from "@/lib/domain/rotulos";
@@ -16,7 +16,7 @@ export default async function Deployment({ params, searchParams }: PageProps<"/p
   const { id } = await params;
   const sp = await searchParams;
   const usuario = await usuarioAtual();
-  const editavel = pode(usuario.perfil, "editar", "PROJETOS");
+  const editavel = await podeEditarProjeto(usuario, id);
   const projeto = await db.projeto.findUnique({ where: { id }, select: { id: true, dataGoLiveAlvo: true, dataGoLiveReal: true, gp: { select: { nome: true } } } });
   if (!projeto) notFound();
   const [deployments, recursos, resumo] = await Promise.all([

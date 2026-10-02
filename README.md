@@ -52,6 +52,7 @@ Para parar: `docker compose down` (os dados ficam guardados; `docker compose dow
 | 4 · Cronograma | Backlog, cronograma (várias pessoas por tarefa, edição inline), Gantt, rateio automático nas semanas, apontamento por atividade (Minhas horas), importação do CTRL-001 | ✅ |
 | 5 · Execução | Pré-projeto e complexidade (N1–N4), registro operacional (RAID), matriz de riscos, testes internos e UAT com ciclos e defeitos, deployment com prontidão Go/No-Go e hypercare, importação das demais abas do CTRL-001 | ✅ |
 | 6 · Status | Status reports com indicadores congelados e histórico, documentos (links SharePoint ou arquivos), painel executivo na tela inicial | ✅ |
+| 1.1 | Exportação Excel (portfólio, capacidade, cronograma, backlog, operacional, testes, UAT), calendário mensal (geral e por projeto), alertas no app e por e-mail, visões salvas de filtros | ✅ |
 
 ## Stack
 
@@ -98,6 +99,15 @@ Pré-Projeto | Complexidade, Pré-Projeto, Backlog, Cronograma, Operacional, Tes
 Teste Cliente | UAT, Deployment e Status Report. As abas calculadas (Dashboard, Auditoria) são
 recalculadas pelo sistema. Reimportar não duplica nada: um resultado de teste diferente vira um
 novo ciclo de execução, e o histórico é mantido.
+
+## Alertas por e-mail
+
+A tela **Alertas** mostra, para cada pessoa, atividades atrasadas, pendências vencidas, sobrecarga
+(semana atual e próxima), ausências a aprovar e status reports atrasados. A rotina diária
+(`POST /api/tarefas/alertas` com `Authorization: Bearer $CRON_SECRET`) manda por e-mail só os
+alertas que a pessoa ainda não recebeu. O serviço `agendador` do `docker-compose.yml` chama a rotina
+nos dias úteis às 7h. Configure `SMTP_*`, `APP_URL` e `CRON_SECRET` no `.env`; sem `SMTP_HOST` a
+rotina só simula. Cada usuário pode desligar os e-mails na própria tela de alertas.
 
 ## Login com Microsoft 365
 

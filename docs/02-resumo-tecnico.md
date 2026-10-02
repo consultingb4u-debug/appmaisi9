@@ -21,6 +21,7 @@ Substituir as planilhas CTRL-001 (uma por projeto) e CTRL-003 (gestão de recurs
 | 4 | Backlog, cronograma com várias pessoas por tarefa, Gantt, rateio automático nas semanas, apontamento por atividade, importação do CTRL-001 | ✅ |
 | 5 | Pré-projeto/complexidade, RAID, matriz de riscos, testes internos, UAT, deployment/Go-No-Go, importação das demais abas do CTRL-001 | ✅ |
 | 6 | Status reports (indicadores congelados), documentos, painel executivo | ✅ |
+| 1.1 | Exportação Excel, calendário, alertas (app + e-mail SMTP com rotina diária), visões salvas | ✅ |
 
 Números atuais: 35 tabelas, 35 enums, 6 migrações, 30 telas, 95 testes unitários.
 
@@ -173,6 +174,18 @@ Importação: `lib/importacao/ctrl001/execucao.ts` (pura). IDs de teste repetido
 TI-001…) recebem o próximo número livre; responsáveis como "Diego / Dornelles" ligam o primeiro nome reconhecido e
 guardam o texto completo (há dois Diegos cadastrados, então "Diego" sozinho fica como texto); textos-modelo do
 Status Report ("[Resumo…]") são ignorados.
+
+## 6c. Versão 1.1
+
+- **Exportação:** `GET /exportar/<tipo>` (portfolio, capacidade, cronograma, backlog, operacional, testes, uat) gera `.xlsx`
+  com ExcelJS (`lib/exportacao`), respeitando os filtros da tela e a permissão de leitura do módulo.
+- **Calendário:** regras puras em `lib/domain/calendario.ts`; eventos (início/fim, marcos, Go Live, janelas de deploy,
+  prazos do Operacional, feriados, ausências aprovadas) em `lib/services/calendario.ts`.
+- **Alertas:** regras puras em `lib/domain/alertas.ts`, com chave estável por situação. Calculados na hora (nada é
+  armazenado); a tabela `notificacao_enviada` guarda só o que já foi mandado por e-mail a cada pessoa, para não repetir.
+  Transporte SMTP (`lib/email.ts`, nodemailer); no Microsoft 365 use `smtp.office365.com:587` com SMTP AUTH. A rotina
+  é protegida por `CRON_SECRET` (comparação em tempo constante) e disparada pelo serviço `agendador` do compose.
+- **Visões salvas:** tabela `visao_salva` (por usuário; gestores podem compartilhar) para portfólio, capacidade e calendário.
 
 ## 7. Segurança
 

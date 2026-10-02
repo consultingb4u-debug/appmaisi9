@@ -140,3 +140,12 @@ export function Barra({ valor, tom = "ok" }: { valor: number; tom?: "ok" | "aler
 export function valorData(d: Date | null | undefined): string {
   return d ? d.toISOString().slice(0, 10) : "";
 }
+
+/** Link de download em Excel (rota /exportar/…); usa <a> comum para o navegador baixar o arquivo. */
+export function BotaoExportar({ href, rotulo = "Exportar Excel" }: { href: string; rotulo?: string }) {
+  return (
+    <a href={href} className={clsx(classeBotao("secundario", "sm"), "nao-imprimir")} title="Baixar em Excel (.xlsx)">
+      ↓ {rotulo}
+    </a>
+  );
+}

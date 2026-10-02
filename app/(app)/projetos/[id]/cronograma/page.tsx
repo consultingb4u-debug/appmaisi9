@@ -8,7 +8,7 @@ import { chaveDia } from "@/lib/domain/datas";
 import { FASE, SITUACAO_PRAZO, STATUS_ITEM } from "@/lib/domain/rotulos";
 import { rotuloSemana, semanaPorId } from "@/lib/domain/semanas";
 import { carregarCronograma } from "@/lib/services/cronograma";
-import { Campo, Cartao, Indicador, LinkBotao, Selo, Vazio } from "@/components/ui";
+import { Campo, Cartao, Indicador, LinkBotao, Selo, Vazio, BotaoExportar } from "@/components/ui";
 import { BotaoAcao, Formulario } from "@/components/formulario";
 import { EditorAtribuicoes } from "@/components/editor-atribuicoes";
 import { TabelaCronograma } from "@/components/cronograma/tabela";
@@ -77,7 +77,8 @@ export default async function Cronograma({ params, searchParams }: PageProps<"/p
       <Cartao
         titulo={reqSel ? `Atividades de ${reqSel.codigo} · ${reqSel.requisito}` : `${atividades.length} atividade(s)`}
         acoes={
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
+            <BotaoExportar href={`/exportar/cronograma?projeto=${id}`} rotulo="Excel" />
             {reqSel && (
               <Link href={`/projetos/${id}/cronograma${visao === "gantt" ? "?visao=gantt" : ""}`} className="text-xs text-ardosia-600 hover:underline">
                 ver todas ✕

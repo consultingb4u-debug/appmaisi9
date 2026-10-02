@@ -1,14 +1,9 @@
 import Link from "next/link";
 import clsx from "clsx";
 import { somarDias } from "@/lib/domain/datas";
-import { rotuloSemana, semanaDe, semanaPorId, semanasEntre, type SemanaIso } from "@/lib/domain/semanas";
+import { rotuloSemana, semanaDe, type SemanaIso } from "@/lib/domain/semanas";
 
-/** Lê ?de=2026-W40&n=8 e devolve as semanas da janela (padrão: semana atual, 8 semanas). */
-export function janelaDeSemanas(de?: string, n?: string): SemanaIso[] {
-  const inicio = (de && semanaPorId(de)) || semanaDe(new Date());
-  const qtd = [4, 8, 12, 16].includes(Number(n)) ? Number(n) : 8;
-  return semanasEntre(inicio.inicio, somarDias(inicio.inicio, 7 * qtd - 1));
-}
+export { janelaDeSemanas } from "@/lib/domain/semanas";
 
 /** Navegação ◀ hoje ▶ e tamanho da janela, preservando os demais filtros da URL. */
 export function NavegadorSemanas({ base, params, semanas }: { base: string; params: Record<string, string | undefined>; semanas: SemanaIso[] }) {

@@ -1,17 +1,18 @@
 import Link from "next/link";
 import clsx from "clsx";
+import { VisoesSalvas } from "@/components/visoes-salvas";
 import { db } from "@/lib/db";
 import { usuarioAtual } from "@/lib/auth/sessao";
 import { formatarData } from "@/lib/domain/datas";
 import { rotuloSemana, semanaDe } from "@/lib/domain/semanas";
 import { cargaPorSemana, COR_FAIXA, formatarUtilizacao, ROTULO_FAIXA } from "@/lib/services/capacidade";
-import { Cartao, LinkBotao, Selo, Vazio } from "@/components/ui";
+import { Cartao, LinkBotao, Selo, Vazio, BotaoExportar } from "@/components/ui";
 import { janelaDeSemanas, NavegadorSemanas } from "@/components/navegador-semanas";
 
 export const metadata = { title: "Mapa de carga" };
 
 export default async function MapaDeCarga({ searchParams }: PageProps<"/capacidade">) {
-  await usuarioAtual();
+  const usuario = await usuarioAtual();
   const sp = await searchParams;
   const p = Object.fromEntries(Object.entries(sp).map(([k, v]) => [k, typeof v === "string" && v ? v : undefined])) as Record<string, string | undefined>;
   const semanas = janelaDeSemanas(p.de, p.n);
@@ -32,8 +33,12 @@ export default async function MapaDeCarga({ searchParams }: PageProps<"/capacida
 
   return (
     <div className="space-y-6">
+      <VisoesSalvas tela="capacidade" base="/capacidade" params={p} usuario={usuario} />
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <NavegadorSemanas base="/capacidade" params={p} semanas={semanas} />
+        <div className="flex flex-wrap items-center gap-2">
+          <NavegadorSemanas base="/capacidade" params={p} semanas={semanas} />
+          <BotaoExportar href={`/exportar/capacidade?${new URLSearchParams(Object.entries(p).filter(([k, x]) => x && ["de", "n", "area"].includes(k)) as [string, string][])}`} rotulo="Excel" />
+        </div>
         <form className="flex items-center gap-2 text-sm">
           {Object.entries(p)
             .filter(([k, v]) => v && ["de", "n"].includes(k))

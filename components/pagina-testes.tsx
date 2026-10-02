@@ -7,7 +7,7 @@ import { resumoTestes, type Resultado } from "@/lib/domain/execucao";
 import { formatarData } from "@/lib/domain/datas";
 import { NIVEL_IMPACTO, RESULTADO_TESTE, STATUS_OPERACIONAL, TOM_RESULTADO, TOM_VALIDACAO, VALIDACAO } from "@/lib/domain/rotulos";
 import { casosComUltima } from "@/lib/services/execucao";
-import { Barra, Campo, Cartao, Indicador, LinkBotao, opcoes, Selo, valorData, Vazio } from "@/components/ui";
+import { Barra, BotaoExportar, Campo, Cartao, Indicador, LinkBotao, opcoes, Selo, valorData, Vazio } from "@/components/ui";
 import { BotaoAcao, Formulario } from "@/components/formulario";
 import { excluirCaso, excluirExecucao, registrarExecucao, salvarCaso } from "@/app/(app)/projetos/execucao-acoes";
 
@@ -46,6 +46,7 @@ export async function PaginaTestes({ projetoId, tipo, sp }: { projetoId: string;
         titulo={`${uat ? "Roteiro de UAT" : "Casos de teste interno"}${filtro ? ` · filtro: ${filtro === "PENDENTE" ? "pendentes" : RESULTADO_TESTE[filtro as Resultado]}` : ""}`}
         acoes={
           <span className="flex items-center gap-2">
+            <BotaoExportar href={`/exportar/${uat ? "uat" : "testes"}?projeto=${projetoId}`} rotulo="Excel" />
             {filtro && (
               <Link href={base} className="text-xs text-ardosia-500 hover:underline">
                 limpar filtro

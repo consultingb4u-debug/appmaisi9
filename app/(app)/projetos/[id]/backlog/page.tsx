@@ -4,7 +4,7 @@ import { db } from "@/lib/db";
 import { usuarioAtual } from "@/lib/auth/sessao";
 import { pode } from "@/lib/auth/permissoes";
 import { ADERENCIA, PRIORIDADE, SIM_NAO, STATUS_ITEM, TIPO_BACKLOG, TOM_PRIORIDADE, TOM_STATUS_ITEM, TOM_VALIDACAO, VALIDACAO } from "@/lib/domain/rotulos";
-import { Campo, Cartao, LinkBotao, Selo, Vazio } from "@/components/ui";
+import { Campo, Cartao, LinkBotao, Selo, Vazio, BotaoExportar } from "@/components/ui";
 import { BotaoAcao, Formulario } from "@/components/formulario";
 import { excluirBacklog, salvarBacklog } from "../../cronograma-acoes";
 
@@ -38,7 +38,16 @@ export default async function Backlog({ params, searchParams }: PageProps<"/proj
     <div className="space-y-6">
       <Cartao
         titulo={`Backlog · ${itens.length} item(ns) · ${total}h estimadas`}
-        acoes={editavel && !mostrarForm && <LinkBotao href={`/projetos/${id}/backlog?novo=1`} tamanho="sm">+ Requisito</LinkBotao>}
+        acoes={
+          <span className="flex items-center gap-2">
+            <BotaoExportar href={`/exportar/backlog?projeto=${id}`} rotulo="Excel" />
+            {editavel && !mostrarForm && (
+              <LinkBotao href={`/projetos/${id}/backlog?novo=1`} tamanho="sm">
+                + Requisito
+              </LinkBotao>
+            )}
+          </span>
+        }
       >
         {itens.length === 0 ? (
           <Vazio>Nenhum requisito. Inclua manualmente ou importe o CTRL-001 do projeto.</Vazio>

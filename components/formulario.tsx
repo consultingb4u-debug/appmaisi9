@@ -86,6 +86,7 @@ export function BotaoAcao({
         {children}
       </button>
       {estado?.erro && <span className="text-xs text-critico">{estado.erro}</span>}
+      {estado?.ok && estado.mensagem && estado.mensagem !== "Salvo." && <span className="text-xs text-ok">{estado.mensagem}</span>}
     </form>
   );
 }

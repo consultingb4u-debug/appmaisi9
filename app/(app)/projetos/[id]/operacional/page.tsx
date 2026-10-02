@@ -8,7 +8,7 @@ import { itemAberto, itemVencido } from "@/lib/domain/execucao";
 import { formatarData } from "@/lib/domain/datas";
 import { NIVEL_IMPACTO, SEVERIDADE, STATUS_OPERACIONAL, TIPO_OPERACIONAL, TOM_OPERACIONAL, TOM_SEVERIDADE } from "@/lib/domain/rotulos";
 import { severidadeDe } from "@/lib/services/execucao";
-import { Campo, Cartao, LinkBotao, opcoes, Selo, valorData, Vazio } from "@/components/ui";
+import { Campo, Cartao, LinkBotao, opcoes, Selo, valorData, Vazio, BotaoExportar } from "@/components/ui";
 import { BotaoAcao, Formulario } from "@/components/formulario";
 import { excluirItemOperacional, salvarItemOperacional } from "../../execucao-acoes";
 
@@ -79,12 +79,14 @@ export default async function Operacional({ params, searchParams }: PageProps<"/
       <Cartao
         titulo={`Registro operacional · ${itens.length} item(ns)`}
         acoes={
-          editavel &&
-          !mostrarForm && (
-            <LinkBotao href={`${base}?novo=${tipo ?? "PENDENCIA"}`} tamanho="sm">
-              + {tipo ? TIPO_OPERACIONAL[tipo] : "Item"}
-            </LinkBotao>
-          )
+          <span className="flex items-center gap-2">
+            <BotaoExportar href={`/exportar/operacional?projeto=${id}`} rotulo="Excel" />
+            {editavel && !mostrarForm && (
+              <LinkBotao href={`${base}?novo=${tipo ?? "PENDENCIA"}`} tamanho="sm">
+                + {tipo ? TIPO_OPERACIONAL[tipo] : "Item"}
+              </LinkBotao>
+            )}
+          </span>
         }
       >
         {itens.length === 0 ? (

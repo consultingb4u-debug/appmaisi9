@@ -11,6 +11,8 @@ export default async function LayoutApp({ children }: LayoutProps<"/">) {
     { href: "/portfolio", rotulo: "Portfólio", icone: "▤" },
     { href: "/recursos", rotulo: "Recursos", icone: "◉" },
     { href: "/capacidade", rotulo: "Capacidade", icone: "▦" },
+    { href: "/calendario", rotulo: "Calendário", icone: "▣" },
+    { href: "/alertas", rotulo: "Alertas", icone: "⚑" },
     { href: "/horas", rotulo: "Minhas horas", icone: "◷" },
     { href: "/clientes", rotulo: "Clientes", icone: "◆" },
   ];

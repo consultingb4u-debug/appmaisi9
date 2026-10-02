@@ -27,11 +27,14 @@ model Usuario {
   perfil        Perfil    @default(VISUALIZADOR)
   ativo         Boolean   @default(true)
   ultimoAcesso  DateTime? @map("ultimo_acesso")
+  notificarEmail Boolean  @default(true) @map("notificar_email")
   criadoEm      DateTime  @default(now()) @map("criado_em")
   atualizadoEm  DateTime  @updatedAt @map("atualizado_em")
 
   recurso       Recurso?
   auditorias    Auditoria[]
+  notificacoes  NotificacaoEnviada[]
+  visoes        VisaoSalva[]
 
   @@map("usuario")
 }
@@ -1037,4 +1040,35 @@ model Documento {
 
   @@index([projetoId])
   @@map("documento")
+}
+
+// ───────────────────────────── Notificações e visões salvas (1.1) ─────────────────────────────
+
+/// Alerta já enviado por e-mail ao usuário (chave estável do alerta): evita repetir o mesmo aviso.
+model NotificacaoEnviada {
+  id         String   @id @default(uuid()) @db.Uuid
+  usuarioId  String   @map("usuario_id") @db.Uuid
+  chave      String
+  enviadoEm  DateTime @default(now()) @map("enviado_em")
+
+  usuario    Usuario  @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+
+  @@unique([usuarioId, chave])
+  @@map("notificacao_enviada")
+}
+
+/// Combinação de filtros salva por um usuário (portfólio, capacidade, calendário). Compartilhada = visível a todos.
+model VisaoSalva {
+  id           String   @id @default(uuid()) @db.Uuid
+  usuarioId    String   @map("usuario_id") @db.Uuid
+  tela         String
+  nome         String
+  parametros   String
+  compartilhada Boolean @default(false)
+  criadoEm     DateTime @default(now()) @map("criado_em")
+
+  usuario      Usuario  @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+
+  @@unique([usuarioId, tela, nome])
+  @@map("visao_salva")
 }

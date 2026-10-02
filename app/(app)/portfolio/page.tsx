@@ -1,5 +1,6 @@
 import Link from "next/link";
 import clsx from "clsx";
+import { VisoesSalvas } from "@/components/visoes-salvas";
 import { db } from "@/lib/db";
 import { usuarioAtual } from "@/lib/auth/sessao";
 import { pode } from "@/lib/auth/permissoes";
@@ -7,7 +8,7 @@ import { diffDias, formatarData, parseDia, somarDias } from "@/lib/domain/datas"
 import { PRIORIDADE, STATUS_PROJETO, TIPO_PROJETO, TOM_NIVEL, TOM_PRIORIDADE, TOM_STATUS_PROJETO } from "@/lib/domain/rotulos";
 import { rotuloSemana, semanaDe, semanasEntre } from "@/lib/domain/semanas";
 import { listarPortfolio, type LinhaPortfolio } from "@/lib/services/portfolio";
-import { Cabecalho, Cartao, LinkBotao, Selo, Vazio } from "@/components/ui";
+import { Cabecalho, Cartao, LinkBotao, Selo, Vazio, BotaoExportar } from "@/components/ui";
 import { ThOrdenavel } from "@/components/ordenavel";
 
 export const metadata = { title: "Portfólio" };
@@ -60,11 +61,13 @@ export default async function PaginaPortfolio({ searchParams }: PageProps<"/port
                 </Link>
               ))}
             </div>
+            <BotaoExportar href={`/exportar/portfolio?${new URLSearchParams(Object.entries(p).filter(([k, x]) => x && k !== "visao") as [string, string][])}`} />
             {pode(usuario.perfil, "editar", "PORTFOLIO") && <LinkBotao href="/portfolio/novo">+ Novo projeto</LinkBotao>}
           </>
         }
       />
 
+      <VisoesSalvas tela="portfolio" base="/portfolio" params={p} usuario={usuario} />
       <form className="mb-4 grid grid-cols-1 gap-2 rounded-lg border border-ardosia-100 bg-white p-3 sm:grid-cols-4 lg:grid-cols-9 [&>*]:min-w-0">
         <input type="hidden" name="visao" value={visao} />
         <input name="q" defaultValue={p.q} placeholder="Buscar projeto, cliente, nota…" className="campo py-1.5 sm:col-span-2" />

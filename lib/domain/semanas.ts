@@ -55,3 +55,10 @@ export function semanaPorId(id: string): SemanaIso | null {
   const s = semanaDe(somarDias(inicioDaSemana(dia(ano, 1, 4)), (numero - 1) * 7));
   return s.anoIso === ano && s.numero === numero ? s : null;
 }
+
+/** Lê ?de=2026-W40&n=8 e devolve as semanas da janela (padrão: semana atual, 8 semanas). */
+export function janelaDeSemanas(de?: string, n?: string): SemanaIso[] {
+  const inicio = (de && semanaPorId(de)) || semanaDe(new Date());
+  const qtd = [4, 8, 12, 16].includes(Number(n)) ? Number(n) : 8;
+  return semanasEntre(inicio.inicio, somarDias(inicio.inicio, 7 * qtd - 1));
+}

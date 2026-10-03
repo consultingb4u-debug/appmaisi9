@@ -17,6 +17,11 @@ type DbLike = {
   collection(p: string): { onSnapshot(n: (s: { docs: { id: string; data(): Record<string, unknown> | undefined }[] }) => void, e?: (err: { code: string; message: string }) => void): () => void; doc(id: string): { set(d: Record<string, unknown>): Promise<void>; delete(): Promise<void> } };
 };
 
+/** Garante as listas que as telas percorrem, mesmo em documentos gravados incompletos. */
+function normalizar(c: Colecao, doc: Doc): Doc {
+  return c === "atividades" && !Array.isArray(doc.atribuicoes) ? { ...doc, atribuicoes: [] } : doc;
+}
+
 export function novoId(): string {
   return typeof crypto !== "undefined" && "randomUUID" in crypto ? crypto.randomUUID() : `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
 }
@@ -54,7 +59,7 @@ export function useDados(): { estado: Estado; modo: Modo; loja: Loja; erro: stri
         parar.push(
           dbRef.current.collection(c).onSnapshot(
             (snap) => {
-              const docs = snap.docs.map((x) => ({ ...(x.data() ?? {}), id: x.id }));
+              const docs = snap.docs.map((x) => normalizar(c, { ...(x.data() ?? {}), id: x.id }));
               setEstado((e) => ({ ...e, [c]: docs }));
               if (!vistas.has(c)) {
                 vistas.add(c);

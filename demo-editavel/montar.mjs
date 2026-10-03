@@ -14,14 +14,20 @@ const js = await build({
   bundle: true,
   format: "iife",
   target: "es2020",
+  // O tsconfig da raiz usa "react-jsx" (runtime do React 19, embutido no pacote); o artefato carrega o React 18 do CDN,
+  // que não reconhece esses elementos e deixa a tela em branco. Por isso a transformação clássica é forçada aqui.
+  jsx: "transform",
+  tsconfigRaw: { compilerOptions: { jsx: "react" } },
   jsxFactory: "React.createElement",
   jsxFragment: "React.Fragment",
   alias: { "@": raiz },
   minify: true,
   write: false,
 });
+const codigo = js.outputFiles[0].text;
+if (/react-jsx-runtime|react\.transitional\.element/.test(codigo)) throw new Error("O pacote embutiu o runtime JSX do React 19; ele não funciona com o React 18 do CDN.");
 const css = await postcss([tailwind({ base: aqui, optimize: { minify: true } })]).process(readFileSync(resolve(aqui, "estilo.css"), "utf8"), { from: resolve(aqui, "estilo.css") });
-const html = readFileSync(resolve(aqui, "cabecalho.html"), "utf8").replace("/*ESTILO*/", css.css) + `<script>${js.outputFiles[0].text}</script>\n`;
+const html = readFileSync(resolve(aqui, "cabecalho.html"), "utf8").replace("/*ESTILO*/", css.css) + `<script>${codigo}</script>\n`;
 mkdirSync(resolve(aqui, "dist"), { recursive: true });
 writeFileSync(resolve(aqui, "dist/index.html"), html);
 console.log(`dist/index.html: ${Math.round(html.length / 1024)} KB`);

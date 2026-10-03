@@ -117,4 +117,29 @@ function App() {
   );
 }
 
-ReactDOM.createRoot(document.getElementById("raiz")!).render(<App />);
+/** Mostra o erro na tela em vez de deixá-la em branco. */
+class Protecao extends React.Component<{ children?: React.ReactNode }, { erro: Error | null }> {
+  state = { erro: null as Error | null };
+  static getDerivedStateFromError(erro: Error) {
+    return { erro };
+  }
+  render() {
+    if (!this.state.erro) return this.props.children;
+    return (
+      <div className="mx-auto max-w-2xl p-8">
+        <h1 className="text-lg font-semibold text-navy-900">A demo encontrou um erro</h1>
+        <p className="mt-2 text-sm text-ardosia-600">Recarregue a página. Se o erro continuar, envie ao Claude o texto abaixo.</p>
+        <pre className="mt-4 overflow-x-auto whitespace-pre-wrap rounded-md border border-critico/30 bg-critico/5 p-3 text-xs text-critico">{String(this.state.erro.stack ?? this.state.erro.message)}</pre>
+        <button type="button" onClick={() => this.setState({ erro: null })} className="mt-4 rounded-md bg-navy-900 px-3.5 py-2 text-sm font-medium text-white">
+          Tentar de novo
+        </button>
+      </div>
+    );
+  }
+}
+
+ReactDOM.createRoot(document.getElementById("raiz")!).render(
+  <Protecao>
+    <App />
+  </Protecao>,
+);

@@ -1,0 +1,28 @@
+<title>MAIS i9 Gestão de Projetos</title>
+<style>
+/* Layout: barra lateral navy + área de trabalho clara, como o sistema. Visual único (claro), cores definidas aqui. */
+:root {
+  color-scheme: light;
+  --navy: #0f2a4a;
+  --fundo: #f4f6f9;
+  --texto: #0a1a30;
+  --destaque: #f28c28;
+  --linha: #e3e9f0;
+  --ardosia: #4f6480;
+  --fonte: "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+}
+html, body, #raiz { height: 100%; }
+body { background: var(--fundo); color: var(--texto); font-family: var(--fonte); margin: 0; }
+.tabela { width: calc(100% + 2rem); border-collapse: collapse; font-size: 0.875rem; }
+.tabela th { border-bottom: 1px solid #c9d3df; background: var(--fundo); padding: 0.5rem 0.75rem; text-align: left; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.025em; text-transform: uppercase; color: var(--ardosia); white-space: nowrap; }
+.tabela td { border-bottom: 1px solid var(--linha); padding: 0.5rem 0.75rem; vertical-align: middle; }
+.tabela tbody tr:hover { background: rgba(244, 246, 249, 0.6); }
+.tabela th.text-right, .tabela td.text-right { text-align: right; }
+.tabela th.text-center, .tabela td.text-center { text-align: center; }
+button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 2px solid var(--destaque); outline-offset: 1px; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+<style>/*ESTILO*/</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+<div id="raiz"></div>

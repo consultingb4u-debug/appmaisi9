@@ -1,0 +1,2 @@
+# Fontes ADVPL em CP-1252 com CRLF, como o TDS espera: o git não deve converter.
+protheus/src/*.prw -text diff

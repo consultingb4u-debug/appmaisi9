@@ -119,7 +119,11 @@ export default function Sobre() {
 
       {/* Nossa atuação */}
       <Secao fundo="cinza" id="atuacao">
-        <CabecalhoSecao sobretitulo="Nossa atuação" titulo="Onde a MAIS i9 gera valor" />
+        <CabecalhoSecao
+          sobretitulo="Nossa atuação"
+          titulo="Duas frentes, contratadas de forma independente"
+          descricao="Cada frente atende a uma necessidade e pode ser contratada sozinha. Para quem usa as duas, o MAIS i9 WMS tem integração padrão com o TOTVS Protheus."
+        />
         <div className="mt-12 grid gap-6 lg:grid-cols-2">
           {[
             {

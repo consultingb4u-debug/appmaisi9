@@ -512,8 +512,8 @@ export default function ConsultoriaProtheus() {
       </Secao>
 
       <CtaFinal
-        titulo="Seu armazém também precisa de controle?"
-        descricao="Conheça o MAIS i9 WMS, solução própria da MAIS i9 com integração padrão ao TOTVS Protheus."
+        titulo="Sua operação também tem um armazém?"
+        descricao="Conheça o MAIS i9 WMS, produto próprio da MAIS i9 com integração padrão ao TOTVS Protheus. Contratação independente da consultoria."
         rotulo="Conhecer o MAIS i9 WMS"
         href="/mais-i9-wms"
         atalhos={false}

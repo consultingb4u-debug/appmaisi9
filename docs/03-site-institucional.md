@@ -47,17 +47,21 @@ funcionalidades, integração e demonstração), contato comercial, política de
 ## 3. Estrutura das páginas
 
 ### Início
-1. **Hero** (azul-marinho): headline e subheadline do briefing, CTAs “Conhecer a Consultoria Protheus” e
-   “Explorar o MAIS i9 WMS”, composição visual ERP ↔ integração ↔ WMS (consultoria apoiando o ERP, mapa do
-   armazém, eventos da operação) — desenhada em SVG, sem banco de imagens.
-2. **Nossas soluções**: dois blocos (claro para a consultoria, escuro para o produto), cada um com proposta
-   de valor, benefícios e CTA próprio.
-3. **Por que escolher a MAIS i9**: os 7 diferenciais do briefing.
-4. **Como geramos valor**: jornada Entender → Planejar → Implementar → Sustentar → Evoluir.
-5. **Clientes e cases**: espaços reservados para logotipos, cases e depoimentos (só com autorização).
-6. **Conteúdos**: três artigos mais recentes.
-7. **CTA final**: “Vamos conversar sobre os desafios da sua operação?” → “Falar com a MAIS i9”, com atalhos
-   para diagnóstico e demonstração.
+As duas frentes têm o **mesmo peso** e são apresentadas como **contratações independentes**: a consultoria não
+exige o WMS, e o WMS não exige a consultoria. A integração entre elas aparece como diferencial, não como pacote.
+
+1. **Hero** (azul-marinho): headline e subheadline do briefing e duas “portas” iguais — MAIS i9 Consultoria
+   Protheus e MAIS i9 WMS —, com os CTAs “Conhecer a Consultoria Protheus” e “Explorar o MAIS i9 WMS”.
+2. **Duas frentes independentes**: um bloco por frente com o mesmo formato — para quem é, o que inclui, como
+   contratar (cada um dizendo que não exige o outro) e CTA próprio.
+3. **Especialista Protheus com WMS próprio**: só a consultoria, só o WMS ou as duas; integração padrão Protheus ↔
+   WMS e o case de integração, com a composição visual ERP ↔ WMS.
+4. **Por que escolher a MAIS i9**: os 7 diferenciais do briefing e as credenciais (+20 anos, +10.000 horas…).
+5. **Como geramos valor**: jornada Entender → Planejar → Implementar → Sustentar → Evoluir.
+6. **Clientes e cases**: clientes citados nos materiais e os cases da apresentação.
+7. **Conteúdos**: três artigos mais recentes.
+8. **CTA final**: “Vamos conversar sobre os desafios da sua operação?” → “Falar com a MAIS i9”, com atalhos
+   para diagnóstico Protheus e demonstração do WMS.
 
 ### Consultoria Protheus
 Hero com painel ilustrativo de governança de demandas → proposta de valor (“mais do que alocar

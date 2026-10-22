@@ -309,6 +309,11 @@ export const faqWms: { pergunta: string; resposta: string }[] = [
       "Não. O MAIS i9 WMS é um produto próprio, desenvolvido e mantido pela MAIS i9. Ele possui um pacote padrão de integração com o ERP TOTVS Protheus. TOTVS e Protheus são marcas registradas de seus respectivos titulares.",
   },
   {
+    pergunta: "Preciso contratar a consultoria da MAIS i9 para usar o WMS?",
+    resposta:
+      "Não. O MAIS i9 WMS é contratado de forma independente: assinatura SaaS e implantação, com a integração padrão ao Protheus incluída. Se a sua empresa também quiser suporte ou sustentação do Protheus, a consultoria da MAIS i9 é uma contratação à parte.",
+  },
+  {
     pergunta: "Funciona apenas com o TOTVS Protheus?",
     resposta:
       "O MAIS i9 WMS tem integração padrão com o TOTVS Protheus e disponibiliza APIs para integração com outros ERPs e sistemas corporativos. Nesses casos, o escopo da integração é avaliado com a sua equipe antes do projeto.",

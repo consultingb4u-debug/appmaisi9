@@ -441,8 +441,8 @@ export default function MaisI9Wms() {
       </Secao>
 
       <CtaFinal
-        titulo="Precisa de apoio também no seu Protheus?"
-        descricao="A MAIS i9 oferece sustentação, suporte, projetos e desenvolvimento para empresas que utilizam o TOTVS Protheus."
+        titulo="Também precisa de apoio no seu Protheus?"
+        descricao="A MAIS i9 é especialista em TOTVS Protheus, com suporte, sustentação, projetos e fábrica de software. Contratação independente do WMS."
         rotulo="Conhecer a Consultoria Protheus"
         href="/consultoria-protheus"
         atalhos={false}

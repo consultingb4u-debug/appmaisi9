@@ -362,6 +362,11 @@ export const faqConsultoria: { pergunta: string; resposta: string }[] = [
       "Não. A MAIS i9 é uma empresa independente, especializada em serviços para empresas que utilizam o ERP TOTVS Protheus. TOTVS e Protheus são marcas registradas de seus respectivos titulares.",
   },
   {
+    pergunta: "Preciso usar o MAIS i9 WMS para contratar a consultoria?",
+    resposta:
+      "Não. A consultoria atende ambientes TOTVS Protheus com ou sem o MAIS i9 WMS. As duas frentes são contratadas de forma independente; para quem usa as duas, a integração padrão entre Protheus e WMS já faz parte do produto.",
+  },
+  {
     pergunta: "Quais modelos de contratação estão disponíveis?",
     resposta:
       "Pontual (por atendimento, sem horas mínimas), Suporte (franquia mensal de horas), Sustentação (bolsa de horas), Evolutivo (bolsa única de horas que combina suporte e sustentação) e Projetos (escopo fechado ou por estimativa). O modelo é definido com você, conforme o volume e o tipo de demanda.",

@@ -5,6 +5,7 @@ Aplicação web interna da MAIS i9 para substituir os controles em planilha
 
 - Proposta, diagnóstico das planilhas e modelo de dados: [`docs/01-proposta-arquitetura.md`](docs/01-proposta-arquitetura.md)
 - Resumo técnico para a equipe de TI: [`docs/02-resumo-tecnico.md`](docs/02-resumo-tecnico.md)
+- Site institucional e comercial (projeto separado em [`site/`](site)): [`docs/03-site-institucional.md`](docs/03-site-institucional.md)
 
 ## Ver funcionando
 

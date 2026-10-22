@@ -1,0 +1,187 @@
+@import "tailwindcss";
+
+/* Identidade MAIS i9 — mesma paleta do sistema interno (app/globals.css da raiz):
+   azul-marinho, azul institucional, ardósia (azul acinzentado), branco, cinza muito claro
+   e laranja apenas como destaque. Validar com o manual de marca antes da publicação. */
+@theme {
+  --color-navy-950: #0a1a30;
+  --color-navy-900: #0f2a4a;
+  --color-navy-800: #17365d;
+  --color-navy-700: #234a78;
+
+  /* Azul institucional: 600 para textos e links (contraste AA sobre branco), 500 para elementos gráficos. */
+  --color-azul-600: #1f5f9e;
+  --color-azul-500: #2b7bbf;
+  --color-azul-300: #8dbbe6;
+  --color-azul-100: #e6f0fa;
+
+  --color-ardosia-700: #3d4f66;
+  --color-ardosia-600: #4f6480;
+  --color-ardosia-500: #5b7088;
+  --color-ardosia-400: #8395ab;
+  --color-ardosia-300: #aab8c8;
+  --color-ardosia-200: #c9d3df;
+  --color-ardosia-100: #e3e9f0;
+  --color-fundo: #f4f6f9;
+
+  /* Laranja: só fundo de botão principal, marcadores e detalhes gráficos.
+     Sobre fundo claro não é usado como cor de texto (contraste insuficiente). */
+  --color-destaque: #f28c28;
+  --color-destaque-escuro: #d9731a;
+  --color-destaque-claro: #fdeedd;
+
+  --color-ok: #1f9d55;
+  --color-alerta: #d4a017;
+  --color-critico: #d64545;
+
+  --font-sans: var(--fonte-texto), ui-sans-serif, system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+  --font-display: var(--fonte-titulo), var(--fonte-texto), ui-sans-serif, system-ui, sans-serif;
+
+  --animate-fluxo: fluxo 1.6s linear infinite;
+  --animate-pulso: pulso 2.4s ease-in-out infinite;
+
+  @keyframes fluxo {
+    to {
+      stroke-dashoffset: -16;
+    }
+  }
+  @keyframes pulso {
+    0%,
+    100% {
+      opacity: 0.35;
+    }
+    50% {
+      opacity: 1;
+    }
+  }
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    background: #ffffff;
+    color: var(--color-navy-950);
+    font-family: var(--font-sans);
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+  p {
+    text-wrap: pretty;
+  }
+  /* Âncoras não ficam escondidas sob o cabeçalho fixo. */
+  [id] {
+    scroll-margin-top: 6rem;
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-azul-500);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+  ::selection {
+    background: var(--color-destaque-claro);
+    color: var(--color-navy-950);
+  }
+}
+
+@layer components {
+  .container-site {
+    @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8;
+  }
+
+  /* Fundo técnico discreto para seções escuras. */
+  .grade-tecnica {
+    background-image:
+      linear-gradient(to right, rgb(255 255 255 / 0.045) 1px, transparent 1px),
+      linear-gradient(to bottom, rgb(255 255 255 / 0.045) 1px, transparent 1px);
+    background-size: 48px 48px;
+  }
+  .grade-tecnica-clara {
+    background-image:
+      linear-gradient(to right, rgb(15 42 74 / 0.05) 1px, transparent 1px),
+      linear-gradient(to bottom, rgb(15 42 74 / 0.05) 1px, transparent 1px);
+    background-size: 48px 48px;
+  }
+
+  /* Campos de formulário */
+  .campo {
+    @apply w-full min-w-0 rounded-lg border border-ardosia-200 bg-white px-3.5 py-2.5 text-[15px] text-navy-950 shadow-xs transition outline-none placeholder:text-ardosia-400 focus:border-azul-500 focus:ring-3 focus:ring-azul-500/15 disabled:bg-fundo aria-invalid:border-critico aria-invalid:ring-critico/10;
+  }
+  .rotulo {
+    @apply mb-1.5 block text-sm font-medium text-navy-900;
+  }
+
+  /* Texto corrido dos artigos (MDX). */
+  .artigo {
+    @apply text-[17px] leading-8 text-ardosia-700;
+  }
+  .artigo > * + * {
+    @apply mt-5;
+  }
+  .artigo h2 {
+    @apply mt-12 text-2xl font-semibold text-navy-950;
+  }
+  .artigo h3 {
+    @apply mt-8 text-xl font-semibold text-navy-950;
+  }
+  .artigo strong {
+    @apply font-semibold text-navy-900;
+  }
+  .artigo a {
+    @apply font-medium text-azul-600 underline decoration-azul-300 underline-offset-4 hover:decoration-azul-600;
+  }
+  .artigo ul {
+    @apply list-disc space-y-2 pl-6 marker:text-destaque;
+  }
+  .artigo ol {
+    @apply list-decimal space-y-2 pl-6 marker:font-semibold marker:text-navy-700;
+  }
+  .artigo blockquote {
+    @apply border-l-4 border-destaque bg-fundo px-5 py-4 text-navy-900 italic;
+  }
+}
+
+/* Revelação ao rolar: só CSS (scroll-driven animations). Navegadores sem suporte
+   ou com movimento reduzido mostram o conteúdo direto, sem animação. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .revelar {
+      animation: revelar linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 30%;
+    }
+  }
+}
+@keyframes revelar {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

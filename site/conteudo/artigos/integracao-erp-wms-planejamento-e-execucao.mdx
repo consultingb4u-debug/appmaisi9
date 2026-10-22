@@ -1,0 +1,47 @@
+Em muitas empresas, o ERP sabe o que *deveria* estar no estoque, mas não sabe exatamente *onde* cada item está, em qual lote, com qual validade e em que etapa da operação. Essa distância entre o registro no sistema e a realidade física do armazém é a origem de boa parte das divergências de estoque. A integração entre ERP e WMS existe para fechar essa distância.
+
+## O papel de cada sistema
+
+O **ERP** é a referência da gestão empresarial: cadastros, compras, vendas, documentos fiscais, financeiro e a posição contábil do estoque. Ele planeja e registra as transações do negócio.
+
+O **WMS** (Warehouse Management System) é o sistema que conduz a execução física dentro do armazém: recebimento, conferência, endereçamento, movimentações, separação, conferência de saída e expedição. Ele organiza o trabalho das pessoas e registra cada movimento no momento em que acontece.
+
+Os dois sistemas não competem entre si. O ERP diz **o que** precisa acontecer; o WMS controla **como** e **onde** acontece — e devolve ao ERP a confirmação do que foi feito.
+
+## Quais informações circulam entre ERP e WMS
+
+Em linhas gerais, a integração cobre dois sentidos:
+
+1. **Do ERP para o WMS:** cadastros de produtos, documentos de entrada que serão recebidos e pedidos que precisam ser separados e expedidos.
+2. **Do WMS para o ERP:** confirmações das operações executadas — o que foi efetivamente recebido, movimentado e expedido.
+
+O detalhe de cada fluxo depende dos processos da empresa e dos módulos utilizados. Por isso, o desenho da integração deve começar pelo processo, e não pela tecnologia.
+
+## Benefícios de uma integração bem desenhada
+
+- **Menos digitação e retrabalho:** a informação é registrada uma vez e reaproveitada pelo outro sistema.
+- **Processos sincronizados:** o planejamento no ERP e a execução no armazém avançam de forma coordenada.
+- **Rastreabilidade:** cada movimentação passa a ter origem, destino, lote e responsável identificados.
+- **Consistência entre sistemas:** os saldos do armazém e do ERP permanecem alinhados, com menos divergências para investigar.
+
+## Cuidados que fazem diferença
+
+### Definir quem é a fonte de cada informação
+
+Cada dado precisa ter um "dono". Se cadastros podem ser alterados nos dois sistemas sem regra clara, as divergências aparecem rapidamente.
+
+### Tratar exceções desde o início
+
+Divergência na conferência, item avariado, pedido alterado depois de separado: os cenários fora do fluxo ideal precisam estar previstos no processo e na integração.
+
+### Monitorar a integração
+
+Uma integração que falha em silêncio é pior do que nenhuma integração. É importante acompanhar o que foi enviado, o que foi processado e o que precisa de tratamento.
+
+### Testar com cenários reais
+
+Antes de entrar em operação, vale testar a integração com documentos e pedidos que representem a rotina real — incluindo os casos de exceção.
+
+## Integração padrão e APIs
+
+O [MAIS i9 WMS](/mais-i9-wms) possui um pacote padrão de integração com o TOTVS Protheus e disponibiliza APIs para integração com outros ERPs. Se você quer ver como o planejamento do ERP se conecta à execução no armazém, [agende uma demonstração](/mais-i9-wms#demonstracao).

@@ -1,0 +1,344 @@
+import { ArrowLeftRight, Check, Database, Plug, Warehouse } from "lucide-react";
+import Link from "next/link";
+import { FormularioDemoWms } from "@/components/formularios/formularios";
+import { CtaFinal, HeroPagina, PerguntasFrequentes } from "@/components/secoes";
+import { Botao, CabecalhoSecao, CaixaIcone, JsonLd, Secao } from "@/components/ui";
+import { Aplicativos, BaseOperacional, FluxoOperacao, NotaIlustracao, VisaoProduto, VitrineHero } from "@/components/wms";
+import { avisoMarcas } from "@/conteudo/empresa";
+import { baseOperacional, beneficiosWms, faqWms, modulosComplementares, pontosIntegracao } from "@/conteudo/wms";
+import { idOrganizacao, perguntasFrequentes, trilha } from "@/lib/jsonld";
+import { metadadosPagina, urlAbsoluta } from "@/lib/site";
+
+export const metadata = metadadosPagina({
+  titulo: "MAIS i9 WMS — Gestão de Armazéns SaaS",
+  descricao:
+    "MAIS i9 WMS: plataforma SaaS de gestão de armazéns com recebimento, armazenagem, expedição, App Operador, indicadores e integração padrão com o TOTVS Protheus. Agende uma demonstração.",
+  caminho: "/mais-i9-wms",
+});
+
+const caminhoTrilha = [
+  { nome: "Início", caminho: "/" },
+  { nome: "MAIS i9 WMS", caminho: "/mais-i9-wms" },
+];
+
+export default function MaisI9Wms() {
+  const produtoJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    name: "MAIS i9 WMS",
+    applicationCategory: "BusinessApplication",
+    applicationSubCategory: "Warehouse Management System",
+    operatingSystem: "Web",
+    url: urlAbsoluta("/mais-i9-wms"),
+    description:
+      "Solução SaaS de gestão de armazéns da MAIS i9, com integração padrão com o TOTVS Protheus e APIs para integração com outros ERPs.",
+    publisher: { "@id": idOrganizacao },
+    featureList: [...baseOperacional, ...modulosComplementares].map((m) => m.titulo),
+  };
+
+  return (
+    <>
+      <JsonLd dados={[produtoJsonLd, perguntasFrequentes(faqWms), trilha(caminhoTrilha)]} />
+
+      <HeroPagina
+        trilha={caminhoTrilha}
+        sobretitulo="MAIS i9 WMS · Produto SaaS"
+        titulo="Mais controle, rastreabilidade e produtividade para sua operação logística."
+        descricao="Conheça o MAIS i9 WMS: uma plataforma completa para gestão de armazéns, conectando pessoas, processos e sistemas em uma operação mais inteligente."
+        visual={<VitrineHero />}
+      >
+        <Botao href="#demonstracao" tamanho="lg" seta>
+          Agendar demonstração
+        </Botao>
+        <Botao href="#funcionalidades" variante="contorno-claro" tamanho="lg">
+          Explorar funcionalidades
+        </Botao>
+      </HeroPagina>
+
+      {/* Faixa de credenciais do produto */}
+      <div className="border-b border-ardosia-100 bg-white">
+        <ul className="container-site grid grid-cols-2 gap-x-6 gap-y-4 py-7 text-sm font-medium text-navy-900 lg:grid-cols-4">
+          {[
+            { t: "Integração padrão com TOTVS Protheus", I: ArrowLeftRight },
+            { t: "APIs para integração com outros ERPs", I: Plug },
+            { t: "App Operador para a operação", I: Warehouse },
+            { t: "Modelo SaaS, produto próprio MAIS i9", I: Database },
+          ].map(({ t, I }) => (
+            <li key={t} className="flex items-center gap-3">
+              <I aria-hidden className="size-5 shrink-0 text-azul-600" strokeWidth={1.75} />
+              {t}
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      {/* Visão do produto */}
+      <Secao fundo="cinza" id="produto">
+        <CabecalhoSecao
+          centro
+          sobretitulo="Visão do produto"
+          titulo="Do painel de gestão ao coletor na mão do operador"
+          descricao="Web para planejar e acompanhar, mobilidade para executar — tudo na mesma plataforma."
+        />
+        <div className="mt-12">
+          <VisaoProduto />
+        </div>
+        <div className="mt-8 text-center">
+          <NotaIlustracao />
+        </div>
+      </Secao>
+
+      {/* Benefícios */}
+      <Secao id="beneficios">
+        <div className="grid gap-12 lg:grid-cols-12">
+          <CabecalhoSecao
+            className="lg:col-span-4"
+            sobretitulo="Benefícios"
+            titulo="O que o MAIS i9 WMS traz para a sua operação"
+            descricao="Controle e visibilidade do recebimento à expedição, com a informação do armazém conectada ao ERP."
+          />
+          <ul className="grid gap-x-8 gap-y-5 sm:grid-cols-2 lg:col-span-8">
+            {beneficiosWms.map(({ titulo, icone: Icone }) => (
+              <li key={titulo} className="revelar flex items-center gap-4 border-b border-ardosia-100 pb-5">
+                <CaixaIcone className="size-10">
+                  <Icone className="size-5" strokeWidth={1.75} />
+                </CaixaIcone>
+                <span className="text-[15.5px] font-medium text-navy-900">{titulo}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </Secao>
+
+      {/* Como funciona */}
+      <Secao fundo="cinza" id="como-funciona">
+        <CabecalhoSecao
+          centro
+          sobretitulo="Como funciona"
+          titulo="O ERP planeja. O WMS conduz a execução física."
+          descricao="As informações do ERP orientam o trabalho no armazém, e cada etapa executada volta para o ERP — sem redigitação."
+        />
+        <div className="mt-16">
+          <FluxoOperacao />
+        </div>
+        <div className="mt-14 grid gap-5 md:grid-cols-2">
+          <div className="rounded-2xl bg-white p-7 ring-1 ring-ardosia-200">
+            <p className="text-xs font-semibold tracking-wider text-azul-600 uppercase">Do ERP para o armazém</p>
+            <p className="mt-3 text-[15.5px] leading-relaxed text-ardosia-700">
+              Cadastros, documentos de entrada e pedidos de saída registrados no ERP chegam ao MAIS i9 WMS e se transformam
+              em tarefas para a equipe do armazém.
+            </p>
+          </div>
+          <div className="rounded-2xl bg-white p-7 ring-1 ring-ardosia-200">
+            <p className="text-xs font-semibold tracking-wider text-azul-600 uppercase">Do armazém para o ERP</p>
+            <p className="mt-3 text-[15.5px] leading-relaxed text-ardosia-700">
+              O que foi conferido, armazenado, movimentado e expedido retorna ao ERP, mantendo os dois sistemas consistentes
+              e a operação rastreável.
+            </p>
+          </div>
+        </div>
+      </Secao>
+
+      {/* Base operacional */}
+      <Secao id="funcionalidades">
+        <div className="flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
+          <CabecalhoSecao
+            sobretitulo="Base operacional"
+            titulo="Sete componentes que estruturam a operação do armazém"
+            descricao="Selecione um componente para ver o que ele cobre."
+          />
+        </div>
+        <div className="mt-12">
+          <BaseOperacional />
+        </div>
+      </Secao>
+
+      {/* Módulos complementares */}
+      <Secao fundo="cinza" id="modulos-complementares">
+        <CabecalhoSecao
+          sobretitulo="Módulos complementares"
+          titulo="Recursos para ampliar o controle além do armazém"
+          descricao="Inventário, produção, entregas e embalagens, para operações que precisam de mais abrangência."
+        />
+        <div className="mt-14 grid gap-6 md:grid-cols-2">
+          {modulosComplementares.map((m) => (
+            <article key={m.id} className="revelar flex flex-col rounded-2xl border border-ardosia-200 bg-white p-7 sm:p-8">
+              <div className="flex items-start gap-5">
+                <CaixaIcone>
+                  <m.icone className="size-5" strokeWidth={1.75} />
+                </CaixaIcone>
+                <div>
+                  <h3 className="text-xl font-semibold text-navy-950">{m.titulo}</h3>
+                  <p className="mt-1.5 text-[15px] leading-relaxed text-ardosia-600">{m.resumo}</p>
+                </div>
+              </div>
+              <ul className="mt-6 space-y-2.5 border-t border-ardosia-100 pt-6">
+                {m.itens.map((item) => (
+                  <li key={item} className="flex gap-3 text-[14.5px] text-ardosia-700">
+                    <Check aria-hidden className="mt-0.5 size-4 shrink-0 text-azul-600" strokeWidth={2.5} />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+              <p className="mt-auto pt-6 text-[15px] font-medium text-navy-900">{m.beneficio}</p>
+            </article>
+          ))}
+        </div>
+        <div className="mt-10 rounded-2xl border border-azul-300/50 bg-azul-100/60 p-6 text-[15px] leading-relaxed text-navy-900 sm:p-8">
+          <strong className="font-semibold">Todos esses recursos fazem parte do produto padrão.</strong> A implantação é
+          dimensionada conforme os processos e os módulos utilizados pela sua operação.
+        </div>
+      </Secao>
+
+      {/* Integração com TOTVS Protheus */}
+      <Secao fundo="escuro" id="integracao">
+        <div className="grid items-center gap-14 lg:grid-cols-12">
+          <div className="lg:col-span-6">
+            <CabecalhoSecao
+              claro
+              sobretitulo="Integração com TOTVS Protheus"
+              titulo="Pacote padrão de integração com o Protheus"
+              descricao="O MAIS i9 WMS nasce conectado ao ERP TOTVS Protheus, para que armazém e gestão trabalhem com a mesma informação."
+            />
+            <dl className="mt-10 space-y-6">
+              {pontosIntegracao.map((p) => (
+                <div key={p.titulo} className="flex gap-4">
+                  <span aria-hidden className="mt-1 flex size-6 shrink-0 items-center justify-center rounded-full bg-white/10 text-destaque">
+                    <Check className="size-3.5" strokeWidth={3} />
+                  </span>
+                  <div>
+                    <dt className="font-semibold text-white">{p.titulo}</dt>
+                    <dd className="mt-1 text-[15px] leading-relaxed text-ardosia-300">{p.texto}</dd>
+                  </div>
+                </div>
+              ))}
+            </dl>
+          </div>
+
+          <div className="lg:col-span-6">
+            <div className="rounded-3xl bg-white/[0.04] p-6 ring-1 ring-white/10 sm:p-8">
+              <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3 sm:gap-5">
+                <div className="rounded-2xl bg-navy-900 p-5 text-center ring-1 ring-white/10">
+                  <Database aria-hidden className="mx-auto size-7 text-azul-300" strokeWidth={1.75} />
+                  <p className="mt-3 text-[11px] tracking-wider text-ardosia-400 uppercase">ERP</p>
+                  <p className="font-semibold text-white">TOTVS Protheus</p>
+                </div>
+                <ArrowLeftRight aria-hidden className="size-7 text-destaque" />
+                <div className="rounded-2xl bg-navy-900 p-5 text-center ring-1 ring-destaque/40">
+                  <Warehouse aria-hidden className="mx-auto size-7 text-destaque" strokeWidth={1.75} />
+                  <p className="mt-3 text-[11px] tracking-wider text-ardosia-400 uppercase">WMS</p>
+                  <p className="font-semibold text-white">MAIS i9 WMS</p>
+                </div>
+              </div>
+              <div className="mt-6 grid gap-3 sm:grid-cols-2">
+                <div className="rounded-xl bg-navy-900/70 p-4 ring-1 ring-white/5">
+                  <p className="text-xs font-semibold text-azul-300">Protheus → WMS</p>
+                  <ul className="mt-2 space-y-1 text-sm text-ardosia-200">
+                    <li>Cadastros</li>
+                    <li>Documentos de entrada</li>
+                    <li>Pedidos de saída</li>
+                  </ul>
+                </div>
+                <div className="rounded-xl bg-navy-900/70 p-4 ring-1 ring-white/5">
+                  <p className="text-xs font-semibold text-destaque">WMS → Protheus</p>
+                  <ul className="mt-2 space-y-1 text-sm text-ardosia-200">
+                    <li>Confirmações das operações</li>
+                    <li>Movimentações</li>
+                    <li>Expedições</li>
+                  </ul>
+                </div>
+              </div>
+              <div className="mt-6 flex gap-4 rounded-xl border border-dashed border-white/20 p-4">
+                <Plug aria-hidden className="mt-0.5 size-5 shrink-0 text-azul-300" strokeWidth={1.75} />
+                <p className="text-sm leading-relaxed text-ardosia-200">
+                  <strong className="font-semibold text-white">Outros ERPs:</strong> o MAIS i9 WMS disponibiliza APIs de
+                  integração. O escopo de cada integração é avaliado com a sua equipe no início do projeto.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </Secao>
+
+      {/* Aplicativos */}
+      <Secao id="aplicativos">
+        <CabecalhoSecao
+          centro
+          sobretitulo="Aplicativos"
+          titulo="Mobilidade dentro e fora do armazém"
+          descricao="Aplicativos pensados para quem executa a operação: no armazém e na rua."
+        />
+        <div className="mt-14">
+          <Aplicativos />
+        </div>
+        <div className="mt-6 text-center">
+          <NotaIlustracao />
+        </div>
+      </Secao>
+
+      {/* FAQ */}
+      <Secao fundo="cinza" id="perguntas">
+        <div className="grid gap-12 lg:grid-cols-12">
+          <CabecalhoSecao
+            className="lg:col-span-4"
+            sobretitulo="Perguntas frequentes"
+            titulo="Dúvidas sobre o MAIS i9 WMS"
+            descricao={
+              <>
+                Quer ver o produto funcionando?{" "}
+                <Link href="#demonstracao" className="font-semibold text-azul-600 hover:text-navy-900">
+                  Agende uma demonstração
+                </Link>
+                .
+              </>
+            }
+          />
+          <div className="lg:col-span-8">
+            <PerguntasFrequentes itens={faqWms} />
+          </div>
+        </div>
+      </Secao>
+
+      {/* Demonstração */}
+      <Secao id="demonstracao">
+        <div className="grid gap-12 lg:grid-cols-12 lg:gap-16">
+          <div className="lg:col-span-5">
+            <CabecalhoSecao
+              sobretitulo="Demonstração"
+              titulo="Agende uma demonstração do MAIS i9 WMS"
+              descricao="Mostramos o MAIS i9 WMS aplicado aos processos da sua operação e como ele se conecta ao seu ERP."
+            />
+            <ul className="mt-10 space-y-4">
+              {[
+                "Conversa inicial para entender a operação e os desafios",
+                "Apresentação do WMS a partir dos seus processos",
+                "Orientação sobre integração com o seu ERP e próximos passos",
+              ].map((t) => (
+                <li key={t} className="flex gap-3 text-[15.5px] text-ardosia-700">
+                  <span aria-hidden className="mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full bg-azul-100 text-azul-600">
+                    <Check className="size-3.5" strokeWidth={3} />
+                  </span>
+                  {t}
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div className="rounded-3xl border border-ardosia-200 bg-white p-6 shadow-xl shadow-navy-950/5 sm:p-10 lg:col-span-7">
+            <FormularioDemoWms />
+          </div>
+        </div>
+        <p className="mt-16 text-xs leading-relaxed text-ardosia-500">
+          O MAIS i9 WMS é um produto desenvolvido e mantido pela MAIS i9. {avisoMarcas}
+        </p>
+      </Secao>
+
+      <CtaFinal
+        titulo="Precisa de apoio também no seu Protheus?"
+        descricao="A MAIS i9 oferece sustentação, suporte, projetos e desenvolvimento para empresas que utilizam o TOTVS Protheus."
+        rotulo="Conhecer a Consultoria Protheus"
+        href="/consultoria-protheus"
+        atalhos={false}
+      />
+    </>
+  );
+}

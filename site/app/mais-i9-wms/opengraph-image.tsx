@@ -1,0 +1,12 @@
+import { imagemOg, tamanhoOg } from "@/lib/og";
+
+export const alt = "MAIS i9 WMS — gestão de armazéns";
+export const size = tamanhoOg;
+export const contentType = "image/png";
+
+export default function Image() {
+  return imagemOg({
+    sobretitulo: "MAIS i9 WMS · Produto SaaS",
+    titulo: "Mais controle, rastreabilidade e produtividade para sua operação logística.",
+  });
+}

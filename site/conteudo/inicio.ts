@@ -1,98 +1,81 @@
 import type { LucideIcon } from "lucide-react";
-import {
-  BadgeCheck,
-  Building2,
-  Cpu,
-  Handshake,
-  Headset,
-  Lightbulb,
-  Link2,
-  Target,
-  Warehouse,
-  Workflow,
-} from "lucide-react";
+import { BadgeCheck, Building2, Cpu, Handshake, Headset, Lightbulb, Target, Warehouse, Workflow } from "lucide-react";
 
 /*
- * Conteúdo da página inicial. As duas frentes têm o mesmo peso e são contratadas
- * de forma independente: a consultoria não exige o WMS, e o WMS não exige a consultoria.
+ * Conteúdo da página inicial: apresentação institucional da MAIS i9 e de seus
+ * serviços e produtos. Cada oferta é descrita por si só e leva à sua página.
  */
 
-export type Frente = {
+export const quemSomosInicio = {
+  titulo: "Conhecimento, experiência e tecnologia a serviço da gestão empresarial",
+  paragrafos: [
+    "A MAIS i9 é uma empresa brasileira de tecnologia que apoia empresas na continuidade, na eficiência e na evolução das suas operações.",
+    "Oferecemos serviços de consultoria especializada em TOTVS Protheus e desenvolvemos soluções próprias, como o MAIS i9 WMS, plataforma SaaS de gestão de armazéns.",
+  ],
+};
+
+export type Oferta = {
   id: "consultoria" | "wms";
+  /** "Serviço" ou "Produto". */
   rotulo: string;
   nome: string;
-  resumo: string;
+  /** Chamada curta do cartão no topo da página. */
+  chamada: string;
   destaques: string[];
-  paraQuem: string;
-  inclui: string[];
-  comoContratar: string;
+  titulo: string;
+  texto: string;
+  itens: string[];
   cta: { rotulo: string; href: string };
-  saibaMais: { rotulo: string; href: string };
+  ctaSecundario: { rotulo: string; href: string };
   icone: LucideIcon;
 };
 
-export const frentes: Frente[] = [
-  {
-    id: "consultoria",
-    rotulo: "Serviços",
-    nome: "MAIS i9 Consultoria Protheus",
-    resumo: "Suporte, sustentação, projetos e fábrica de software para empresas que utilizam o TOTVS Protheus.",
-    destaques: ["Suporte N1–N3", "Sustentação", "Projetos", "ADVPL/TLPP"],
-    paraQuem: "Empresas que utilizam o TOTVS Protheus e precisam de continuidade, suporte especializado e evolução do ERP.",
-    inclui: [
-      "Suporte N1 a N3 com SLA e atendimento multicanal",
-      "Sustentação, atualizações e migrações de versão",
-      "Projetos, integrações e fábrica de software ADVPL/TLPP",
-      "DBA Oracle e SQL Server",
-    ],
-    comoContratar: "Modelos Pontual, Suporte, Sustentação, Evolutivo ou Projetos — sem necessidade de usar o MAIS i9 WMS.",
-    cta: { rotulo: "Falar com um especialista Protheus", href: "/consultoria-protheus#formulario" },
-    saibaMais: { rotulo: "Conhecer a Consultoria Protheus", href: "/consultoria-protheus" },
-    icone: Headset,
-  },
-  {
-    id: "wms",
-    rotulo: "Produto SaaS",
-    nome: "MAIS i9 WMS",
-    resumo: "Gestão Inteligente de Armazéns: recebimento, armazenagem, expedição e inventário com rastreabilidade.",
-    destaques: ["100% SaaS", "App Operador", "Integração Protheus", "APIs"],
-    paraQuem: "Operações logísticas que precisam de controle, rastreabilidade e mobilidade no armazém.",
-    inclui: [
-      "Recebimento, armazenagem, expedição e gestão administrativa",
-      "App Operador em dispositivos Android",
-      "Dashboards, lotes, validade e FIFO/FEFO",
-      "Módulos de inventário, produção, entregas e embalagens",
-    ],
-    comoContratar: "Assinatura SaaS e implantação dos módulos escolhidos — sem necessidade de contratar a consultoria.",
-    cta: { rotulo: "Agendar demonstração", href: "/mais-i9-wms#demonstracao" },
-    saibaMais: { rotulo: "Explorar o MAIS i9 WMS", href: "/mais-i9-wms" },
-    icone: Warehouse,
-  },
-];
+export const consultoriaInicio: Oferta = {
+  id: "consultoria",
+  rotulo: "Serviço",
+  nome: "MAIS i9 Consultoria Protheus",
+  chamada: "Especialistas em TOTVS Protheus: suporte, sustentação, projetos e fábrica de software.",
+  destaques: ["+20 anos em Protheus", "Suporte N1–N3", "Sustentação", "Projetos"],
+  titulo: "Especialistas em TOTVS Protheus",
+  texto:
+    "Mais de 20 anos dedicados ao Protheus. Apoiamos empresas a extrair o máximo valor do ERP com estabilidade, governança e evolução contínua — com especialistas funcionais e técnicos que conhecem o seu ambiente.",
+  itens: [
+    "Suporte N1 a N3, com SLA e atendimento multicanal",
+    "Sustentação, atualizações e migrações de versão",
+    "Projetos de implantação, integrações e internacionalização",
+    "Fábrica de software ADVPL/TLPP e DBA Oracle e SQL Server",
+  ],
+  cta: { rotulo: "Conhecer a Consultoria Protheus", href: "/consultoria-protheus" },
+  ctaSecundario: { rotulo: "Falar com um especialista Protheus", href: "/consultoria-protheus#formulario" },
+  icone: Headset,
+};
 
-/** Como as frentes se relacionam: independentes, com integração padrão quando usadas juntas. */
-export const combinacoesFrentes: { titulo: string; texto: string; icone: LucideIcon }[] = [
-  {
-    titulo: "Só a consultoria",
-    texto: "Suporte, sustentação e projetos para o seu ambiente Protheus, com ou sem WMS.",
-    icone: Headset,
-  },
-  {
-    titulo: "Só o MAIS i9 WMS",
-    texto: "Integração padrão com o Protheus incluída na implantação e APIs para outros ERPs, sem exigir a consultoria.",
-    icone: Warehouse,
-  },
-  {
-    titulo: "As duas frentes",
-    texto: "Um único parceiro para o ERP e o armazém: quem cuida do Protheus conhece a integração com o WMS.",
-    icone: Link2,
-  },
-];
+export const wmsInicio: Oferta = {
+  id: "wms",
+  rotulo: "Produto",
+  nome: "MAIS i9 WMS",
+  chamada: "Gestão Inteligente de Armazéns, 100% SaaS, com controle e rastreabilidade do recebimento à expedição.",
+  destaques: ["100% SaaS", "App Operador", "Rastreabilidade", "Addon MAIS i9 (API)"],
+  titulo: "Gestão Inteligente de Armazéns",
+  texto:
+    "Plataforma SaaS que conecta pessoas, processos e tecnologia no armazém: visibilidade do estoque, rastreabilidade ponta a ponta e mais segurança nas decisões, do recebimento à expedição.",
+  itens: [
+    "Recebimento, armazenagem, expedição e inventário",
+    "Lotes, validade, FIFO/FEFO e endereçamento",
+    "App Operador em dispositivos Android",
+    "Conexão ao TOTVS Protheus pelo Addon MAIS i9, via API",
+  ],
+  cta: { rotulo: "Explorar o MAIS i9 WMS", href: "/mais-i9-wms" },
+  ctaSecundario: { rotulo: "Agendar demonstração", href: "/mais-i9-wms#demonstracao" },
+  icone: Warehouse,
+};
+
+export const ofertasInicio = [consultoriaInicio, wmsInicio];
 
 export const diferenciaisInicio: { titulo: string; texto: string; icone: LucideIcon }[] = [
   {
     titulo: "Especialização",
-    texto: "Foco em TOTVS Protheus e em gestão de armazéns — as frentes em que concentramos conhecimento e investimento.",
+    texto: "Foco em TOTVS Protheus e em gestão de armazéns — as áreas em que concentramos conhecimento e investimento.",
     icone: Target,
   },
   {
@@ -102,7 +85,7 @@ export const diferenciaisInicio: { titulo: string; texto: string; icone: LucideI
   },
   {
     titulo: "Conhecimento técnico e funcional",
-    texto: "Domínio da parametrização e do desenvolvimento, aliado ao entendimento de como as áreas usam o ERP.",
+    texto: "Domínio da parametrização e do desenvolvimento, aliado ao entendimento de como as áreas usam o sistema.",
     icone: Cpu,
   },
   {
@@ -117,7 +100,7 @@ export const diferenciaisInicio: { titulo: string; texto: string; icone: LucideI
   },
   {
     titulo: "Tecnologia própria",
-    texto: "O MAIS i9 WMS é desenvolvido e evoluído pela MAIS i9, com conhecimento direto do produto e da integração.",
+    texto: "Produtos desenvolvidos e evoluídos pela própria MAIS i9, com conhecimento direto de cada solução.",
     icone: Lightbulb,
   },
   {

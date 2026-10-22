@@ -1,7 +1,7 @@
 import { ArrowLeftRight, Check, Cloud, Database, Plug, ScanBarcode, Warehouse } from "lucide-react";
 import Link from "next/link";
 import { FormularioDemoWms } from "@/components/formularios/formularios";
-import { CtaFinal, HeroPagina, PerguntasFrequentes } from "@/components/secoes";
+import { HeroPagina, PerguntasFrequentes } from "@/components/secoes";
 import { Botao, CabecalhoSecao, CaixaIcone, JsonLd, Secao, Sobretitulo } from "@/components/ui";
 import { Aplicativos, BaseOperacional, FluxoOperacao, NotaIlustracao, VisaoProduto, VitrineHero } from "@/components/wms";
 import { avisoMarcas, empresa } from "@/conteudo/empresa";
@@ -24,7 +24,7 @@ import { metadadosPagina, urlAbsoluta } from "@/lib/site";
 export const metadata = metadadosPagina({
   titulo: "MAIS i9 WMS — Gestão de Armazéns SaaS",
   descricao:
-    "MAIS i9 WMS: plataforma SaaS de gestão de armazéns com recebimento, armazenagem, expedição, App Operador, indicadores e integração padrão com o TOTVS Protheus. Agende uma demonstração.",
+    "MAIS i9 WMS: plataforma SaaS de gestão de armazéns com recebimento, armazenagem, expedição, App Operador e indicadores, conectada ao TOTVS Protheus pelo Addon MAIS i9 (API). Agende uma demonstração.",
   caminho: "/mais-i9-wms",
 });
 
@@ -43,7 +43,7 @@ export default function MaisI9Wms() {
     operatingSystem: "Web",
     url: urlAbsoluta("/mais-i9-wms"),
     description:
-      "Solução SaaS de gestão de armazéns da MAIS i9, com integração padrão com o TOTVS Protheus e APIs para integração com outros ERPs.",
+      "Solução SaaS de gestão de armazéns da MAIS i9, conectada ao TOTVS Protheus pelo Addon MAIS i9 (API) e com APIs para integração com outros ERPs.",
     publisher: { "@id": idOrganizacao },
     featureList: [...baseOperacional, ...modulosComplementares].map((m) => m.titulo),
   };
@@ -72,7 +72,7 @@ export default function MaisI9Wms() {
         <ul className="container-site grid grid-cols-2 gap-x-6 gap-y-4 py-7 text-sm font-medium text-navy-900 lg:grid-cols-4">
           {[
             { t: "100% SaaS, produto próprio MAIS i9", I: Cloud },
-            { t: "Integração padrão com TOTVS Protheus", I: ArrowLeftRight },
+            { t: "Addon MAIS i9 para o TOTVS Protheus (API)", I: ArrowLeftRight },
             { t: "App Operador em dispositivos Android", I: ScanBarcode },
             { t: "APIs para integração com outros ERPs", I: Plug },
           ].map(({ t, I }) => (
@@ -214,9 +214,9 @@ export default function MaisI9Wms() {
           <div className="lg:col-span-6">
             <CabecalhoSecao
               claro
-              sobretitulo="Integração com TOTVS Protheus"
-              titulo="Pacote padrão de integração com o Protheus"
-              descricao="O MAIS i9 WMS nasce conectado ao ERP TOTVS Protheus, para que armazém e gestão trabalhem com a mesma informação. A integração padrão já está contemplada na implantação de cada componente."
+              sobretitulo="Conexão com o TOTVS Protheus"
+              titulo="Conectado ao Protheus pelo Addon MAIS i9"
+              descricao="O MAIS i9 WMS se conecta ao TOTVS Protheus por meio do Addon MAIS i9, via API, para que armazém e gestão trabalhem com a mesma informação. A conexão já está contemplada na implantação de cada componente."
             />
             <dl className="mt-10 space-y-6">
               {pontosIntegracao.map((p) => (
@@ -241,7 +241,11 @@ export default function MaisI9Wms() {
                   <p className="mt-3 text-[11px] tracking-wider text-ardosia-400 uppercase">ERP</p>
                   <p className="font-semibold text-white">TOTVS Protheus</p>
                 </div>
-                <ArrowLeftRight aria-hidden className="size-7 text-destaque" />
+                <div className="flex flex-col items-center gap-1.5 text-center">
+                  <ArrowLeftRight aria-hidden className="size-7 text-destaque" />
+                  <span className="rounded-full bg-destaque px-2.5 py-1 text-[11px] font-bold whitespace-nowrap text-navy-950">Addon MAIS i9</span>
+                  <span className="text-[11px] tracking-wider text-ardosia-300 uppercase">via API</span>
+                </div>
                 <div className="rounded-2xl bg-navy-900 p-5 text-center ring-1 ring-destaque/40">
                   <Warehouse aria-hidden className="mx-auto size-7 text-destaque" strokeWidth={1.75} />
                   <p className="mt-3 text-[11px] tracking-wider text-ardosia-400 uppercase">WMS</p>
@@ -439,14 +443,6 @@ export default function MaisI9Wms() {
           O MAIS i9 WMS é um produto desenvolvido e mantido pela MAIS i9. {avisoMarcas}
         </p>
       </Secao>
-
-      <CtaFinal
-        titulo="Também precisa de apoio no seu Protheus?"
-        descricao="A MAIS i9 é especialista em TOTVS Protheus, com suporte, sustentação, projetos e fábrica de software. Contratação independente do WMS."
-        rotulo="Conhecer a Consultoria Protheus"
-        href="/consultoria-protheus"
-        atalhos={false}
-      />
     </>
   );
 }

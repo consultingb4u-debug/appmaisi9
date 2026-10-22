@@ -222,8 +222,8 @@ export const diferenciaisConsultoria: { titulo: string; texto: string }[] = [
     texto: "Central de chamados, e-mail, WhatsApp e telefone, com níveis de serviço definidos em contrato.",
   },
   {
-    titulo: "Soluções proprietárias",
-    texto: "A MAIS i9 também desenvolve produtos integrados ao Protheus, como o MAIS i9 WMS.",
+    titulo: "Mais de 20 anos em Protheus",
+    texto: "Mais de 10.000 horas de projetos de implantação, customização, integração e internacionalização no ERP.",
   },
 ];
 
@@ -360,11 +360,6 @@ export const faqConsultoria: { pergunta: string; resposta: string }[] = [
     pergunta: "A MAIS i9 faz parte da TOTVS?",
     resposta:
       "Não. A MAIS i9 é uma empresa independente, especializada em serviços para empresas que utilizam o ERP TOTVS Protheus. TOTVS e Protheus são marcas registradas de seus respectivos titulares.",
-  },
-  {
-    pergunta: "Preciso usar o MAIS i9 WMS para contratar a consultoria?",
-    resposta:
-      "Não. A consultoria atende ambientes TOTVS Protheus com ou sem o MAIS i9 WMS. As duas frentes são contratadas de forma independente; para quem usa as duas, a integração padrão entre Protheus e WMS já faz parte do produto.",
   },
   {
     pergunta: "Quais modelos de contratação estão disponíveis?",

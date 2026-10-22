@@ -3,7 +3,7 @@ import { ArrowRight, Check, Mail, MessageCircle, Phone, Ticket, Video } from "lu
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { FormularioConsultoria } from "@/components/formularios/formularios";
-import { Credenciais, CtaFinal, HeroPagina, PerguntasFrequentes } from "@/components/secoes";
+import { Credenciais, HeroPagina, PerguntasFrequentes } from "@/components/secoes";
 import { Botao, CabecalhoSecao, CaixaIcone, JsonLd, Secao, Sobretitulo } from "@/components/ui";
 import { PainelGovernanca } from "@/components/visuais/painel-governanca";
 import {
@@ -510,14 +510,6 @@ export default function ConsultoriaProtheus() {
         </div>
         <p className="mt-16 text-xs leading-relaxed text-ardosia-500">{avisoMarcas}</p>
       </Secao>
-
-      <CtaFinal
-        titulo="Sua operação também tem um armazém?"
-        descricao="Conheça o MAIS i9 WMS, produto próprio da MAIS i9 com integração padrão ao TOTVS Protheus. Contratação independente da consultoria."
-        rotulo="Conhecer o MAIS i9 WMS"
-        href="/mais-i9-wms"
-        atalhos={false}
-      />
     </>
   );
 }

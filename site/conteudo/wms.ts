@@ -43,7 +43,13 @@ export type Modulo = {
 };
 
 export const introducaoWms =
-  "A MAIS i9 une experiência em tecnologia, operações logísticas e TOTVS Protheus para transformar rotinas de armazenagem em processos mais ágeis, confiáveis e conectados. Essa experiência deu origem ao MAIS i9 WMS, plataforma de gestão de armazéns oferecida no modelo SaaS.";
+  "Plataforma de gestão de armazéns no modelo SaaS que transforma rotinas de armazenagem em processos mais ágeis, confiáveis e conectados: visibilidade do estoque, rastreabilidade ponta a ponta e mais segurança nas decisões, do recebimento à expedição.";
+
+/** Como o MAIS i9 WMS se conecta ao ERP. */
+export const conexaoProtheus = {
+  nome: "Addon MAIS i9",
+  resumo: "O MAIS i9 WMS se conecta ao TOTVS Protheus por meio do Addon MAIS i9, via API.",
+};
 
 export const baseOperacional: Modulo[] = [
   {
@@ -136,9 +142,9 @@ export const baseOperacional: Modulo[] = [
   {
     id: "apis",
     titulo: "APIs de Integração",
-    resumo: "Interfaces padrão de comunicação com o ERP e demais sistemas corporativos.",
+    resumo: "Conexão com o TOTVS Protheus pelo Addon MAIS i9 e APIs para o ERP e demais sistemas corporativos.",
     itens: [
-      "Pacote padrão de integração com o TOTVS Protheus",
+      "Addon MAIS i9 para o TOTVS Protheus, via API",
       "APIs para integração com outros ERPs",
       "Comunicação com demais sistemas corporativos",
       "Menos lançamentos manuais e retrabalho",
@@ -232,7 +238,7 @@ export const diferenciaisWms: { titulo: string; texto: string; icone: LucideIcon
   { titulo: "100% SaaS", texto: "Acesso de qualquer lugar, com segurança e alta disponibilidade.", icone: Cloud },
   {
     titulo: "Integração com ERP",
-    texto: "Pacote padrão de integração com o TOTVS Protheus e APIs para conectar o ERP atual da sua empresa.",
+    texto: "Conexão ao TOTVS Protheus pelo Addon MAIS i9, via API, e APIs para conectar outros ERPs.",
     icone: Plug,
   },
   { titulo: "Aplicativo para operadores", texto: "Interface simples, intuitiva e eficiente para quem executa a operação.", icone: Smartphone },
@@ -259,8 +265,8 @@ export const etapasFluxo: { titulo: string; texto: string; icone: LucideIcon }[]
 
 export const pontosIntegracao: { titulo: string; texto: string }[] = [
   {
-    titulo: "Integração de informações",
-    texto: "Documentos fiscais, XML, pedidos e notas do Protheus chegam ao WMS sem redigitação.",
+    titulo: "Addon MAIS i9, via API",
+    texto: "Documentos fiscais, XML, pedidos e notas do Protheus chegam ao WMS pelo Addon MAIS i9, sem redigitação.",
   },
   {
     titulo: "Menos lançamentos manuais",
@@ -287,13 +293,13 @@ export const modeloContratacaoWms = {
   implantacao:
     "A implantação (Setup) define quais processos entram em operação. Ela começa pela Base Operacional e avança com os módulos complementares, conforme as prioridades do seu negócio.",
   integracao:
-    "A integração com o TOTVS Protheus já está contemplada: cada componente implantado inclui a configuração funcional e a integração padrão correspondente. Particularidades que exijam ajustes têm o escopo apresentado previamente, para aprovação.",
+    "A conexão com o TOTVS Protheus é feita pelo Addon MAIS i9, via API, e já está contemplada: cada componente implantado inclui a configuração funcional e a integração correspondente. Particularidades que exijam ajustes têm o escopo apresentado previamente, para aprovação.",
 };
 
 export const etapasImplantacao: { titulo: string; texto: string }[] = [
   { titulo: "Planejamento", texto: "Levantamento dos processos, responsáveis e premissas, com os módulos escolhidos." },
   { titulo: "Configuração", texto: "Ambiente, cadastros, parâmetros e processos contratados." },
-  { titulo: "Integrações", texto: "Implantação e testes das integrações padrão com o TOTVS Protheus." },
+  { titulo: "Integração", texto: "Instalação do Addon MAIS i9 e testes da integração com o TOTVS Protheus." },
   { titulo: "Homologação", texto: "Validação dos fluxos operacionais com os usuários-chave." },
   { titulo: "Treinamento", texto: "Capacitação dos usuários conforme o cronograma do projeto." },
   { titulo: "Entrada em produção", texto: "Go-live e acompanhamento inicial, conforme o planejamento aprovado." },
@@ -306,17 +312,12 @@ export const faqWms: { pergunta: string; resposta: string }[] = [
   {
     pergunta: "O MAIS i9 WMS é um produto da TOTVS?",
     resposta:
-      "Não. O MAIS i9 WMS é um produto próprio, desenvolvido e mantido pela MAIS i9. Ele possui um pacote padrão de integração com o ERP TOTVS Protheus. TOTVS e Protheus são marcas registradas de seus respectivos titulares.",
-  },
-  {
-    pergunta: "Preciso contratar a consultoria da MAIS i9 para usar o WMS?",
-    resposta:
-      "Não. O MAIS i9 WMS é contratado de forma independente: assinatura SaaS e implantação, com a integração padrão ao Protheus incluída. Se a sua empresa também quiser suporte ou sustentação do Protheus, a consultoria da MAIS i9 é uma contratação à parte.",
+      "Não. O MAIS i9 WMS é um produto próprio, desenvolvido e mantido pela MAIS i9, que se conecta ao TOTVS Protheus pelo Addon MAIS i9, via API. TOTVS e Protheus são marcas registradas de seus respectivos titulares.",
   },
   {
     pergunta: "Funciona apenas com o TOTVS Protheus?",
     resposta:
-      "O MAIS i9 WMS tem integração padrão com o TOTVS Protheus e disponibiliza APIs para integração com outros ERPs e sistemas corporativos. Nesses casos, o escopo da integração é avaliado com a sua equipe antes do projeto.",
+      "Com o TOTVS Protheus, a conexão é feita pelo Addon MAIS i9, via API. Para outros ERPs e sistemas corporativos, o MAIS i9 WMS disponibiliza APIs, e o escopo da integração é avaliado com a sua equipe antes do projeto.",
   },
   {
     pergunta: "Como o MAIS i9 WMS é contratado?",
@@ -324,9 +325,9 @@ export const faqWms: { pergunta: string; resposta: string }[] = [
       "Por assinatura SaaS, que dá acesso à solução completa, e pela implantação (Setup) dos componentes colocados em operação. A Base Operacional é a etapa inicial; os módulos complementares entram conforme a necessidade. Os valores são apresentados em proposta.",
   },
   {
-    pergunta: "A integração com o Protheus está incluída?",
+    pergunta: "Como funciona a conexão com o Protheus?",
     resposta:
-      "Sim. A integração padrão faz parte da implantação de cada componente. Se forem identificadas particularidades que exijam ajustes, o escopo é apresentado previamente para aprovação.",
+      "Pelo Addon MAIS i9, via API, que faz parte da implantação de cada componente. Se forem identificadas particularidades que exijam ajustes, o escopo é apresentado previamente para aprovação.",
   },
   {
     pergunta: "Quais equipamentos são necessários?",

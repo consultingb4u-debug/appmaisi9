@@ -5,17 +5,18 @@
 
 ## 1. Objetivo e princípios
 
-O site existe para **gerar oportunidades comerciais qualificadas** nas duas frentes da MAIS i9:
+O site existe para **gerar oportunidades comerciais qualificadas** nos serviços e produtos da MAIS i9:
 
-| Frente | O que é | Conversões |
+| Oferta | O que é | Conversões |
 |---|---|---|
 | **MAIS i9 Consultoria Protheus** | Serviços para empresas que usam o ERP TOTVS Protheus | Falar com um especialista Protheus · Solicitar diagnóstico · Solicitar proposta |
 | **MAIS i9 WMS** | Produto próprio, SaaS, de gestão de armazéns | Agendar demonstração · Conversar com um especialista · Solicitar proposta |
 
 Princípios que orientaram as decisões:
 
-1. **Em 10 segundos, o visitante entende** quem é a MAIS i9, as duas frentes e como falar com a equipe.
-2. **Cada frente tem a sua jornada** e CTAs próprios, sem “Saiba mais” genérico.
+1. **Em 10 segundos, o visitante entende** quem é a MAIS i9, o que ela oferece e como falar com a equipe.
+2. **Cada oferta tem a sua jornada** e CTAs próprios, sem “Saiba mais” genérico. A consultoria é apresentada
+   pela especialização em Protheus; o WMS, pelo que o produto entrega. Uma não é argumento de venda da outra.
 3. **Credibilidade sem exagero**: nenhuma promessa numérica, nenhum dado inventado; o que falta aparece
    como pendência visível (`[A preencher: …]`) até ser fornecido.
 4. **WMS é produto, consultoria é serviço**: o WMS nunca aparece como serviço de consultoria nem como
@@ -47,38 +48,42 @@ funcionalidades, integração e demonstração), contato comercial, política de
 ## 3. Estrutura das páginas
 
 ### Início
-As duas frentes têm o **mesmo peso** e são apresentadas como **contratações independentes**: a consultoria não
-exige o WMS, e o WMS não exige a consultoria. A integração entre elas aparece como diferencial, não como pacote.
+Página institucional: apresenta a MAIS i9 e seus serviços e produtos, e leva o visitante à página da
+Consultoria Protheus ou do MAIS i9 WMS. Conteúdo em `conteudo/inicio.ts`.
 
-1. **Hero** (azul-marinho): headline e subheadline do briefing e duas “portas” iguais — MAIS i9 Consultoria
-   Protheus e MAIS i9 WMS —, com os CTAs “Conhecer a Consultoria Protheus” e “Explorar o MAIS i9 WMS”.
-2. **Duas frentes independentes**: um bloco por frente com o mesmo formato — para quem é, o que inclui, como
-   contratar (cada um dizendo que não exige o outro) e CTA próprio.
-3. **Especialista Protheus com WMS próprio**: só a consultoria, só o WMS ou as duas; integração padrão Protheus ↔
-   WMS e o case de integração, com a composição visual ERP ↔ WMS.
-4. **Por que escolher a MAIS i9**: os 7 diferenciais do briefing e as credenciais (+20 anos, +10.000 horas…).
-5. **Como geramos valor**: jornada Entender → Planejar → Implementar → Sustentar → Evoluir.
-6. **Clientes e cases**: clientes citados nos materiais e os cases da apresentação.
-7. **Conteúdos**: três artigos mais recentes.
-8. **CTA final**: “Vamos conversar sobre os desafios da sua operação?” → “Falar com a MAIS i9”, com atalhos
+1. **Hero** (azul-marinho): headline e subheadline do briefing e duas “portas” — **Serviço · MAIS i9 Consultoria
+   Protheus** e **Produto · MAIS i9 WMS** —, que levam a “Conhecer a Consultoria Protheus” e “Explorar o MAIS i9 WMS”.
+2. **Quem somos**: apresentação institucional, link para a página Sobre e as credenciais (+20 anos, +10.000 horas…).
+3. **MAIS i9 Consultoria Protheus** (serviço): “Especialistas em TOTVS Protheus”, principais serviços, painel
+   ilustrativo de governança e CTAs para a página da consultoria e para falar com um especialista.
+4. **MAIS i9 WMS** (produto): “Gestão Inteligente de Armazéns”, o que o produto entrega (incluindo a conexão ao
+   Protheus pelo Addon MAIS i9, via API), vitrine do painel e do App Operador e CTAs para a página do produto e
+   para agendar demonstração.
+5. **Por que a MAIS i9**: os 7 diferenciais do briefing.
+6. **Como geramos valor**: jornada Entender → Planejar → Implementar → Sustentar → Evoluir.
+7. **Clientes e cases**: clientes citados nos materiais e os cases da apresentação.
+8. **Conteúdos**: três artigos mais recentes.
+9. **CTA final**: “Vamos conversar sobre os desafios da sua operação?” → “Falar com a MAIS i9”, com atalhos
    para diagnóstico Protheus e demonstração do WMS.
 
 ### Consultoria Protheus
-Hero com painel ilustrativo de governança de demandas → proposta de valor (“mais do que alocar
-profissionais”) e 3 pilares → **6 desafios** comuns → **6 serviços** com itens do briefing e “Solicitar
-proposta” (pré-seleciona o serviço no formulário) → **diferenciais** → **5 modelos de contratação** (sem
-preços) → **metodologia de atendimento** em 5 etapas → **benefícios** → **FAQ** (7 perguntas, incluindo
-“A MAIS i9 faz parte da TOTVS?”) → **formulário** com próximos passos → aviso de marcas → ponte para o WMS.
+Página do serviço, centrada na especialização em TOTVS Protheus. Hero com painel ilustrativo de governança de
+demandas → **o que sua empresa ganha** → **experiência** (credenciais e especialidades da equipe) → **desafios**
+comuns → **6 serviços** com itens do briefing e “Solicitar proposta” (pré-seleciona o serviço no formulário),
+mais DBA Oracle e SQL Server → **diferenciais** → **5 modelos de contratação** (sem preços), com matriz e
+condições de atendimento → **metodologia de atendimento**, prioridades e canais → **benefícios** → o papel da
+MAIS i9 → **FAQ** (incluindo “A MAIS i9 faz parte da TOTVS?”) → **formulário** com próximos passos → aviso de marcas.
 
 ### MAIS i9 WMS (página de produto)
-Hero com o painel web e o App Operador → faixa de credenciais (integração Protheus, APIs, App Operador, SaaS)
+Página do produto: o que ele é, o que faz e o que entrega. Hero com o painel web e o App Operador → faixa de
+credenciais (Addon MAIS i9 para o Protheus, APIs, App Operador, SaaS)
 → **Visão do produto** em abas (Dashboard web, App Operador, Telas operacionais, Indicadores gerenciais) →
 **10 benefícios** → **Como funciona**: ERP → Recebimento → Armazenagem → Movimentação → Expedição, com o
 que vai do ERP para o armazém e o que volta → **Base operacional**: os 7 componentes em cards interativos
 (abas acessíveis por teclado) → **4 módulos complementares** e a nota “todos fazem parte do produto padrão;
-implantação dimensionada” → **Integração com TOTVS Protheus** (pacote padrão, 5 pontos e APIs para outros
-ERPs sem prometer integrações prontas) → **Aplicativos** (App Operador e App Motorista, separados) → FAQ →
-**formulário de demonstração** → ponte para a consultoria.
+implantação dimensionada” → **Conexão com o TOTVS Protheus** pelo **Addon MAIS i9, via API** (pontos de
+integração e APIs para outros ERPs, sem prometer integrações prontas) → **Aplicativos** (App Operador e App Motorista, separados) → FAQ →
+**formulário de demonstração**.
 
 ### Institucionais
 - **Sobre**: quem somos, campos editáveis (fundação, sede, equipe, certificações), atuação, visão sobre

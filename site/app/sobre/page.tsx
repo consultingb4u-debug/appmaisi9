@@ -73,7 +73,7 @@ export default function Sobre() {
       <Secao>
         <div className="grid gap-12 lg:grid-cols-12 lg:gap-16">
           <div className="lg:col-span-7">
-            <CabecalhoSecao sobretitulo="Quem somos" titulo="Uma empresa brasileira de tecnologia com duas frentes complementares" />
+            <CabecalhoSecao sobretitulo="Quem somos" titulo="Uma empresa brasileira de tecnologia para gestão empresarial" />
             <div className="mt-6 space-y-5 text-lg leading-relaxed text-ardosia-600">
               <p>
                 A MAIS i9 é uma <strong className="font-semibold text-navy-900">consultoria especializada em TOTVS Protheus</strong>,
@@ -81,8 +81,8 @@ export default function Sobre() {
                 sustentação, governança, projetos, integrações e soluções tecnológicas.
               </p>
               <p>
-                A experiência em tecnologia, operações logísticas e Protheus deu origem ao{" "}
-                <strong className="font-semibold text-navy-900">MAIS i9 WMS</strong>, nossa plataforma de gestão de armazéns
+                Também desenvolvemos soluções próprias, como o{" "}
+                <strong className="font-semibold text-navy-900">MAIS i9 WMS</strong>, plataforma de gestão de armazéns
                 oferecida no modelo SaaS.
               </p>
               <p>
@@ -121,14 +121,14 @@ export default function Sobre() {
       <Secao fundo="cinza" id="atuacao">
         <CabecalhoSecao
           sobretitulo="Nossa atuação"
-          titulo="Duas frentes, contratadas de forma independente"
-          descricao="Cada frente atende a uma necessidade e pode ser contratada sozinha. Para quem usa as duas, o MAIS i9 WMS tem integração padrão com o TOTVS Protheus."
+          titulo="Serviços e produtos MAIS i9"
+          descricao="Consultoria especializada em TOTVS Protheus e o MAIS i9 WMS, nossa plataforma de gestão de armazéns."
         />
         <div className="mt-12 grid gap-6 lg:grid-cols-2">
           {[
             {
               href: "/consultoria-protheus",
-              rotulo: "Serviços",
+              rotulo: "Serviço",
               titulo: "MAIS i9 Consultoria Protheus",
               texto:
                 "Para empresas que utilizam o TOTVS Protheus e precisam de continuidade operacional, evolução e governança do ERP.",
@@ -136,9 +136,9 @@ export default function Sobre() {
             },
             {
               href: "/mais-i9-wms",
-              rotulo: "Produto SaaS",
+              rotulo: "Produto",
               titulo: "MAIS i9 WMS",
-              texto: "Para operações logísticas que precisam de controle, rastreabilidade e mobilidade no armazém, integradas ao ERP.",
+              texto: "Para operações logísticas que precisam de controle, rastreabilidade e mobilidade no armazém, do recebimento à expedição.",
               cta: "Conhecer o MAIS i9 WMS",
             },
           ].map((c) => (

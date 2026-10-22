@@ -63,7 +63,7 @@ const visoes = [
     rotulo: "App Operador",
     titulo: "Tarefas executadas no ponto da operação",
     texto: "O operador recebe a tarefa, confirma produto, lote e endereço com a leitura de códigos e registra a execução na hora.",
-    itens: ["Tarefas de recebimento, armazenagem e expedição", "Confirmação por leitura de códigos", "Menos papel e menos digitação"],
+    itens: ["Smartphones Android e coletores compatíveis", "Confirmação por leitura de códigos", "Menos papel e menos digitação"],
     tela: (
       <div className="flex justify-center rounded-2xl bg-navy-950 py-10">
         <MolduraCelular>
@@ -79,7 +79,7 @@ const visoes = [
     rotulo: "Telas operacionais",
     titulo: "Conferência com controle de cada item",
     texto: "Na conferência de recebimento, o esperado é comparado ao conferido, com registro de lote, validade e divergências.",
-    itens: ["Documentos de entrada vindos do ERP", "Lote e validade registrados na entrada", "Divergências identificadas antes da armazenagem"],
+    itens: ["Documentos fiscais e XML vindos do ERP", "Lote e validade registrados na entrada", "Divergências identificadas antes da armazenagem"],
     tela: (
       <MolduraNavegador titulo="MAIS i9 WMS · Conferência de recebimento">
         <TelaOuIlustracao real={telasReais.operacional}>

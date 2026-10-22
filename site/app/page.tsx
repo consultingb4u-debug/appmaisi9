@@ -1,7 +1,7 @@
 import type { LucideIcon } from "lucide-react";
 import { BadgeCheck, Building2, Cpu, Handshake, Lightbulb, Target, Workflow } from "lucide-react";
 import { CardArtigo } from "@/components/conteudos";
-import { CtaFinal, Jornada, SecaoClientesCases } from "@/components/secoes";
+import { Credenciais, CtaFinal, Jornada, SecaoClientesCases } from "@/components/secoes";
 import { Botao, CabecalhoSecao, CaixaIcone, LinkSeta, ListaCheck, Secao, Sobretitulo } from "@/components/ui";
 import { HeroIntegracao } from "@/components/visuais/hero-integracao";
 import { artigosOrdenados } from "@/conteudo/insights";
@@ -71,7 +71,7 @@ export default function Inicio() {
               </Botao>
             </div>
             <ul className="mt-12 grid gap-x-6 gap-y-3 border-t border-white/10 pt-8 text-sm text-ardosia-300 sm:grid-cols-3">
-              {["Sustentação e suporte contínuos", "Desenvolvimento ADVPL/TLPP", "WMS SaaS integrado ao Protheus"].map((t) => (
+              {["Mais de 20 anos em TOTVS Protheus", "Suporte, sustentação e projetos", "WMS SaaS integrado ao Protheus"].map((t) => (
                 <li key={t} className="flex items-center gap-2.5">
                   <span aria-hidden className="size-1.5 shrink-0 rounded-[1px] bg-destaque" />
                   {t}
@@ -82,6 +82,13 @@ export default function Inicio() {
           <div className="hidden sm:block lg:col-span-6">
             <HeroIntegracao />
           </div>
+        </div>
+      </section>
+
+      {/* Credenciais */}
+      <section aria-label="Experiência da MAIS i9" className="border-b border-ardosia-100 bg-white py-12">
+        <div className="container-site">
+          <Credenciais />
         </div>
       </section>
 
@@ -98,16 +105,16 @@ export default function Inicio() {
             <p className="text-xs font-semibold tracking-[0.14em] text-azul-600 uppercase">Para quem utiliza TOTVS Protheus</p>
             <h3 className="mt-3 text-2xl font-bold text-navy-950 sm:text-[1.75rem]">MAIS i9 Consultoria Protheus</h3>
             <p className="mt-4 text-[17px] leading-relaxed text-ardosia-600">
-              Sustentação, suporte, projetos e desenvolvimento para que o ERP acompanhe a evolução do seu negócio — com
-              governança, indicadores e visão de processos.
+              Suporte, sustentação, projetos e fábrica de software para extrair o máximo valor do Protheus — com
+              estabilidade, governança e evolução contínua do ERP.
             </p>
             <ListaCheck
               className="mt-7"
               itens={[
                 "Continuidade operacional e estabilidade do ambiente",
-                "Atendimento funcional e técnico especializado",
-                "Evolução com projetos, integrações e customizações",
-                "Governança de demandas e acompanhamento executivo",
+                "Suporte N1 a N3 com SLA e atendimento multicanal",
+                "Projetos, integrações e desenvolvimento ADVPL/TLPP",
+                "Modelos de contratação do pontual ao evolutivo",
               ]}
             />
             <div className="mt-auto flex flex-col gap-4 pt-10 sm:flex-row sm:items-center">
@@ -126,17 +133,17 @@ export default function Inicio() {
             </div>
             <h3 className="relative mt-3 text-2xl font-bold sm:text-[1.75rem]">MAIS i9 WMS</h3>
             <p className="relative mt-4 text-[17px] leading-relaxed text-ardosia-200">
-              Gestão de armazéns com controle, rastreabilidade e mobilidade — recebimento, armazenagem, expedição e
-              inventário, com integração padrão ao TOTVS Protheus e APIs para outros ERPs.
+              Gestão Inteligente de Armazéns: recebimento, armazenagem, expedição e inventário com controle, rastreabilidade
+              e mobilidade, integração padrão ao TOTVS Protheus e APIs para outros ERPs.
             </p>
             <ListaCheck
               claro
               className="relative mt-7"
               itens={[
                 "Rastreabilidade das movimentações",
-                "Gestão de lotes, validade e endereçamento",
-                "Operação com mobilidade pelo App Operador",
-                "Integração entre armazém e ERP",
+                "Lotes, validade, FIFO/FEFO e endereçamento",
+                "App Operador em dispositivos Android",
+                "100% SaaS, com implantação ágil",
               ]}
             />
             <div className="relative mt-auto flex flex-col gap-4 pt-10 sm:flex-row sm:items-center">

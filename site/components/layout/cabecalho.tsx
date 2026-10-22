@@ -8,7 +8,7 @@ export function Cabecalho() {
     // Fundo sólido, sem backdrop-filter: o filtro criaria um contêiner para o menu móvel (position: fixed).
     <header className="sticky top-0 z-50 border-b border-ardosia-100 bg-white">
       <div className="container-site flex h-[72px] items-center justify-between gap-6">
-        <Marca />
+        <Marca altura={46} />
         <NavegacaoDesktop />
         <div className="flex items-center gap-3">
           <div className="hidden sm:block">

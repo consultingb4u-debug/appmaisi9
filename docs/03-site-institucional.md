@@ -92,7 +92,7 @@ ERPs sem prometer integrações prontas) → **Aplicativos** (App Operador e App
 |---|---|
 | **Cores** | Paleta já usada no sistema interno da MAIS i9: azul-marinho `#0a1a30`/`#0f2a4a` (superfícies de destaque), azul institucional `#1f5f9e` (textos e links) e `#2b7bbf` (gráficos), ardósia `#4f6480` (texto de apoio), cinza muito claro `#f4f6f9`, branco. **Laranja `#f28c28` só como destaque**: botão principal (com texto marinho, contraste AA), marcadores e detalhes. Sobre fundo claro o laranja nunca é cor de texto. |
 | **Tipografia** | Manrope (títulos) e Inter (texto), auto-hospedadas pelo `next/font`. Ajustar se o manual de marca definir outra família. |
-| **Logotipo** | Arquivo oficial, usado sem alteração (`conteudo/empresa.ts`). Enquanto não for fornecido, o nome aparece em texto simples — não há versão recriada do logotipo. |
+| **Logotipo** | Arquivo oficial colorido, usado sem alteração (`site/public/marca/logo-maisi9.png`); no rodapé escuro, sobre placa branca até chegar a versão negativa. O símbolo é o favicon. |
 | **Ritmo** | Seções alternando branco, cinza muito claro e azul-marinho com grade técnica discreta; cantos arredondados; sombras leves. |
 | **Imagens** | Sem fotos genéricas. Visuais construídos em código: composição de integração na Home, painel de governança na consultoria e telas do WMS. As telas do WMS são **ilustrativas, com dados fictícios** e aviso explícito, até serem substituídas pelas telas reais. |
 | **Ícones** | Um único conjunto (Lucide), traço consistente. |
@@ -117,28 +117,39 @@ ERPs sem prometer integrações prontas) → **Aplicativos** (App Operador e App
 
 Itens que dependem da MAIS i9 — o site sinaliza cada um em vez de inventar.
 
+**Já incorporado** (apresentação comercial 2026-2S, propostas WMS e Evolutivo, folhetos): logotipo colorido e
+símbolo (favicon), domínio `maisi9.com.br`, e-mail e telefone comerciais, e-mail de chamados, +20 anos de
+experiência, +10.000 horas de projetos, especialidades da equipe, missão, os cinco modelos de contratação e o
+quadro de benefícios, canais e classificação de prioridades, DBA Oracle/SQL Server, funcionalidades reais dos
+módulos do WMS, implantação e contratação do WMS, dois cases (sem identificar o cliente) e a lista de clientes.
+
+**Regra de conteúdo:** o site não publica valores nem preços (valor/hora, setup, assinatura, ganhos em R$) nem
+quantidades de pacotes comerciais (horas mensais, usuários incluídos). O teste `tests/conteudo.test.ts` falha se
+algum valor em reais entrar no conteúdo. Também ficaram de fora os números genéricos do folheto do WMS
+(“−40% de perdas”, “95%+ de acuracidade”, “−70% no tempo de inventário”, “ROI em até 6 meses”), que não vêm de um
+case; os resultados publicados são apenas os dos cases da apresentação.
+
 **Marca e materiais**
-- [ ] Logotipo oficial (versões para fundo claro e escuro) e favicon derivado do símbolo
-- [ ] Confirmação da paleta e da tipografia com o manual de marca
+- [ ] Logotipo em SVG e a versão para fundo escuro (branca), usada no rodapé e na imagem de compartilhamento
+- [ ] Logotipos oficiais dos clientes e confirmação de que cada um autoriza a exibição no site
 - [ ] Telas reais do MAIS i9 WMS (dashboard, App Operador, telas operacionais, indicadores, App Motorista)
 
-**Dados institucionais** (`conteudo/empresa.ts`)
+**Dados institucionais** (`site/conteudo/empresa.ts`)
 - [ ] Razão social, CNPJ, endereço, cidade/UF
-- [ ] E-mail e telefone comerciais, horário de atendimento, WhatsApp oficial, LinkedIn
-- [ ] Ano de fundação, tamanho da equipe, experiência da equipe, segmentos atendidos, certificações
+- [ ] Número oficial de WhatsApp, horário de atendimento, LinkedIn
+- [ ] Ano de fundação, tamanho da equipe, segmentos atendidos, certificações (se houver)
+- [ ] Confirmar o papel de `suite.maisi9.com.br` (citado no folheto do WMS)
 
 **Comercial e jurídico**
 - [ ] Destino dos leads: URL do CRM/automação (webhook) e/ou e-mail + SMTP
 - [ ] Revisão jurídica da Política de Privacidade (encarregado, fornecedores, prazo de retenção) e do aviso de marcas
-- [ ] Cases, logotipos e depoimentos com autorização dos clientes
 
 **Validação de conteúdo**
-- [ ] Descrições funcionais dos módulos do WMS e fluxo de integração com o Protheus (time de produto)
-- [ ] Metodologia de atendimento, modelos de contratação e FAQ (time de consultoria)
+- [ ] Metodologia de atendimento e FAQ (time de consultoria)
 - [ ] Revisão dos três artigos iniciais
 
 **Publicação**
-- [ ] Domínio e hospedagem; `NEXT_PUBLIC_SITE_URL` e `SITE_INDEXAVEL=true` no build oficial
+- [ ] Domínio e hospedagem; `NEXT_PUBLIC_SITE_URL=https://www.maisi9.com.br` e `SITE_INDEXAVEL=true` no build oficial
 - [ ] Se houver ferramentas de análise ou marketing: consentimento de cookies e atualização da política
 
 ## 7. Próximas evoluções sugeridas

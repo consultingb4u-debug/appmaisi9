@@ -1,4 +1,4 @@
-import { existsSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 import { cases } from "@/conteudo/cases";
@@ -37,13 +37,28 @@ describe("conteúdo do site", () => {
     for (const s of servicosConsultoria) expect(opcoesServico.some((o) => o.valor === s.id)).toBe(true);
   });
 
-  it("cases publicados trazem desafio, solução e cliente", () => {
+  it("cases publicados trazem título, desafio e solução", () => {
     for (const c of cases.filter((x) => x.publicado)) {
-      expect(c.cliente && c.desafio && c.solucao).toBeTruthy();
+      expect(c.titulo && c.desafio && c.solucao).toBeTruthy();
     }
   });
 
   it("formata datas de publicação em português", () => {
     expect(formatarData("2026-10-22")).toBe("22 de outubro de 2026");
+  });
+});
+
+describe("sem valores nem preços no site", () => {
+  // Regra do cliente: propostas e apresentações trazem preços, mas o site não publica valores.
+  const arquivos = (dir: string): string[] =>
+    readdirSync(path.join(raiz, dir), { withFileTypes: true }).flatMap((e) =>
+      e.isDirectory() ? arquivos(path.join(dir, e.name)) : /\.(tsx?|mdx)$/.test(e.name) ? [path.join(dir, e.name)] : [],
+    );
+
+  it("nenhum arquivo de conteúdo, página ou componente cita valores em reais", () => {
+    const comValor = ["conteudo", "app", "components"]
+      .flatMap(arquivos)
+      .filter((f) => /R\$|\d+,\d{2}\s*\/\s*(hora|m[eê]s)/i.test(readFileSync(path.join(raiz, f), "utf8")));
+    expect(comValor).toEqual([]);
   });
 });

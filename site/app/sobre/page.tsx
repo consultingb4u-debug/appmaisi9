@@ -1,8 +1,8 @@
 import { ArrowRight, Eye, Handshake, Lock, RefreshCw, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { CtaFinal, HeroPagina } from "@/components/secoes";
-import { CabecalhoSecao, CaixaIcone, JsonLd, Pendente, Secao } from "@/components/ui";
+import { Credenciais, CtaFinal, HeroPagina } from "@/components/secoes";
+import { CabecalhoSecao, CaixaIcone, JsonLd, Pendente, Secao, Sobretitulo } from "@/components/ui";
 import { empresa } from "@/conteudo/empresa";
 import { trilha } from "@/lib/jsonld";
 import { metadadosPagina } from "@/lib/site";
@@ -48,6 +48,8 @@ const compromissos = [
 
 export default function Sobre() {
   const fatos: { rotulo: string; valor: ReactNode }[] = [
+    { rotulo: "Experiência", valor: empresa.experiencia ?? <Pendente>tempo de experiência</Pendente> },
+    { rotulo: "Projetos entregues", valor: empresa.horasProjetos ?? <Pendente>volume de projetos</Pendente> },
     { rotulo: "Fundação", valor: empresa.anoFundacao ?? <Pendente>ano de fundação</Pendente> },
     { rotulo: "Sede", valor: empresa.sede ?? <Pendente>cidade/UF</Pendente> },
     { rotulo: "Equipe", valor: empresa.tamanhoEquipe ?? <Pendente>tamanho da equipe</Pendente> },
@@ -74,14 +76,18 @@ export default function Sobre() {
             <CabecalhoSecao sobretitulo="Quem somos" titulo="Uma empresa brasileira de tecnologia com duas frentes complementares" />
             <div className="mt-6 space-y-5 text-lg leading-relaxed text-ardosia-600">
               <p>
-                A MAIS i9 atua com <strong className="font-semibold text-navy-900">consultoria especializada em TOTVS Protheus</strong>{" "}
-                — sustentação, suporte, projetos, desenvolvimento e governança — e com o{" "}
-                <strong className="font-semibold text-navy-900">MAIS i9 WMS</strong>, solução própria para gestão de armazéns
-                comercializada no modelo SaaS.
+                A MAIS i9 é uma <strong className="font-semibold text-navy-900">consultoria especializada em TOTVS Protheus</strong>,
+                com mais de 20 anos de experiência e uma equipe de especialistas funcionais e técnicos. Atuamos com suporte,
+                sustentação, governança, projetos, integrações e soluções tecnológicas.
               </p>
               <p>
-                As duas frentes compartilham o mesmo propósito: ajudar as empresas a operar com mais controle, eficiência e
-                segurança, conectando tecnologia, processos e pessoas.
+                A experiência em tecnologia, operações logísticas e Protheus deu origem ao{" "}
+                <strong className="font-semibold text-navy-900">MAIS i9 WMS</strong>, nossa plataforma de gestão de armazéns
+                oferecida no modelo SaaS.
+              </p>
+              <p>
+                Mais do que resolver incidentes, buscamos contribuir para que o ERP permaneça estável, seguro, atualizado e
+                preparado para acompanhar o crescimento de cada organização.
               </p>
             </div>
           </div>
@@ -96,6 +102,19 @@ export default function Sobre() {
             </dl>
           </aside>
         </div>
+      </Secao>
+
+      {/* Missão e credenciais */}
+      <Secao fundo="escuro" id="missao">
+        {empresa.missao && (
+          <figure className="mx-auto max-w-4xl text-center">
+            <Sobretitulo claro>Nossa missão</Sobretitulo>
+            <blockquote className="mt-6 font-display text-2xl leading-snug font-semibold text-balance text-white sm:text-3xl">
+              “{empresa.missao}”
+            </blockquote>
+          </figure>
+        )}
+        <Credenciais claro className="mt-16" />
       </Secao>
 
       {/* Nossa atuação */}
@@ -137,21 +156,21 @@ export default function Sobre() {
       </Secao>
 
       {/* Visão */}
-      <Secao fundo="escuro" id="visao">
-        <CabecalhoSecao claro sobretitulo="Nossa visão" titulo="O que acreditamos sobre tecnologia e negócios" />
+      <Secao id="visao">
+        <CabecalhoSecao sobretitulo="Nossa visão" titulo="O que acreditamos sobre tecnologia e negócios" />
         <div className="mt-14 grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
           {visao.map((v, i) => (
-            <div key={v.titulo} className="revelar border-t border-white/15 pt-6">
-              <p className="font-display text-sm font-bold text-destaque">{String(i + 1).padStart(2, "0")}</p>
-              <h3 className="mt-3 text-lg font-semibold text-white">{v.titulo}</h3>
-              <p className="mt-2 text-[15px] leading-relaxed text-ardosia-300">{v.texto}</p>
+            <div key={v.titulo} className="revelar border-t-2 border-navy-900 pt-6">
+              <p className="font-display text-sm font-bold text-azul-600">{String(i + 1).padStart(2, "0")}</p>
+              <h3 className="mt-3 text-lg font-semibold text-navy-950">{v.titulo}</h3>
+              <p className="mt-2 text-[15px] leading-relaxed text-ardosia-600">{v.texto}</p>
             </div>
           ))}
         </div>
       </Secao>
 
       {/* Compromisso */}
-      <Secao id="compromisso">
+      <Secao fundo="cinza" id="compromisso">
         <div className="grid gap-12 lg:grid-cols-12">
           <CabecalhoSecao
             className="lg:col-span-4"
@@ -176,22 +195,33 @@ export default function Sobre() {
       </Secao>
 
       {/* Equipe */}
-      <Secao fundo="cinza" id="equipe">
+      <Secao id="equipe">
         <div className="grid gap-12 lg:grid-cols-12">
           <CabecalhoSecao className="lg:col-span-5" sobretitulo="Experiência da equipe" titulo="Especialistas em ERP, processos e operações" />
-          <div className="space-y-6 text-[16px] leading-relaxed text-ardosia-600 lg:col-span-7">
-            <p>
-              A equipe da MAIS i9 reúne profissionais com conhecimento técnico e funcional em TOTVS Protheus, desenvolvimento
-              ADVPL/TLPP, gestão de projetos e operações logísticas.
-            </p>
+          <div className="space-y-7 text-[16px] leading-relaxed text-ardosia-600 lg:col-span-7">
             <p>{empresa.experienciaEquipe ?? <Pendente>resumo da experiência da equipe (áreas, tempo de atuação, perfis)</Pendente>}</p>
+            {[
+              ["Equipe experiente em", empresa.especialidadesEquipe],
+              [`${empresa.horasProjetos ?? "Horas"} de projetos em`, empresa.tiposProjeto],
+            ].map(([titulo, itens]) => (
+              <div key={titulo as string}>
+                <p className="text-sm font-semibold text-navy-900">{titulo}</p>
+                <ul className="mt-2 flex flex-wrap gap-2">
+                  {(itens as string[]).map((e) => (
+                    <li key={e} className="rounded-full bg-white px-3 py-1 text-sm text-navy-900 ring-1 ring-ardosia-200">
+                      {e}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
             <div>
               <p className="text-sm font-semibold text-navy-900">Segmentos atendidos</p>
               <div className="mt-2">
                 {empresa.segmentosAtendidos.length ? (
                   <ul className="flex flex-wrap gap-2">
                     {empresa.segmentosAtendidos.map((s) => (
-                      <li key={s} className="rounded-full bg-white px-3 py-1 text-sm text-navy-900 ring-1 ring-ardosia-200">
+                      <li key={s} className="rounded-full bg-fundo px-3 py-1 text-sm text-navy-900 ring-1 ring-ardosia-200">
                         {s}
                       </li>
                     ))}

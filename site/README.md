@@ -52,18 +52,24 @@ dados estruturados. Nunca substitua por dado fictício.
 
 ### Logotipo oficial
 
-1. Coloque o arquivo original em `public/marca/` (SVG de preferência), sem editar.
-2. Em `conteudo/empresa.ts`, preencha `logo.positivo` (fundo claro) e, se houver, `logo.negativo`
-   (fundo escuro) com o caminho e as **dimensões originais** do arquivo — usadas só para manter a proporção:
+O logotipo colorido está em `public/marca/logo-maisi9.png` e o símbolo é o favicon (`app/icon.png`), ambos
+usados como fornecidos. Para trocar ou acrescentar versões (SVG, versão para fundo escuro), coloque o arquivo
+em `public/marca/` e ajuste `logo` em `conteudo/empresa.ts` com as **dimensões originais** do arquivo:
 
 ```ts
 logo: {
-  positivo: { src: "/marca/logo-maisi9.svg", largura: 640, altura: 180 },
-  negativo: { src: "/marca/logo-maisi9-negativo.svg", largura: 640, altura: 180 },
+  positivo: { src: "/marca/logo-maisi9.png", largura: 1527, altura: 493 },
+  negativo: { src: "/marca/logo-maisi9-negativo.svg", largura: 1527, altura: 493 }, // versão branca, quando houver
 },
 ```
 
-Enquanto não houver arquivo, cabeçalho e rodapé mostram apenas o nome em texto simples.
+Sem a versão negativa, o rodapé (fundo escuro) mostra a versão colorida sobre uma placa branca.
+
+### Valores e preços
+
+O site **não publica valores nem preços** (valor/hora, setup, assinatura, ganhos em R$). Eles ficam nas
+propostas. O teste `tests/conteudo.test.ts` falha se algum valor em reais aparecer em `conteudo/`, `app/` ou
+`components/`.
 
 ### Telas reais do MAIS i9 WMS
 

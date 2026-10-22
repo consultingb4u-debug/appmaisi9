@@ -1,9 +1,34 @@
 import clsx from "clsx";
-import { ChevronDown, ImageOff, Quote } from "lucide-react";
+import { Award, ChevronDown, Clock, CodeXml, ImageOff, Puzzle, Quote, Users } from "lucide-react";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { Botao, CabecalhoSecao, LinkSeta, Secao, Sobretitulo } from "@/components/ui";
-import { cases, depoimentos, logosClientes, tiposCase, type TipoCase } from "@/conteudo/cases";
+import { cases, clientes, depoimentos, logosClientes, tiposCase, type TipoCase } from "@/conteudo/cases";
+import { credenciais } from "@/conteudo/empresa";
+
+const iconesCredenciais = [Award, Clock, Users, CodeXml, Puzzle];
+
+/** Credenciais da MAIS i9 (+20 anos, +10.000 horas…), em faixa clara ou escura. */
+export function Credenciais({ claro = false, className }: { claro?: boolean; className?: string }) {
+  return (
+    <ul className={clsx("grid grid-cols-2 gap-x-6 gap-y-8 sm:grid-cols-3 lg:grid-cols-5", className)}>
+      {credenciais.map((c, i) => {
+        const Icone = iconesCredenciais[i % iconesCredenciais.length];
+        return (
+          <li key={c.destaque} className="flex flex-col items-start gap-3 lg:items-center lg:text-center">
+            <Icone aria-hidden className={clsx("size-7", claro ? "text-azul-300" : "text-azul-600")} strokeWidth={1.5} />
+            <p className="leading-tight">
+              <span className={clsx("block font-display text-xl font-bold sm:text-2xl", claro ? "text-white" : "text-navy-950")}>
+                {c.destaque}
+              </span>
+              <span className={clsx("mt-1 block text-sm", claro ? "text-ardosia-300" : "text-ardosia-600")}>{c.complemento}</span>
+            </p>
+          </li>
+        );
+      })}
+    </ul>
+  );
+}
 
 /** Topo das páginas internas: trilha, título e chamadas. */
 export function HeroPagina({
@@ -148,7 +173,10 @@ export function PerguntasFrequentes({ itens }: { itens: { pergunta: string; resp
   );
 }
 
-/** Logotipos de clientes autorizados; espaços reservados enquanto não houver autorização. */
+/**
+ * Clientes: logotipos oficiais quando fornecidos; antes disso, os nomes citados nos
+ * materiais comerciais; sem nenhum dos dois, espaços reservados.
+ */
 export function LogosClientes({ quantidade = 6 }: { quantidade?: number }) {
   if (logosClientes.length) {
     return (
@@ -157,6 +185,20 @@ export function LogosClientes({ quantidade = 6 }: { quantidade?: number }) {
           <li key={logo.nome} className="flex justify-center">
             {/* eslint-disable-next-line @next/next/no-img-element -- logotipos de terceiros exibidos sem alteração */}
             <img src={logo.src} alt={logo.nome} width={logo.largura} height={logo.altura} className="h-10 w-auto object-contain" />
+          </li>
+        ))}
+      </ul>
+    );
+  }
+  if (clientes.length) {
+    return (
+      <ul aria-label="Clientes" className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+        {clientes.map((nome) => (
+          <li
+            key={nome}
+            className="flex min-h-16 items-center justify-center rounded-xl border border-ardosia-200 bg-white px-4 py-3 text-center font-display text-[15px] font-semibold text-ardosia-600"
+          >
+            {nome}
           </li>
         ))}
       </ul>
@@ -187,15 +229,17 @@ export function CardsCases({ tipos }: { tipos: TipoCase[] }) {
   const publicados = cases.filter((c) => c.publicado && tipos.includes(c.tipo));
   if (publicados.length) {
     return (
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      <div className={clsx("grid gap-6 md:grid-cols-2", publicados.length > 2 && "lg:grid-cols-3")}>
         {publicados.map((c) => (
-          <article key={c.id} className="flex flex-col rounded-2xl border border-ardosia-200 bg-white p-7">
-            <p className="text-xs font-semibold tracking-wider text-azul-600 uppercase">{tiposCase[c.tipo].rotulo}</p>
-            <h3 className="mt-3 text-lg font-semibold text-navy-950">{c.titulo}</h3>
-            <p className="mt-1 text-sm text-ardosia-500">
-              {c.cliente} · {c.segmento}
+          <article key={c.id} className="revelar flex flex-col rounded-2xl border border-ardosia-200 bg-white p-7">
+            <p className="text-xs font-semibold tracking-wider text-azul-600 uppercase">
+              {tiposCase[c.tipo].frente} · {tiposCase[c.tipo].rotulo}
             </p>
-            <dl className="mt-5 space-y-4 text-[15px] text-ardosia-700">
+            <h3 className="mt-3 text-lg font-semibold text-navy-950">{c.titulo}</h3>
+            {(c.cliente || c.segmento) && (
+              <p className="mt-1 text-sm text-ardosia-500">{[c.cliente, c.segmento].filter(Boolean).join(" · ")}</p>
+            )}
+            <dl className="mt-5 flex flex-1 flex-col gap-4 text-[15px] text-ardosia-700">
               <div>
                 <dt className="font-semibold text-navy-900">Desafio</dt>
                 <dd className="mt-1">{c.desafio}</dd>
@@ -205,12 +249,14 @@ export function CardsCases({ tipos }: { tipos: TipoCase[] }) {
                 <dd className="mt-1">{c.solucao}</dd>
               </div>
               {c.resultados.length > 0 && (
-                <div>
-                  <dt className="font-semibold text-navy-900">Resultados</dt>
-                  <dd className="mt-1">
-                    <ul className="list-disc space-y-1 pl-5">
+                <div className="mt-auto rounded-xl bg-navy-950 p-4">
+                  <dt className="text-xs font-semibold tracking-wider text-azul-300 uppercase">Resultados</dt>
+                  <dd className="mt-2">
+                    <ul className="flex flex-wrap gap-2">
                       {c.resultados.map((r) => (
-                        <li key={r}>{r}</li>
+                        <li key={r} className="rounded-lg bg-white/10 px-3 py-1.5 font-display text-[15px] font-semibold text-white">
+                          {r}
+                        </li>
                       ))}
                     </ul>
                   </dd>
@@ -279,8 +325,8 @@ export function SecaoClientesCases() {
       <div className="flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
         <CabecalhoSecao
           sobretitulo="Clientes e cases"
-          titulo="Projetos reais, contados com autorização dos nossos clientes"
-          descricao="Implantações, projetos de evolução, sustentação e operações com o MAIS i9 WMS. Os cases serão publicados à medida que forem autorizados."
+          titulo="Resultados construídos com os nossos clientes"
+          descricao="Sustentação do Protheus, integrações e operações com o MAIS i9 WMS em empresas de diferentes segmentos."
         />
         <LinkSeta href="/cases" className="shrink-0">
           Ver cases e clientes

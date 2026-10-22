@@ -14,7 +14,7 @@ export function Rodape() {
       <div className="container-site pt-16 pb-10 lg:pt-20">
         <div className="grid gap-12 lg:grid-cols-12">
           <div className="lg:col-span-4">
-            <Marca fundo="escuro" />
+            <Marca fundo="escuro" altura={40} />
             <p className="mt-5 max-w-sm text-[15px] leading-relaxed text-ardosia-300">
               Tecnologia, consultoria e soluções para gestão empresarial: consultoria especializada em TOTVS Protheus e o
               MAIS i9 WMS, solução própria para gestão de armazéns.

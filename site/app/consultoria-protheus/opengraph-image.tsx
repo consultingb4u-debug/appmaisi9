@@ -6,7 +6,7 @@ export const contentType = "image/png";
 
 export default function Image() {
   return imagemOg({
-    sobretitulo: "MAIS i9 Consultoria Protheus",
-    titulo: "Especialistas em TOTVS Protheus para manter sua operação estável e em evolução.",
+    sobretitulo: "Especialista em ambientes TOTVS Protheus",
+    titulo: "Continuidade operacional e evolução para ambientes TOTVS Protheus.",
   });
 }

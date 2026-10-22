@@ -15,7 +15,7 @@ Projeto Next.js independente do sistema interno da raiz (deploy, dependências e
 - Idioma do conteúdo, do código de domínio e da interface: português.
 - Textos editáveis ficam em `conteudo/` (dados institucionais, serviços, módulos do WMS, cases, artigos). Componentes não devem ter dado institucional fixo.
 - Nunca inventar dados (ano de fundação, clientes, números, certificações, contatos). Informação ausente fica `null` e aparece com `<Pendente>`.
-- Nada de promessas numéricas de resultado; não apresentar a MAIS i9 como parte da TOTVS nem o WMS como produto TOTVS.
+- Nada de valores e preços (R$, valor/hora, setup, assinatura) nem de promessas numéricas sem case que as comprove; não apresentar a MAIS i9 como parte da TOTVS nem o WMS como produto TOTVS.
 - Logotipo oficial só como arquivo fornecido (`conteudo/empresa.ts` → `logo`), sem redesenho.
 - Formulários nunca simulam sucesso: `lib/leads/` valida com Zod e só confirma o envio se um canal (webhook ou SMTP) aceitar.
 - Verificação antes de commitar: `npm run lint && npm run typecheck && npm test && npm run build` (dentro de `site/`).

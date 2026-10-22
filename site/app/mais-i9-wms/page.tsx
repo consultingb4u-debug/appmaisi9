@@ -1,11 +1,23 @@
-import { ArrowLeftRight, Check, Database, Plug, Warehouse } from "lucide-react";
+import { ArrowLeftRight, Check, Cloud, Database, Plug, ScanBarcode, Warehouse } from "lucide-react";
 import Link from "next/link";
 import { FormularioDemoWms } from "@/components/formularios/formularios";
 import { CtaFinal, HeroPagina, PerguntasFrequentes } from "@/components/secoes";
-import { Botao, CabecalhoSecao, CaixaIcone, JsonLd, Secao } from "@/components/ui";
+import { Botao, CabecalhoSecao, CaixaIcone, JsonLd, Secao, Sobretitulo } from "@/components/ui";
 import { Aplicativos, BaseOperacional, FluxoOperacao, NotaIlustracao, VisaoProduto, VitrineHero } from "@/components/wms";
-import { avisoMarcas } from "@/conteudo/empresa";
-import { baseOperacional, beneficiosWms, faqWms, modulosComplementares, pontosIntegracao } from "@/conteudo/wms";
+import { avisoMarcas, empresa } from "@/conteudo/empresa";
+import {
+  baseOperacional,
+  beneficiosWms,
+  diferenciaisWms,
+  etapasImplantacao,
+  faqWms,
+  impactoWms,
+  introducaoWms,
+  modeloContratacaoWms,
+  modulosComplementares,
+  papelWms,
+  pontosIntegracao,
+} from "@/conteudo/wms";
 import { idOrganizacao, perguntasFrequentes, trilha } from "@/lib/jsonld";
 import { metadadosPagina, urlAbsoluta } from "@/lib/site";
 
@@ -42,7 +54,7 @@ export default function MaisI9Wms() {
 
       <HeroPagina
         trilha={caminhoTrilha}
-        sobretitulo="MAIS i9 WMS · Produto SaaS"
+        sobretitulo="MAIS i9 WMS · Gestão Inteligente de Armazéns"
         titulo="Mais controle, rastreabilidade e produtividade para sua operação logística."
         descricao="Conheça o MAIS i9 WMS: uma plataforma completa para gestão de armazéns, conectando pessoas, processos e sistemas em uma operação mais inteligente."
         visual={<VitrineHero />}
@@ -59,10 +71,10 @@ export default function MaisI9Wms() {
       <div className="border-b border-ardosia-100 bg-white">
         <ul className="container-site grid grid-cols-2 gap-x-6 gap-y-4 py-7 text-sm font-medium text-navy-900 lg:grid-cols-4">
           {[
+            { t: "100% SaaS, produto próprio MAIS i9", I: Cloud },
             { t: "Integração padrão com TOTVS Protheus", I: ArrowLeftRight },
+            { t: "App Operador em dispositivos Android", I: ScanBarcode },
             { t: "APIs para integração com outros ERPs", I: Plug },
-            { t: "App Operador para a operação", I: Warehouse },
-            { t: "Modelo SaaS, produto próprio MAIS i9", I: Database },
           ].map(({ t, I }) => (
             <li key={t} className="flex items-center gap-3">
               <I aria-hidden className="size-5 shrink-0 text-azul-600" strokeWidth={1.75} />
@@ -78,7 +90,7 @@ export default function MaisI9Wms() {
           centro
           sobretitulo="Visão do produto"
           titulo="Do painel de gestão ao coletor na mão do operador"
-          descricao="Web para planejar e acompanhar, mobilidade para executar — tudo na mesma plataforma."
+          descricao={introducaoWms}
         />
         <div className="mt-12">
           <VisaoProduto />
@@ -88,26 +100,32 @@ export default function MaisI9Wms() {
         </div>
       </Secao>
 
-      {/* Benefícios */}
+      {/* Impacto e benefícios */}
       <Secao id="beneficios">
-        <div className="grid gap-12 lg:grid-cols-12">
-          <CabecalhoSecao
-            className="lg:col-span-4"
-            sobretitulo="Benefícios"
-            titulo="O que o MAIS i9 WMS traz para a sua operação"
-            descricao="Controle e visibilidade do recebimento à expedição, com a informação do armazém conectada ao ERP."
-          />
-          <ul className="grid gap-x-8 gap-y-5 sm:grid-cols-2 lg:col-span-8">
-            {beneficiosWms.map(({ titulo, icone: Icone }) => (
-              <li key={titulo} className="revelar flex items-center gap-4 border-b border-ardosia-100 pb-5">
-                <CaixaIcone className="size-10">
-                  <Icone className="size-5" strokeWidth={1.75} />
-                </CaixaIcone>
-                <span className="text-[15.5px] font-medium text-navy-900">{titulo}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
+        <CabecalhoSecao
+          sobretitulo="O impacto na operação"
+          titulo="Pessoas, processos e tecnologia conectados no armazém"
+          descricao="O MAIS i9 WMS conecta pessoas, processos e tecnologia para reduzir perdas, aumentar a produtividade e elevar a confiabilidade da operação logística."
+        />
+        <ul className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          {impactoWms.map(({ titulo, texto, icone: Icone }) => (
+            <li key={titulo} className="revelar rounded-2xl border border-ardosia-200 bg-white p-7">
+              <span aria-hidden className="flex size-12 items-center justify-center rounded-full bg-destaque-claro text-destaque-escuro">
+                <Icone className="size-6" strokeWidth={1.75} />
+              </span>
+              <h3 className="mt-5 text-lg font-semibold text-navy-950">{titulo}</h3>
+              <p className="mt-2 text-[15px] leading-relaxed text-ardosia-600">{texto}</p>
+            </li>
+          ))}
+        </ul>
+        <ul aria-label="Benefícios" className="mt-10 flex flex-wrap gap-2.5">
+          {beneficiosWms.map(({ titulo, icone: Icone }) => (
+            <li key={titulo} className="flex items-center gap-2 rounded-full bg-fundo px-3.5 py-2 text-sm font-medium text-navy-900">
+              <Icone aria-hidden className="size-4 text-azul-600" strokeWidth={1.75} />
+              {titulo}
+            </li>
+          ))}
+        </ul>
       </Secao>
 
       {/* Como funciona */}
@@ -198,7 +216,7 @@ export default function MaisI9Wms() {
               claro
               sobretitulo="Integração com TOTVS Protheus"
               titulo="Pacote padrão de integração com o Protheus"
-              descricao="O MAIS i9 WMS nasce conectado ao ERP TOTVS Protheus, para que armazém e gestão trabalhem com a mesma informação."
+              descricao="O MAIS i9 WMS nasce conectado ao ERP TOTVS Protheus, para que armazém e gestão trabalhem com a mesma informação. A integração padrão já está contemplada na implantação de cada componente."
             />
             <dl className="mt-10 space-y-6">
               {pontosIntegracao.map((p) => (
@@ -234,17 +252,17 @@ export default function MaisI9Wms() {
                 <div className="rounded-xl bg-navy-900/70 p-4 ring-1 ring-white/5">
                   <p className="text-xs font-semibold text-azul-300">Protheus → WMS</p>
                   <ul className="mt-2 space-y-1 text-sm text-ardosia-200">
+                    <li>Documentos fiscais e XML</li>
+                    <li>Pedidos e notas fiscais</li>
                     <li>Cadastros</li>
-                    <li>Documentos de entrada</li>
-                    <li>Pedidos de saída</li>
                   </ul>
                 </div>
                 <div className="rounded-xl bg-navy-900/70 p-4 ring-1 ring-white/5">
                   <p className="text-xs font-semibold text-destaque">WMS → Protheus</p>
                   <ul className="mt-2 space-y-1 text-sm text-ardosia-200">
                     <li>Confirmações das operações</li>
-                    <li>Movimentações</li>
-                    <li>Expedições</li>
+                    <li>Movimentações de estoque</li>
+                    <li>Apontamentos de produção</li>
                   </ul>
                 </div>
               </div>
@@ -258,6 +276,29 @@ export default function MaisI9Wms() {
             </div>
           </div>
         </div>
+      </Secao>
+
+      {/* Diferenciais */}
+      <Secao fundo="cinza" id="diferenciais">
+        <CabecalhoSecao
+          centro
+          sobretitulo="Diferenciais da solução"
+          titulo="Pensado para a realidade da operação logística"
+          descricao="Tecnologia acessível, integrada ao ERP e simples para quem executa."
+        />
+        <ul className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {diferenciaisWms.map(({ titulo, texto, icone: Icone }) => (
+            <li key={titulo} className="revelar flex gap-5 rounded-2xl border border-ardosia-200 bg-white p-7">
+              <CaixaIcone>
+                <Icone className="size-5" strokeWidth={1.75} />
+              </CaixaIcone>
+              <div>
+                <h3 className="text-lg font-semibold text-navy-950">{titulo}</h3>
+                <p className="mt-1.5 text-[15px] leading-relaxed text-ardosia-600">{texto}</p>
+              </div>
+            </li>
+          ))}
+        </ul>
       </Secao>
 
       {/* Aplicativos */}
@@ -276,8 +317,63 @@ export default function MaisI9Wms() {
         </div>
       </Secao>
 
+      {/* Contratação e implantação */}
+      <Secao fundo="cinza" id="implantacao">
+        <div className="grid gap-12 lg:grid-cols-12 lg:gap-16">
+          <div className="lg:col-span-5">
+            <CabecalhoSecao
+              sobretitulo="Contratação e implantação"
+              titulo="Uma solução completa, no ritmo da sua operação"
+              descricao="Comece pelos processos essenciais e cresça com segurança, à medida que novas necessidades surgirem."
+            />
+            <dl className="mt-10 space-y-6">
+              {[
+                ["Assinatura SaaS", modeloContratacaoWms.assinatura],
+                ["Implantação por componente", modeloContratacaoWms.implantacao],
+                ["Integração Protheus contemplada", modeloContratacaoWms.integracao],
+              ].map(([t, d]) => (
+                <div key={t} className="border-l-2 border-destaque pl-5">
+                  <dt className="font-semibold text-navy-950">{t}</dt>
+                  <dd className="mt-1.5 text-[15px] leading-relaxed text-ardosia-600">{d}</dd>
+                </div>
+              ))}
+            </dl>
+          </div>
+          <div className="lg:col-span-7">
+            <h3 className="text-lg font-semibold text-navy-950">Como acontece a implantação</h3>
+            <ol className="mt-6 grid gap-4 sm:grid-cols-2">
+              {etapasImplantacao.map((etapa, i) => (
+                <li key={etapa.titulo} className="revelar flex gap-4 rounded-2xl bg-white p-5 ring-1 ring-ardosia-200">
+                  <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-navy-900 font-display text-sm font-bold text-white">
+                    {i + 1}
+                  </span>
+                  <div>
+                    <p className="font-semibold text-navy-950">{etapa.titulo}</p>
+                    <p className="mt-1 text-[14.5px] leading-relaxed text-ardosia-600">{etapa.texto}</p>
+                  </div>
+                </li>
+              ))}
+            </ol>
+            <p className="mt-6 text-sm leading-relaxed text-ardosia-500">
+              O planejamento é construído com a sua equipe, considerando os módulos escolhidos, a disponibilidade das equipes e
+              os marcos de validação e entrada em produção. Demandas adicionais são avaliadas e aprovadas antes da execução.
+            </p>
+          </div>
+        </div>
+      </Secao>
+
+      {/* O papel do MAIS i9 WMS */}
+      <section className="grade-tecnica bg-navy-950 py-16 text-white sm:py-20">
+        <div className="container-site grid gap-8 lg:grid-cols-12 lg:items-center">
+          <div className="lg:col-span-4">
+            <Sobretitulo claro>O papel do MAIS i9 WMS</Sobretitulo>
+          </div>
+          <p className="font-display text-2xl leading-snug font-semibold text-balance sm:text-[1.75rem] lg:col-span-8">{papelWms}</p>
+        </div>
+      </section>
+
       {/* FAQ */}
-      <Secao fundo="cinza" id="perguntas">
+      <Secao id="perguntas">
         <div className="grid gap-12 lg:grid-cols-12">
           <CabecalhoSecao
             className="lg:col-span-4"
@@ -300,7 +396,7 @@ export default function MaisI9Wms() {
       </Secao>
 
       {/* Demonstração */}
-      <Secao id="demonstracao">
+      <Secao fundo="cinza" id="demonstracao">
         <div className="grid gap-12 lg:grid-cols-12 lg:gap-16">
           <div className="lg:col-span-5">
             <CabecalhoSecao
@@ -322,6 +418,18 @@ export default function MaisI9Wms() {
                 </li>
               ))}
             </ul>
+            <p className="mt-10 text-sm leading-relaxed text-ardosia-600">
+              Prefere falar agora? {empresa.telefoneComercial} · {empresa.emailComercial}
+              {empresa.siteWms && (
+                <>
+                  <br />
+                  Conheça também:{" "}
+                  <a href={empresa.siteWms} target="_blank" rel="noopener noreferrer" className="font-semibold text-azul-600 hover:text-navy-900">
+                    {empresa.siteWms.replace("https://", "")}
+                  </a>
+                </>
+              )}
+            </p>
           </div>
           <div className="rounded-3xl border border-ardosia-200 bg-white p-6 shadow-xl shadow-navy-950/5 sm:p-10 lg:col-span-7">
             <FormularioDemoWms />

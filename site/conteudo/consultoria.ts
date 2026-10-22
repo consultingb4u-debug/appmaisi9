@@ -2,17 +2,25 @@ import type { LucideIcon } from "lucide-react";
 import {
   ChartGantt,
   CodeXml,
+  Database,
   FileText,
   GitMerge,
   Headset,
   Layers,
   LifeBuoy,
   SearchCheck,
+  ShieldCheck,
+  TrendingUp,
   TriangleAlert,
   UserRoundCheck,
   Users,
   Workflow,
 } from "lucide-react";
+
+/*
+ * Conteúdo da MAIS i9 Consultoria Protheus, a partir da apresentação comercial
+ * (2026-2S) e do modelo de proposta. Valores e preços NÃO são publicados no site.
+ */
 
 type Servico = {
   /** Usado em âncoras e no campo "Serviço de interesse" do formulário. */
@@ -25,76 +33,84 @@ type Servico = {
 
 export const servicosConsultoria = [
   {
-    id: "sustentacao",
-    titulo: "Sustentação ERP Protheus",
-    resumo: "Atendimento contínuo para manter o ambiente estável e a operação funcionando.",
-    itens: [
-      "Atendimento contínuo de demandas",
-      "Correção de problemas e análise de incidentes",
-      "Apoio aos processos operacionais",
-      "Manutenção e estabilidade do ambiente",
-      "Acompanhamento de indicadores de atendimento",
-    ],
-    icone: LifeBuoy,
-  },
-  {
     id: "suporte",
     titulo: "Suporte Especializado Protheus",
-    resumo: "Atendimento funcional e técnico aos usuários, conforme o modelo contratado.",
+    resumo: "Atendimento funcional e técnico, nos níveis N1, N2 e N3, para os usuários e a equipe interna de TI.",
     itens: [
-      "Atendimento funcional e técnico",
-      "Orientação aos usuários",
-      "Diagnóstico e resolução de problemas",
-      "Apoio à utilização dos módulos do ERP",
+      "Esclarecimento de dúvidas sobre rotinas e funcionalidades",
+      "Análise e tratamento de incidentes",
+      "Apoio às rotinas operacionais e aos fechamentos",
+      "Ajustes operacionais e parametrizações de baixa complexidade",
+      "Gestão de usuários, perfis e acessos",
+      "Escalonamento ao fabricante, quando necessário",
     ],
     icone: Headset,
   },
   {
+    id: "sustentacao",
+    titulo: "Sustentação e Evolução do Ambiente",
+    resumo: "Atuação preventiva e planejada para manter o Protheus estável, seguro, atualizado e em evolução.",
+    itens: [
+      "Avaliação periódica das condições técnicas do ambiente",
+      "Identificação de riscos e dependências críticas",
+      "Planejamento de atualizações, patches e updates",
+      "Migrações de versão planejadas e dimensionadas",
+      "Melhoria contínua com boas práticas (ITIL/COBIT)",
+      "Plano de treinamento e capacitação",
+    ],
+    icone: LifeBuoy,
+  },
+  {
     id: "projetos",
     titulo: "Projetos de Implantação e Evolução",
-    resumo: "Implantação de módulos e evolução do ambiente, com método e governança.",
+    resumo: "Projetos estruturados, com escopo, cronograma e entregáveis definidos, em metodologia Agile ou Waterfall.",
     itens: [
-      "Implantação de módulos",
-      "Melhorias de processos e parametrizações",
-      "Integrações",
-      "Atualizações e adequações",
-      "Evolução funcional e tecnológica",
+      "Implantação de novos módulos",
+      "Novas funcionalidades e parametrizações",
+      "Integrações e automações",
+      "Internacionalização",
+      "Projetos de melhoria e transformação de processos",
+      "Gestão de projetos especializada",
     ],
     icone: Layers,
   },
   {
     id: "desenvolvimento",
-    titulo: "Desenvolvimento e Customizações",
-    resumo: "Desenvolvimento ADVPL/TLPP para as necessidades específicas dos seus processos.",
+    titulo: "Fábrica de Software ADVPL/TLPP",
+    resumo: "Desenvolvimento para as necessidades específicas dos processos, integrado ao padrão do Protheus.",
     itens: [
-      "Desenvolvimento ADVPL/TLPP",
-      "Criação e manutenção de rotinas específicas",
-      "Relatórios e automatizações",
-      "Integrações com sistemas externos",
+      "Customizações ADVPL/TLPP",
+      "Rotinas e processos específicos",
+      "Desenvolvimento e consumo de APIs",
+      "Integrações com sistemas e plataformas externas",
+      "Automatização de processos",
     ],
     icone: CodeXml,
   },
   {
     id: "consultoria-pontual",
-    titulo: "Consultoria Pontual e Especializada",
-    resumo: "Diagnósticos, avaliações e apoio especializado, sob demanda.",
+    titulo: "Consultoria Pontual e Diagnóstico",
+    resumo: "Atendimento sob demanda, sem horas mínimas mensais, para situações específicas.",
     itens: [
-      "Diagnósticos do ambiente",
+      "Diagnóstico do ambiente Protheus",
       "Avaliações técnicas e funcionais",
-      "Resolução de problemas específicos",
+      "Resolução pontual de problemas",
+      "Projetos de melhorias",
       "Apoio em projetos críticos",
     ],
     icone: SearchCheck,
   },
   {
     id: "governanca",
-    titulo: "Governança e Gestão de Projetos",
-    resumo: "Planejamento, acompanhamento e indicadores para decisões executivas.",
+    titulo: "Governança e Gestão dos Serviços",
+    resumo: "Transparência sobre demandas, prioridades e capacidade contratada.",
     itens: [
-      "Planejamento e acompanhamento de projetos",
-      "Gestão de recursos e entregas",
-      "Governança de demandas",
-      "Indicadores e acompanhamento executivo",
+      "Registro e acompanhamento das solicitações",
+      "Classificação e priorização das demandas",
+      "Controle das horas executadas e do saldo",
+      "Identificação de demandas recorrentes",
+      "Reuniões periódicas e relatórios de atividades",
+      "Roadmap de evolução e priorização conjunta",
     ],
     icone: ChartGantt,
   },
@@ -102,10 +118,28 @@ export const servicosConsultoria = [
 
 export type ServicoId = (typeof servicosConsultoria)[number]["id"];
 
+/** Serviço especializado complementar, contratado à parte. */
+export const servicoDba = {
+  titulo: "Administração de Bancos de Dados — Oracle e SQL Server",
+  resumo:
+    "Estabilidade, segurança e desempenho da camada de banco de dados que sustenta o TOTVS Protheus. Contratação pontual ou contínua, à parte dos demais modelos.",
+  itens: [
+    "Diagnóstico e análise de desempenho",
+    "Identificação de gargalos e ajustes de performance",
+    "Manutenção preventiva e corretiva",
+    "Estratégias de backup e recuperação",
+    "Apoio em atualizações e migrações de bancos",
+    "Análise de incidentes na camada de banco de dados",
+  ],
+  icone: Database,
+};
+
 /** Opções do campo "Serviço de interesse" (formulário da consultoria). */
 export const opcoesServico: { valor: string; rotulo: string }[] = [
   { valor: "diagnostico", rotulo: "Diagnóstico do ambiente Protheus" },
+  { valor: "evolutivo", rotulo: "Modelo Evolutivo (suporte + sustentação)" },
   ...servicosConsultoria.map((s) => ({ valor: s.id, rotulo: s.titulo })),
+  { valor: "dba", rotulo: "DBA Oracle / SQL Server" },
   { valor: "nao-sei", rotulo: "Ainda não sei — quero orientação" },
 ];
 
@@ -132,7 +166,7 @@ export const desafiosProtheus: { titulo: string; texto: string; icone: LucideIco
   },
   {
     titulo: "Atualizações e adequações adiadas",
-    texto: "Mudanças de versão, adequações legais e fiscais postergadas pelo receio de impactar a operação.",
+    texto: "Mudanças de versão, adequações legais e fiscais — como a Reforma Tributária — postergadas pelo receio de impactar a operação.",
     icone: Layers,
   },
   {
@@ -142,114 +176,184 @@ export const desafiosProtheus: { titulo: string; texto: string; icone: LucideIco
   },
 ];
 
-export const pilaresConsultoria: { titulo: string; texto: string }[] = [
+/** "O que sua empresa ganha" — material comercial da consultoria. */
+export const ganhosConsultoria: { titulo: string; texto: string; icone: LucideIcon }[] = [
   {
     titulo: "Continuidade operacional",
-    texto: "Ambiente estável, incidentes tratados com método e processos críticos funcionando.",
+    texto: "Redução de indisponibilidades e maior previsibilidade para os processos críticos.",
+    icone: ShieldCheck,
   },
   {
-    titulo: "Melhor uso do ERP",
-    texto: "Parametrizações, rotinas e orientação para que as áreas usem o Protheus a favor do negócio.",
+    titulo: "Governança do ambiente",
+    texto: "Organização das demandas, planejamento das evoluções e acompanhamento técnico contínuo.",
+    icone: ChartGantt,
   },
   {
-    titulo: "Evolução alinhada ao negócio",
-    texto: "Projetos, integrações e melhorias priorizados de acordo com os objetivos da empresa.",
+    titulo: "Maior capacidade da equipe",
+    texto: "Apoio especializado para reduzir filas de atendimento e acelerar entregas.",
+    icone: Users,
+  },
+  {
+    titulo: "Evolução do Protheus",
+    texto: "Atualizações, melhorias e novos projetos conduzidos de forma planejada.",
+    icone: TrendingUp,
   },
 ];
 
 export const diferenciaisConsultoria: { titulo: string; texto: string }[] = [
   {
-    titulo: "Visão técnica e funcional",
-    texto: "Quem analisa a demanda entende tanto o código e a parametrização quanto o processo da área usuária.",
+    titulo: "Especialistas funcionais e técnicos",
+    texto: "Equipe com experiência em Backoffice e Reforma Tributária, GPE e Medicina, Qualidade, Manufatura, TAF, PMS e infraestrutura Protheus.",
   },
   {
     titulo: "Governança de demandas",
-    texto: "Demandas registradas, classificadas e priorizadas, com acompanhamento de prazos e indicadores de atendimento.",
+    texto: "Solicitações registradas, classificadas por criticidade e acompanhadas, com controle de horas, saldo e relatórios periódicos.",
   },
   {
-    titulo: "Processo antes da ferramenta",
-    texto: "Cada solução parte do entendimento do processo de negócio que o ERP precisa sustentar.",
+    titulo: "Boas práticas de gestão",
+    texto: "Sustentação orientada por melhoria contínua, com referências de mercado como ITIL e COBIT.",
   },
   {
-    titulo: "Acompanhamento executivo",
-    texto: "Indicadores e status periódicos para a gestão acompanhar volume, prioridades, riscos e entregas.",
+    titulo: "Fábrica de software",
+    texto: "Desenvolvimento ADVPL/TLPP, APIs, integrações e automações com o mesmo time que conhece o seu ambiente.",
   },
   {
-    titulo: "Atendimento próximo",
-    texto: "Relacionamento direto com os especialistas que conhecem o seu ambiente e o seu histórico.",
+    titulo: "Atendimento multicanal",
+    texto: "Central de chamados, e-mail, WhatsApp e telefone, com níveis de serviço definidos em contrato.",
   },
   {
-    titulo: "Experiência de produto",
-    texto: "A MAIS i9 também desenvolve software próprio integrado ao Protheus — o MAIS i9 WMS.",
+    titulo: "Soluções proprietárias",
+    texto: "A MAIS i9 também desenvolve produtos integrados ao Protheus, como o MAIS i9 WMS.",
   },
 ];
 
-export type ModeloContratacao = { titulo: string; texto: string; indicado: string; servico: ServicoId };
+export type ModeloId = "pontual" | "suporte" | "sustentacao" | "evolutivo" | "projetos";
+
+export type ModeloContratacao = {
+  id: ModeloId;
+  titulo: string;
+  /** Formato de contratação (sem valores). */
+  formato: string;
+  base: string;
+  indicado: string[];
+  recomendado?: boolean;
+  /** Opção pré-selecionada no formulário ao clicar em "Solicitar proposta". */
+  servico: string;
+};
 
 export const modelosContratacao: ModeloContratacao[] = [
   {
-    titulo: "Sustentação continuada",
-    texto: "Atendimento recorrente de demandas, correções e apoio operacional, com escopo e indicadores acordados.",
-    indicado: "Ambientes em produção que exigem estabilidade e continuidade.",
-    servico: "sustentacao",
-  },
-  {
-    titulo: "Suporte especializado",
-    texto: "Atendimento funcional e técnico aos usuários, dimensionado conforme o modelo contratado.",
-    indicado: "Equipes que precisam de apoio especializado no uso do ERP.",
-    servico: "suporte",
-  },
-  {
-    titulo: "Projetos de evolução",
-    texto: "Escopo, cronograma e entregas definidos para implantar módulos, melhorar processos ou integrar sistemas.",
-    indicado: "Iniciativas com objetivo e prazo definidos.",
-    servico: "projetos",
-  },
-  {
-    titulo: "Consultoria pontual",
-    texto: "Diagnósticos, avaliações e resolução de problemas específicos, contratados sob demanda.",
-    indicado: "Situações críticas ou decisões que pedem uma avaliação especializada.",
+    id: "pontual",
+    titulo: "Pontual",
+    formato: "Por atendimento",
+    base: "Sem horas mínimas mensais",
+    indicado: ["Soluções imediatas", "Resolução pontual", "Projetos de melhorias"],
     servico: "consultoria-pontual",
   },
   {
-    titulo: "Alocação especializada",
-    texto: "Profissionais especializados dedicados conforme o escopo contratado, com acompanhamento da MAIS i9.",
-    indicado: "Demandas que exigem dedicação de especialistas por um período.",
-    servico: "desenvolvimento",
+    id: "suporte",
+    titulo: "Suporte",
+    formato: "Franquia mensal de horas",
+    base: "Atendimento recorrente com SLA",
+    indicado: ["Suporte ágil", "Atendimento multicanal", "SLA no atendimento", "Especialistas"],
+    servico: "suporte",
   },
+  {
+    id: "sustentacao",
+    titulo: "Sustentação",
+    formato: "Bolsa de horas",
+    base: "Atuação preventiva e planejada",
+    indicado: ["Estabilidade do ambiente", "Atualizações programadas", "Acompanhamento contínuo", "Planejamento"],
+    servico: "sustentacao",
+  },
+  {
+    id: "evolutivo",
+    titulo: "Evolutivo",
+    formato: "Bolsa única de horas",
+    base: "Suporte + Sustentação",
+    indicado: ["Ambientes com operação ativa", "Crescimento estruturado", "Roadmap de evolução"],
+    recomendado: true,
+    servico: "evolutivo",
+  },
+  {
+    id: "projetos",
+    titulo: "Projetos",
+    formato: "Escopo fechado ou por estimativa",
+    base: "Escopo, cronograma e entregáveis definidos",
+    indicado: ["Implantação de módulos", "Integrações e desenvolvimentos", "Projetos estruturados"],
+    servico: "projetos",
+  },
+];
+
+/** O que cada modelo contempla (quadro "Nossos Serviços" da apresentação comercial). */
+export const matrizModelos: { beneficio: string; modelos: ModeloId[] }[] = [
+  { beneficio: "Atendimento sob demanda", modelos: ["pontual", "suporte", "sustentacao", "evolutivo"] },
+  { beneficio: "Atendimento por agendamento", modelos: ["pontual", "suporte", "sustentacao", "evolutivo"] },
+  { beneficio: "Resolução de incidentes", modelos: ["pontual", "suporte", "sustentacao", "evolutivo"] },
+  { beneficio: "Especialistas dedicados", modelos: ["pontual", "suporte", "sustentacao", "evolutivo"] },
+  { beneficio: "Atendimento recorrente", modelos: ["suporte", "sustentacao", "evolutivo"] },
+  { beneficio: "Prioridade no atendimento", modelos: ["suporte", "sustentacao", "evolutivo"] },
+  { beneficio: "Suporte multicanal", modelos: ["suporte", "sustentacao", "evolutivo"] },
+  { beneficio: "SLA definido", modelos: ["suporte", "evolutivo"] },
+  { beneficio: "Acompanhamento contínuo", modelos: ["sustentacao", "evolutivo"] },
+  { beneficio: "Atuação preventiva", modelos: ["sustentacao", "evolutivo"] },
+  { beneficio: "Atualizações programadas", modelos: ["sustentacao", "evolutivo"] },
+  { beneficio: "Planejamento e roadmap", modelos: ["evolutivo"] },
+  { beneficio: "Evolução do ambiente", modelos: ["evolutivo"] },
+  { beneficio: "Gestão de projetos (Agile/Waterfall)", modelos: ["evolutivo", "projetos"] },
+  { beneficio: "Projetos estruturados", modelos: ["evolutivo", "projetos"] },
+  { beneficio: "Apoio na definição do escopo", modelos: ["evolutivo", "projetos"] },
+  { beneficio: "Previsibilidade de capacidade", modelos: ["evolutivo", "projetos"] },
+];
+
+export const condicoesAtendimento = [
+  "Atendimento remoto incluso",
+  "Atendimento presencial mediante despesas adicionais e aprovação prévia",
+  "Projetos com estimativa conforme o escopo definido pelo cliente",
+  "Serviços de DBA e projetos contratados à parte dos modelos de suporte e sustentação",
 ];
 
 export const metodologiaAtendimento: { titulo: string; texto: string }[] = [
   {
-    titulo: "Registro e triagem",
-    texto: "A demanda é registrada, classificada por tipo e prioridade e direcionada ao especialista adequado.",
+    titulo: "Registro",
+    texto: "A solicitação é registrada pela central de chamados, e-mail, WhatsApp ou telefone, garantindo rastreabilidade.",
   },
   {
-    titulo: "Análise",
-    texto: "Investigação técnica e funcional da causa, com alinhamento junto à área usuária.",
+    titulo: "Classificação",
+    texto: "A demanda recebe prioridade conforme criticidade e impacto operacional e segue para o especialista adequado.",
   },
   {
-    titulo: "Solução e validação",
-    texto: "Correção, parametrização ou desenvolvimento testados e validados com o usuário antes da entrega.",
+    titulo: "Análise e tratamento",
+    texto: "Atendimento funcional e técnico nos níveis N1 a N3, com escalonamento ao fabricante quando necessário.",
   },
   {
-    titulo: "Entrega e registro",
-    texto: "Publicação controlada e registro da solução, preservando o conhecimento sobre o ambiente.",
+    titulo: "Validação e encerramento",
+    texto: "Intervenções em produção aprovadas pelo cliente e solução validada com a área usuária.",
   },
   {
-    titulo: "Indicadores e melhoria",
-    texto: "Acompanhamento periódico de volume, prazos e qualidade, com recomendações de evolução.",
+    titulo: "Acompanhamento",
+    texto: "Relatórios de atividades, horas consumidas e saldo, com identificação de recorrências e recomendações de melhoria.",
   },
 ];
 
-export const beneficiosConsultoria: { texto: string; icone: LucideIcon }[] = [
-  { texto: "Estabilidade e continuidade da operação", icone: LifeBuoy },
-  { texto: "Previsibilidade no atendimento das demandas", icone: ChartGantt },
-  { texto: "Melhor aproveitamento do investimento no ERP", icone: Layers },
-  { texto: "Menos dependência de pessoas-chave", icone: UserRoundCheck },
-  { texto: "Processos mais aderentes ao negócio", icone: Workflow },
-  { texto: "Visão executiva por meio de indicadores", icone: SearchCheck },
+export const prioridadesAtendimento: { nivel: string; texto: string; tom: "critico" | "alto" | "medio" | "baixo" }[] = [
+  { nivel: "Crítica", texto: "Indisponibilidade de processo essencial, sem alternativa operacional viável", tom: "critico" },
+  { nivel: "Alta", texto: "Impacto relevante em processo de negócio, com operação comprometida", tom: "alto" },
+  { nivel: "Média", texto: "Incidente ou dificuldade operacional com alternativa de execução", tom: "medio" },
+  { nivel: "Baixa", texto: "Dúvidas, orientações e solicitações sem impacto imediato na operação", tom: "baixo" },
 ];
+
+export const beneficiosConsultoria: { texto: string; icone: LucideIcon }[] = [
+  { texto: "Menor impacto de incidentes nas atividades diárias", icone: LifeBuoy },
+  { texto: "Acesso a especialistas sem ampliar a estrutura interna", icone: UserRoundCheck },
+  { texto: "Menos tempo da equipe investigando problemas recorrentes", icone: SearchCheck },
+  { texto: "Atendimento estruturado, com prioridades e acompanhamento", icone: ChartGantt },
+  { texto: "Previsibilidade de capacidade de atendimento", icone: Layers },
+  { texto: "ERP estável, seguro e preparado para crescer", icone: ShieldCheck },
+];
+
+export const papelMaisI9 =
+  "O ERP sustenta processos essenciais da empresa. A atuação da MAIS i9 é garantir que ele permaneça disponível, atualizado e preparado para acompanhar a evolução do negócio, reduzindo riscos operacionais e apoiando as equipes responsáveis pelo ambiente.";
 
 export const faqConsultoria: { pergunta: string; resposta: string }[] = [
   {
@@ -260,31 +364,39 @@ export const faqConsultoria: { pergunta: string; resposta: string }[] = [
   {
     pergunta: "Quais modelos de contratação estão disponíveis?",
     resposta:
-      "Sustentação continuada, suporte especializado, projetos de evolução, consultoria pontual e alocação especializada conforme o escopo contratado. O modelo é definido junto com você, de acordo com o volume e o tipo de demanda.",
+      "Pontual (por atendimento, sem horas mínimas), Suporte (franquia mensal de horas), Sustentação (bolsa de horas), Evolutivo (bolsa única de horas que combina suporte e sustentação) e Projetos (escopo fechado ou por estimativa). O modelo é definido com você, conforme o volume e o tipo de demanda.",
   },
   {
-    pergunta: "Como funciona o diagnóstico do ambiente?",
+    pergunta: "Como funciona o Modelo Evolutivo?",
     resposta:
-      "Fazemos uma avaliação técnica e funcional do seu Protheus — processos, parametrizações, customizações, integrações e demandas recorrentes — e apresentamos os pontos de atenção e as recomendações priorizadas.",
+      "Ele integra suporte operacional especializado e sustentação do ambiente em uma única bolsa de horas, que você direciona às necessidades mais relevantes. As horas não utilizadas em um mês continuam disponíveis durante a vigência, e o consumo e o saldo são acompanhados em relatórios periódicos.",
   },
   {
-    pergunta: "Vocês atendem demandas pontuais?",
+    pergunta: "Quais são os canais de atendimento?",
     resposta:
-      "Sim. A consultoria pontual atende diagnósticos, avaliações, resolução de problemas específicos e apoio em projetos críticos, sem a necessidade de um contrato contínuo.",
+      "Central de atendimento e registro de chamados, e-mail, WhatsApp, telefone e reuniões remotas quando necessárias. Toda solicitação é registrada para garantir rastreabilidade e controle das horas.",
   },
   {
-    pergunta: "Vocês desenvolvem customizações em ADVPL/TLPP?",
+    pergunta: "Como funciona o SLA?",
     resposta:
-      "Sim. Desenvolvemos e mantemos rotinas específicas, relatórios, automatizações e integrações com sistemas externos, sempre partindo do processo de negócio que a customização precisa atender.",
+      "As solicitações são classificadas por criticidade (crítica, alta, média e baixa). Os tempos de primeira resposta, os horários de cobertura e as regras de escalonamento são formalizados em cada contrato. O SLA se refere ao início do atendimento; a solução pode depender da complexidade técnica, do fabricante ou de informações do cliente.",
   },
   {
-    pergunta: "Como acompanho o andamento dos atendimentos?",
-    resposta:
-      "As demandas são registradas e acompanhadas com indicadores de atendimento, e a gestão recebe um acompanhamento executivo periódico com volume, prioridades, prazos e riscos.",
+    pergunta: "O atendimento é remoto ou presencial?",
+    resposta: "O atendimento é predominantemente remoto, e o remoto está incluso. O atendimento presencial é possível mediante despesas adicionais e aprovação prévia.",
   },
   {
-    pergunta: "Os valores dos serviços estão disponíveis no site?",
+    pergunta: "Vocês desenvolvem customizações e integrações?",
     resposta:
-      "Não. Cada proposta é elaborada de acordo com o escopo, o volume de demandas e o modelo de atendimento. Fale com um especialista para receber uma proposta.",
+      "Sim. A fábrica de software da MAIS i9 desenvolve customizações ADVPL/TLPP, rotinas específicas, APIs, integrações e automações. Projetos e desenvolvimentos são contratados por escopo, à parte dos modelos de suporte e sustentação.",
+  },
+  {
+    pergunta: "A MAIS i9 atende bancos de dados Oracle e SQL Server?",
+    resposta:
+      "Sim. Há serviços especializados de DBA para Oracle e Microsoft SQL Server — diagnóstico de desempenho, manutenção, backup e recuperação, apoio em migrações — contratados de forma pontual ou contínua.",
+  },
+  {
+    pergunta: "Os valores estão disponíveis no site?",
+    resposta: "Não. Cada proposta é elaborada de acordo com o escopo, o volume de demandas e o modelo de atendimento. Fale com um especialista para receber a sua.",
   },
 ];

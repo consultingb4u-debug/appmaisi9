@@ -1,6 +1,5 @@
 import { CardsCases, CtaFinal, Depoimentos, HeroPagina, LogosClientes } from "@/components/secoes";
 import { CabecalhoSecao, JsonLd, Secao } from "@/components/ui";
-import type { TipoCase } from "@/conteudo/cases";
 import { trilha } from "@/lib/jsonld";
 import { metadadosPagina } from "@/lib/site";
 
@@ -16,19 +15,10 @@ const caminhoTrilha = [
   { nome: "Cases", caminho: "/cases" },
 ];
 
-const grupos: { id: string; titulo: string; descricao: string; tipos: TipoCase[] }[] = [
-  {
-    id: "consultoria",
-    titulo: "Consultoria Protheus",
-    descricao: "Implantações, projetos de evolução e resultados de sustentação em ambientes TOTVS Protheus.",
-    tipos: ["implantacao", "evolucao", "sustentacao"],
-  },
-  {
-    id: "wms",
-    titulo: "MAIS i9 WMS",
-    descricao: "Operações logísticas que utilizam o MAIS i9 WMS: processos, integração e resultados.",
-    tipos: ["wms"],
-  },
+const secoes = [
+  { href: "#clientes", rotulo: "Clientes" },
+  { href: "#cases", rotulo: "Cases" },
+  { href: "#depoimentos", rotulo: "Depoimentos" },
 ];
 
 export default function Cases() {
@@ -39,10 +29,10 @@ export default function Cases() {
         trilha={caminhoTrilha}
         sobretitulo="Cases e clientes"
         titulo="Projetos reais, contados com autorização dos nossos clientes."
-        descricao="Aqui você vai encontrar cases de implantação, projetos de evolução, resultados de sustentação e operações com o MAIS i9 WMS. Cada case é publicado somente após a aprovação do cliente."
+        descricao="Cases de sustentação, integração e operações com o MAIS i9 WMS, e as empresas que confiam na MAIS i9 para cuidar do seu ERP e da sua logística."
       >
         <nav aria-label="Seções da página" className="flex flex-wrap gap-2">
-          {[...grupos.map((g) => ({ href: `#${g.id}`, rotulo: g.titulo })), { href: "#depoimentos", rotulo: "Depoimentos" }].map((l) => (
+          {secoes.map((l) => (
             <a
               key={l.href}
               href={l.href}
@@ -61,16 +51,18 @@ export default function Cases() {
         </div>
       </Secao>
 
-      {grupos.map((g, i) => (
-        <Secao key={g.id} id={g.id} fundo={i % 2 === 0 ? "cinza" : "branco"}>
-          <CabecalhoSecao sobretitulo="Cases" titulo={g.titulo} descricao={g.descricao} />
-          <div className="mt-12">
-            <CardsCases tipos={g.tipos} />
-          </div>
-        </Secao>
-      ))}
+      <Secao id="cases" fundo="cinza">
+        <CabecalhoSecao
+          sobretitulo="Cases"
+          titulo="Resultados de projetos da MAIS i9"
+          descricao="Sustentação do Protheus e integração com o MAIS i9 WMS. Os cases são apresentados sem identificar o cliente; novos cases entram aqui à medida que forem autorizados."
+        />
+        <div className="mt-12">
+          <CardsCases tipos={["implantacao", "evolucao", "sustentacao", "wms"]} />
+        </div>
+      </Secao>
 
-      <Secao id="depoimentos" fundo="cinza">
+      <Secao id="depoimentos">
         <div className="grid gap-12 lg:grid-cols-12">
           <CabecalhoSecao
             className="lg:col-span-4"

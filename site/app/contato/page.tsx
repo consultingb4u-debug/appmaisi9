@@ -1,4 +1,4 @@
-import { Building2, Clock, Mail, MapPin, MessageCircle, Phone } from "lucide-react";
+import { Building2, Clock, Headset, Mail, MapPin, MessageCircle, Phone } from "lucide-react";
 import type { ReactNode } from "react";
 import { FormularioContato } from "@/components/formularios/formularios";
 import { HeroPagina } from "@/components/secoes";
@@ -93,6 +93,13 @@ export default function Contato() {
                     <Pendente>telefone comercial</Pendente>
                   )}
                 </Linha>
+                {empresa.emailChamados && (
+                  <Linha icone={<Headset className="size-5" />} rotulo="Clientes: abertura de chamados">
+                    <a href={`mailto:${empresa.emailChamados}`} className="hover:text-azul-600">
+                      {empresa.emailChamados}
+                    </a>
+                  </Linha>
+                )}
                 <Linha icone={<Clock className="size-5" />} rotulo="Horário de atendimento">
                   {empresa.horarioAtendimento ?? <Pendente>horário de atendimento</Pendente>}
                 </Linha>

@@ -28,7 +28,15 @@ if (preg_match('#href="(/_next/static/[^"]+\.css)"#', $html, $m)) {
 }
 
 $ok('Páginas internas (ex.: /sobre/)', is_file(__DIR__ . '/sobre/index.html'));
-$ok('Arquivo .htaccess', is_file(__DIR__ . '/.htaccess'), 'arquivo oculto: ative "mostrar ocultos" no Gerenciador');
+$htaccess = (string) @file_get_contents(__DIR__ . '/.htaccess');
+$ok('Arquivo .htaccess do site novo', str_contains($htaccess, 'Site MAIS i9'),
+    str_contains($htaccess, 'Site MAIS i9') ? '' : ($htaccess === '' ? 'não encontrado (arquivo oculto: ative "mostrar ocultos" no Gerenciador)'
+    : (str_contains($htaccess, 'WordPress') ? 'é o .htaccess do WordPress: substitua pelo do pacote' : 'é de outra origem: substitua pelo do pacote')));
+
+// Restos do WordPress em public_html desviam pedidos para o WordPress (e o cache dele serve páginas antigas).
+$restos = array_values(array_filter(['wp-config.php', 'wp-login.php', 'wp-admin', 'wp-includes', 'wp-content', 'index.php'],
+    static fn($n) => file_exists(__DIR__ . '/' . $n)));
+$ok('Sem arquivos do WordPress antigo em public_html', !$restos, $restos ? 'encontrados: ' . implode(', ', $restos) : '');
 $ok('Formulários: contato.php', is_file(__DIR__ . '/contato.php'));
 $ok('Formulários: contato-opcoes.json', is_file(__DIR__ . '/contato-opcoes.json'));
 

@@ -17,6 +17,18 @@ apontado para ela.
 -------------------------------
 hPanel > Arquivos > Backups (ou baixe a pasta public_html pelo Gerenciador de Arquivos).
 
+SE O DOMÍNIO TINHA WORDPRESS: os arquivos dele não podem ficar em public_html. O
+.htaccess do WordPress manda para ele tudo o que não encontra, e o cache dele (LiteSpeed)
+continua servindo páginas antigas. Em vez de apagar, guarde:
+
+  a) No Gerenciador de Arquivos, abra a pasta do domínio (a que contém public_html) e
+     crie a pasta wordpress-antigo.
+  b) Entre em public_html, ative "mostrar arquivos ocultos", selecione TUDO
+     (wp-admin, wp-content, wp-includes, index.php, wp-config.php, .htaccess etc.)
+     e mova para wordpress-antigo. Se existir a pasta .well-known, pode deixá-la.
+  c) O banco de dados do WordPress continua no hPanel e não atrapalha o site novo.
+     Se um dia quiser voltar, é só mover os arquivos de volta.
+
 
 2. ENVIE O SITE (pelo zip, para não faltar nenhuma pasta)
 ---------------------------------------------------------
@@ -59,8 +71,10 @@ entrega é mais confiável.
 
 4. CONFIRA E TESTE
 ------------------
-  a) Abra https://www.maisi9.com.br e navegue pelas páginas. Se aparecer sem cores
-     e sem fontes, recarregue com Ctrl+F5; se continuar, use o passo (c).
+  a) Limpe o cache do servidor: hPanel > Avançado > Gerenciador de cache (Cache Manager)
+     > Limpar tudo. Se usar a CDN da Hostinger, limpe também em hPanel > Desempenho > CDN.
+     Depois abra https://www.maisi9.com.br e recarregue com Ctrl+F5. Se aparecer sem
+     cores e sem fontes, use o passo (c).
   b) Envie o formulário da página Contato com seus dados. Deve aparecer
      "Recebemos sua solicitação" com um protocolo, e o e-mail deve chegar em
      contato@maisi9.com.br. Ao responder o e-mail, a resposta vai para quem preencheu.

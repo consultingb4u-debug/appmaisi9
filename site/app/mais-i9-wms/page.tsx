@@ -2,6 +2,7 @@ import clsx from "clsx";
 import { ArrowLeftRight, Check, Cloud, Database, Plug, ScanBarcode, Warehouse } from "lucide-react";
 import { FormularioDemoWms } from "@/components/formularios/formularios";
 import { HeroPagina, PerguntasFrequentes } from "@/components/secoes";
+import { TeaserWms } from "@/components/teaser-wms";
 import { Botao, CabecalhoSecao, CaixaIcone, JsonLd, LinkDestino, Secao, Sobretitulo } from "@/components/ui";
 import { Aplicativos, BaseOperacional, FluxoOperacao, NotaIlustracao, VisaoProduto, VitrineHero } from "@/components/wms";
 import { avisoMarcas, ctaWhatsapp, empresa } from "@/conteudo/empresa";
@@ -18,6 +19,7 @@ import {
   modulosComplementares,
   papelWms,
   pontosIntegracao,
+  teaserWms,
 } from "@/conteudo/wms";
 import { idOrganizacao, perguntasFrequentes, trilha } from "@/lib/jsonld";
 import { metadadosPagina, urlAbsoluta } from "@/lib/site";
@@ -93,7 +95,10 @@ export default function MaisI9Wms() {
           titulo="Do painel de gestão ao coletor na mão do operador"
           descricao={introducaoWms}
         />
-        <div className="mt-12">
+        <div className="mx-auto mt-12 max-w-5xl">
+          <TeaserWms video={teaserWms} />
+        </div>
+        <div className="mt-16">
           <VisaoProduto />
         </div>
         <div className="mt-8 text-center">

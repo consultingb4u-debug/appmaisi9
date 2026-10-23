@@ -78,7 +78,8 @@ MAIS i9 → **FAQ** (incluindo “A MAIS i9 faz parte da TOTVS?”) → **formul
 ### MAIS i9 WMS (página de produto)
 Página do produto: o que ele é, o que faz e o que entrega. Hero com o painel web e o App Operador → faixa de
 credenciais (Addon MAIS i9 para o Protheus, APIs, App Operador, SaaS)
-→ **Visão do produto** em abas (Dashboard, App Operador, Telas operacionais, Torre Controle de Expedição) →
+→ **Visão do produto**: teaser em vídeo (31 s, sem som, em loop) e abas (Dashboard, App Operador, Telas
+operacionais, Torre Controle de Expedição) →
 **10 benefícios** → **Como funciona**: ERP → Recebimento → Armazenagem → Movimentação → Expedição, com o
 que vai do ERP para o armazém e o que volta → **Base operacional**: os 7 componentes em cards interativos
 (abas acessíveis por teclado) → **4 módulos complementares** e a nota “todos fazem parte do produto padrão;
@@ -146,7 +147,11 @@ case. A página de cases foi removida a pedido da MAIS i9; o site não publica r
   App Operador (menu de tarefas e consulta por produto), em `site/public/wms/`
 - [x] Telas operacionais: portal de aplicações do WMS (módulos por processo)
 - [x] Torre Controle de Expedição: monitor logístico de expedição (sem a área vazia abaixo do quadro)
-- [ ] Tela real ainda pendente: App Motorista. O “Dashboard de Localização” enviado não foi usado: tem valores negativos e em reais, gráficos
+- [ ] Tela real ainda pendente: App Motorista.
+- [x] Teaser do WMS (`site/public/wms/teaser-wms.webm` + `.mp4` + pôster), montado das demonstrações gravadas: só a
+  área do sistema, sem nome do prospect, sem telas com valores em reais ou CNPJ. Toca só quando visível, tem botão
+  de pausar e não toca sozinho com “reduzir movimento”. Os vídeos originais não estão no repositório.
+- [ ] Versão do teaser com música (MP4 para LinkedIn/WhatsApp): aguarda a faixa escolhida (licença de uso comercial) O “Dashboard de Localização” enviado não foi usado: tem valores negativos e em reais, gráficos
   vazios e a captura cortada à direita
 - [ ] Recaptura da consulta por produto com quantidade dentro da capacidade (a tela atual mostra 5.785 para
   capacidade de 2.620)

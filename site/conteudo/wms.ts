@@ -376,6 +376,19 @@ export const opcoesUsuarios = [
  */
 export type TelaReal = { src: string; largura: number; altura: number; descricao: string };
 
+/** Teaser em vídeo (sem som), montado a partir das demonstrações gravadas, sem dados de clientes nem valores. */
+export type VideoTeaser = { webm: string; mp4: string; poster: string; largura: number; altura: number; descricao: string };
+
+export const teaserWms: VideoTeaser = {
+  webm: "/wms/teaser-wms.webm",
+  mp4: "/wms/teaser-wms.mp4",
+  poster: "/wms/teaser-wms-poster.jpg",
+  largura: 1280,
+  altura: 720,
+  descricao:
+    "Teaser do MAIS i9 WMS: entrada da nota, conferência e endereçamento no coletor, liberação da ordem de venda, separação, embalagem, torre de controle de expedição e devolução, com dados de demonstração.",
+};
+
 export type ChaveTela = "dashboard" | "appOperador" | "appOperadorConsulta" | "operacional" | "torreExpedicao" | "appMotorista";
 
 export const telasReais: Record<ChaveTela, TelaReal | null> = {

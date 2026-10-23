@@ -4,7 +4,7 @@ import { describe, expect, it } from "vitest";
 import { opcoesServico, servicosConsultoria } from "@/conteudo/consultoria";
 import { ctaWhatsapp, empresa, mensagensWhatsapp } from "@/conteudo/empresa";
 import { artigos, categorias, formatarData } from "@/conteudo/insights";
-import { baseOperacional, modulosComplementares, telasReais } from "@/conteudo/wms";
+import { baseOperacional, modulosComplementares, teaserWms, telasReais } from "@/conteudo/wms";
 import { paginasInstitucionais } from "@/lib/rotas";
 
 const raiz = path.resolve(import.meta.dirname, "..");
@@ -50,6 +50,12 @@ describe("conteúdo do site", () => {
       // Cabeçalho IHDR do PNG: largura e altura nos bytes 16–23.
       expect([png.readUInt32BE(16), png.readUInt32BE(20)], tela.src).toEqual([tela.largura, tela.altura]);
       expect(tela.descricao.length, tela.src).toBeGreaterThan(20);
+    }
+  });
+
+  it("teaser do WMS tem WebM, MP4 e pôster em public/", () => {
+    for (const arquivo of [teaserWms.webm, teaserWms.mp4, teaserWms.poster]) {
+      expect(existsSync(path.join(raiz, "public", arquivo)), arquivo).toBe(true);
     }
   });
 

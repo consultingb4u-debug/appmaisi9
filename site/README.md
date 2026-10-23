@@ -42,7 +42,7 @@ Tudo o que é texto institucional fica em `conteudo/` — os componentes não t�
 |---|---|
 | `conteudo/empresa.ts` | dados institucionais, contatos, WhatsApp e mensagens das chamadas (`ctaWhatsapp`), logotipo, encarregado LGPD |
 | `conteudo/consultoria.ts` | serviços, desafios, diferenciais, modelos de contratação, metodologia, FAQ |
-| `conteudo/wms.ts` | base operacional, módulos complementares, benefícios, integração, FAQ, telas reais |
+| `conteudo/wms.ts` | base operacional, módulos complementares, benefícios, integração, FAQ, telas reais e teaser em vídeo (`public/wms/`) |
 | `conteudo/insights.ts` + `conteudo/artigos/*.mdx` | categorias e artigos |
 | `conteudo/navegacao.ts` | menu e rodapé |
 

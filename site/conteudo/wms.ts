@@ -406,6 +406,12 @@ export const telasReais: Record<ChaveTela, TelaReal | null> = {
     descricao:
       "Portal do MAIS i9 WMS com os módulos organizados por processo: configuração, recebimento, expedição, produção, movimentação, inventário, viagens e dashboards.",
   },
-  torreExpedicao: null,
+  torreExpedicao: {
+    src: "/wms/torre-controle-expedicao.png",
+    largura: 1862,
+    altura: 584,
+    descricao:
+      "Torre Controle de Expedição do MAIS i9 WMS: pedidos do ERP por etapa — pendentes, separação e expedição —, com status no ERP e atualização automática.",
+  },
   appMotorista: null,
 };

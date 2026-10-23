@@ -145,8 +145,8 @@ case. A página de cases foi removida a pedido da MAIS i9; o site não publica r
 - [x] Telas reais do MAIS i9 WMS: dashboard de controle de lotes (sem as linhas de valor em reais) e duas telas do
   App Operador (menu de tarefas e consulta por produto), em `site/public/wms/`
 - [x] Telas operacionais: portal de aplicações do WMS (módulos por processo)
-- [ ] Telas reais ainda pendentes: Torre Controle de Expedição (monitor de expedição; enquanto isso, ilustração) e
-  App Motorista. O “Dashboard de Localização” enviado não foi usado: tem valores negativos e em reais, gráficos
+- [x] Torre Controle de Expedição: monitor logístico de expedição (sem a área vazia abaixo do quadro)
+- [ ] Tela real ainda pendente: App Motorista. O “Dashboard de Localização” enviado não foi usado: tem valores negativos e em reais, gráficos
   vazios e a captura cortada à direita
 - [ ] Recaptura da consulta por produto com quantidade dentro da capacidade (a tela atual mostra 5.785 para
   capacidade de 2.620)

@@ -11,23 +11,25 @@ import {
   MolduraNavegador,
   TelaOuIlustracao,
 } from "@/components/visuais/mockups";
-import { baseOperacional, etapasFluxo, telasReais } from "@/conteudo/wms";
+import { baseOperacional, etapasFluxo, telasReais, type ChaveTela } from "@/conteudo/wms";
 
-export function NotaIlustracao({ claro = false }: { claro?: boolean }) {
-  // Some quando todas as ilustrações tiverem sido trocadas pelas telas reais.
-  if (Object.values(telasReais).every(Boolean)) return null;
-  return (
-    <p className={clsx("text-xs", claro ? "text-ardosia-400" : "text-ardosia-500")}>
-      Representação ilustrativa da interface do MAIS i9 WMS, com dados fictícios.
-    </p>
-  );
+/** Legenda das telas exibidas: reais (dados de demonstração), ilustrativas ou as duas. */
+export function NotaIlustracao({ telas, claro = false }: { telas: ChaveTela[]; claro?: boolean }) {
+  const reais = telas.filter((t) => telasReais[t]).length;
+  const texto =
+    reais === telas.length
+      ? "Telas do MAIS i9 WMS com dados de demonstração."
+      : reais === 0
+        ? "Representação ilustrativa da interface do MAIS i9 WMS, com dados fictícios."
+        : "Telas do MAIS i9 WMS e representações ilustrativas da interface, com dados de demonstração.";
+  return <p className={clsx("text-xs", claro ? "text-ardosia-400" : "text-ardosia-500")}>{texto}</p>;
 }
 
 /** Composição do topo da página do WMS: painel web + App Operador. */
 export function VitrineHero() {
   return (
     <div className="relative sm:pr-24 sm:pb-16 lg:pr-20">
-      <MolduraNavegador titulo="MAIS i9 WMS · Painel da operação">
+      <MolduraNavegador titulo="MAIS i9 WMS · Dashboard">
         <TelaOuIlustracao real={telasReais.dashboard}>
           <MockDashboard />
         </TelaOuIlustracao>
@@ -47,11 +49,11 @@ const visoes = [
   {
     id: "dashboard",
     rotulo: "Dashboard web",
-    titulo: "A operação inteira em uma tela",
-    texto: "Recebimentos, tarefas de armazenagem, pedidos em separação e ocupação do armazém acompanhados em um painel único.",
-    itens: ["Situação da operação no turno", "Pendências e divergências em destaque", "Acesso rápido a cada processo"],
+    titulo: "Lotes e validades sob controle",
+    texto: "Lotes aptos, críticos e em alerta, vencimentos por faixa de dias e a estratégia FIFO/FEFO acompanhados em um painel único.",
+    itens: ["Lotes críticos e em alerta em destaque", "Vencimentos por faixa de dias", "Distribuição por estratégia FIFO/FEFO"],
     tela: (
-      <MolduraNavegador titulo="MAIS i9 WMS · Painel da operação">
+      <MolduraNavegador titulo="MAIS i9 WMS · Dashboard">
         <TelaOuIlustracao real={telasReais.dashboard}>
           <MockDashboard />
         </TelaOuIlustracao>
@@ -231,7 +233,7 @@ export function Aplicativos() {
           titulo: "App Operador",
           texto: "Para a equipe do armazém executar recebimento, armazenagem, movimentações e expedição com mobilidade, confirmando cada etapa no ponto da operação.",
           tela: <MockAppOperador />,
-          real: telasReais.appOperador,
+          real: telasReais.appOperadorConsulta ?? telasReais.appOperador,
         },
         {
           rotulo: "Módulo Gestão de Entregas e Viagens",

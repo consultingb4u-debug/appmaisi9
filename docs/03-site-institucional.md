@@ -142,7 +142,12 @@ case. A página de cases foi removida a pedido da MAIS i9; o site não publica r
 
 **Marca e materiais**
 - [ ] Logotipo em SVG e a versão para fundo escuro (branca), usada no rodapé e na imagem de compartilhamento
-- [ ] Telas reais do MAIS i9 WMS (dashboard, App Operador, telas operacionais, indicadores, App Motorista)
+- [x] Telas reais do MAIS i9 WMS: dashboard de controle de lotes (sem as linhas de valor em reais) e duas telas do
+  App Operador (menu de tarefas e consulta por produto), em `site/public/wms/`
+- [ ] Telas reais ainda pendentes: telas operacionais (conferência), indicadores e App Motorista. O “Dashboard de
+  Localização” enviado não foi usado: tem valores negativos e em reais, gráficos vazios e a captura cortada à direita
+- [ ] Recaptura da consulta por produto com quantidade dentro da capacidade (a tela atual mostra 5.785 para
+  capacidade de 2.620)
 
 **Dados institucionais** (`site/conteudo/empresa.ts`)
 - [ ] Razão social e CNPJ (usados na Política de Privacidade e no rodapé)

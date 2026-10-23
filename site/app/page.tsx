@@ -137,7 +137,7 @@ export default function Inicio() {
           <div className="min-w-0 lg:order-1 lg:col-span-7">
             <VitrineHero />
             <div className="mt-4">
-              <NotaIlustracao claro />
+              <NotaIlustracao claro telas={["dashboard", "appOperador"]} />
             </div>
           </div>
         </div>

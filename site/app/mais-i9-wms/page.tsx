@@ -95,7 +95,7 @@ export default function MaisI9Wms() {
           <VisaoProduto />
         </div>
         <div className="mt-8 text-center">
-          <NotaIlustracao />
+          <NotaIlustracao telas={["dashboard", "appOperador", "operacional", "indicadores"]} />
         </div>
       </Secao>
 
@@ -316,7 +316,7 @@ export default function MaisI9Wms() {
           <Aplicativos />
         </div>
         <div className="mt-6 text-center">
-          <NotaIlustracao />
+          <NotaIlustracao telas={["appOperadorConsulta", "appMotorista"]} />
         </div>
       </Secao>
 

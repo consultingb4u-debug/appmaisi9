@@ -59,16 +59,18 @@ export function MolduraCelular({ children, className }: { children: ReactNode; c
 
 export function TelaOuIlustracao({ real, children, celular = false }: { real: TelaReal | null; children: ReactNode; celular?: boolean }) {
   if (!real) return <>{children}</>;
-  return (
+  const imagem = (
     <Image
       src={real.src}
       alt={real.descricao}
       width={real.largura}
       height={real.altura}
       sizes={celular ? "240px" : "(min-width: 1024px) 760px, 100vw"}
-      className={clsx("h-auto w-full", celular ? "rounded-[1.8rem]" : "rounded-xl")}
+      className="h-auto w-full"
     />
   );
+  // No celular, uma faixa de status fica sob o recorte da moldura, sem cobrir a tela capturada.
+  return celular ? <div className="bg-white pt-6">{imagem}</div> : imagem;
 }
 
 function Pilula({ tom, children }: { tom: "ok" | "azul" | "laranja" | "cinza"; children: ReactNode }) {

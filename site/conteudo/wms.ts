@@ -362,15 +362,36 @@ export const opcoesUsuarios = [
 ];
 
 /**
- * Telas reais do MAIS i9 WMS (prioridade sobre as ilustrações).
+ * Telas reais do MAIS i9 WMS (prioridade sobre as ilustrações), capturadas do ambiente de demonstração.
  * Coloque os arquivos em `public/wms/` e informe aqui; enquanto for `null`,
  * o site exibe a representação ilustrativa da interface.
+ * Na tela do dashboard foram apagadas as linhas de valor em reais (o site não publica valores).
  */
 export type TelaReal = { src: string; largura: number; altura: number; descricao: string };
 
-export const telasReais: Record<"dashboard" | "appOperador" | "operacional" | "indicadores" | "appMotorista", TelaReal | null> = {
-  dashboard: null,
-  appOperador: null,
+export type ChaveTela = "dashboard" | "appOperador" | "appOperadorConsulta" | "operacional" | "indicadores" | "appMotorista";
+
+export const telasReais: Record<ChaveTela, TelaReal | null> = {
+  dashboard: {
+    src: "/wms/dashboard-controle-de-lote.png",
+    largura: 1708,
+    altura: 904,
+    descricao:
+      "Dashboard de controle de lotes do MAIS i9 WMS: lotes aptos, críticos e em alerta, vencimentos, estratégia FIFO/FEFO e produtos com mais lotes.",
+  },
+  appOperador: {
+    src: "/wms/app-operador-tarefas.png",
+    largura: 344,
+    altura: 798,
+    descricao:
+      "App Operador do MAIS i9 WMS: conferência e armazenagem de recebimento, armazenagem de produção, transferências, separação e picking.",
+  },
+  appOperadorConsulta: {
+    src: "/wms/app-operador-consulta.png",
+    largura: 346,
+    altura: 802,
+    descricao: "Consulta por produto no App Operador do MAIS i9 WMS: localização, capacidade, quantidade atual e reservas.",
+  },
   operacional: null,
   indicadores: null,
   appMotorista: null,

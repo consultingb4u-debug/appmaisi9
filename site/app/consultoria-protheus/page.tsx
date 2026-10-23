@@ -79,7 +79,7 @@ export default function ConsultoriaProtheus() {
         trilha={caminhoTrilha}
         sobretitulo="Especialista em ambientes TOTVS Protheus"
         titulo="Continuidade operacional e evolução para ambientes TOTVS Protheus."
-        descricao="Apoiamos empresas a extrair o máximo valor do Protheus com estabilidade, governança e evolução contínua do ERP — suporte, sustentação, projetos e fábrica de software com o mesmo time."
+        descricao="Apoiamos empresas a extrair o máximo valor do Protheus com estabilidade, governança e evolução contínua do ERP: suporte, sustentação, projetos e fábrica de software com o mesmo time."
         visual={<PainelGovernanca />}
       >
         <Botao href={ctaWhatsapp("especialistaProtheus")} tamanho="lg" seta>
@@ -152,7 +152,7 @@ export default function ConsultoriaProtheus() {
         <CabecalhoSecao
           sobretitulo="Desafios comuns"
           titulo="Sinais de que o seu Protheus precisa de mais atenção"
-          descricao="Situações frequentes em empresas que dependem do ERP no dia a dia — e que uma parceria especializada ajuda a resolver."
+          descricao="Situações frequentes em empresas que dependem do ERP no dia a dia e que uma parceria especializada ajuda a resolver."
         />
         <div className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {desafiosProtheus.map(({ titulo, texto, icone: Icone }) => (
@@ -321,9 +321,7 @@ export default function ConsultoriaProtheus() {
                         {linha.modelos.includes(m.id) ? (
                           <Check aria-label="Contempla" className="mx-auto size-4 text-azul-600" strokeWidth={2.75} />
                         ) : (
-                          <span aria-label="Não contempla" className="text-ardosia-300">
-                            —
-                          </span>
+                          <span aria-label="Não contempla" className="mx-auto block h-px w-3 bg-ardosia-300" />
                         )}
                       </td>
                     ))}
@@ -419,7 +417,7 @@ export default function ConsultoriaProtheus() {
             className="lg:col-span-5"
             sobretitulo="Benefícios"
             titulo="O que muda no dia a dia da sua equipe"
-            descricao="Um ERP estável, bem utilizado e preparado para evoluir — com a gestão acompanhando de perto."
+            descricao="Um ERP estável, bem utilizado e preparado para evoluir, com a gestão acompanhando de perto."
           />
           <ul className="grid gap-4 sm:grid-cols-2 lg:col-span-7">
             {beneficiosConsultoria.map(({ texto, icone: Icone }) => (

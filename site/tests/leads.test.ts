@@ -16,6 +16,11 @@ const agora = new Date("2026-10-22T13:00:00Z");
 const ctx = { id: "3f2a9c1e-0000-4000-8000-000000000000", agora };
 
 describe("validarLead", () => {
+  it("guarda o telefone já no formato com DDD", () => {
+    const r = validarLead("contato", { ...contato, telefone: "+55 11 988887777", assunto: "proposta", mensagem: "Quero uma proposta de sustentação." });
+    expect(r.ok && r.dados.telefone).toBe("(11) 98888-7777");
+  });
+
   it("aceita a demonstração do WMS e normaliza o e-mail", () => {
     const r = validarLead("demonstracao-wms", { ...contato, erp: "protheus", usuarios: "11-30", desafio: "Divergência de estoque" });
     expect(r.ok).toBe(true);
@@ -30,7 +35,7 @@ describe("validarLead", () => {
         nome: "Informe seu nome.",
         empresa: "Informe o nome da empresa.",
         email: "Informe um e-mail válido.",
-        telefone: "Informe o telefone com DDD.",
+        telefone: "Informe um telefone válido com DDD.",
         servico: "Selecione o serviço de interesse.",
         consentimento: "Para enviarmos o retorno, é preciso concordar com o tratamento dos dados.",
       });
@@ -80,7 +85,7 @@ describe("montarLead", () => {
   it("gera protocolo curto e e-mail com o resumo", () => {
     expect(protocolo(lead)).toBe("3F2A9C1E");
     const email = emailDoLead(lead);
-    expect(email.assunto).toBe("[Site MAIS i9] Demonstração MAIS i9 WMS — Empresa Teste (Ana Souza) · 3F2A9C1E");
+    expect(email.assunto).toBe("[Site MAIS i9] Demonstração MAIS i9 WMS: Empresa Teste (Ana Souza) · 3F2A9C1E");
     expect(email.texto).toContain("ERP utilizado: TOTVS Protheus");
     expect(email.texto).toContain("E-mail: joao@gmail.com (provedor gratuito)");
     expect(email.texto).toContain("UTM: utm_source=linkedin");

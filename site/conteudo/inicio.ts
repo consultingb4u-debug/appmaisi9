@@ -1,6 +1,7 @@
 import type { LucideIcon } from "lucide-react";
 import { BadgeCheck, Building2, Cpu, Handshake, Headset, Lightbulb, Target, Warehouse, Workflow } from "lucide-react";
 import { ctaWhatsapp } from "@/conteudo/empresa";
+import type { Diferencial } from "@/conteudo/tipos";
 
 /*
  * Conteúdo da página inicial: apresentação institucional da MAIS i9 e de seus
@@ -36,10 +37,10 @@ export const consultoriaInicio: Oferta = {
   rotulo: "Serviço",
   nome: "MAIS i9 Consultoria Protheus",
   chamada: "Especialistas em TOTVS Protheus: suporte, sustentação, projetos e fábrica de software.",
-  destaques: ["+20 anos em Protheus", "Suporte N1–N3", "Sustentação", "Projetos"],
+  destaques: ["+20 anos em Protheus", "Suporte N1 a N3", "Sustentação", "Projetos"],
   titulo: "Especialistas em TOTVS Protheus",
   texto:
-    "Mais de 20 anos dedicados ao Protheus. Apoiamos empresas a extrair o máximo valor do ERP com estabilidade, governança e evolução contínua — com especialistas funcionais e técnicos que conhecem o seu ambiente.",
+    "Mais de 20 anos dedicados ao Protheus. Apoiamos empresas a extrair o máximo valor do ERP com estabilidade, governança e evolução contínua, com especialistas funcionais e técnicos que conhecem o seu ambiente.",
   itens: [
     "Suporte N1 a N3, com SLA e atendimento multicanal",
     "Sustentação, atualizações e migrações de versão",
@@ -73,11 +74,15 @@ export const wmsInicio: Oferta = {
 
 export const ofertasInicio = [consultoriaInicio, wmsInicio];
 
-export const diferenciaisInicio: { titulo: string; texto: string; icone: LucideIcon }[] = [
+export const diferenciaisInicio: Diferencial[] = [
   {
     titulo: "Especialização",
-    texto: "Foco em TOTVS Protheus e em gestão de armazéns — as áreas em que concentramos conhecimento e investimento.",
+    texto: "Concentramos conhecimento e investimento em duas áreas, cada uma com time e solução dedicados.",
     icone: Target,
+    focos: [
+      { titulo: "TOTVS Protheus", texto: "Suporte, sustentação, projetos e fábrica de software.", icone: Headset },
+      { titulo: "Gestão de armazéns", texto: "MAIS i9 WMS, plataforma SaaS própria.", icone: Warehouse },
+    ],
   },
   {
     titulo: "Experiência em ambientes empresariais",

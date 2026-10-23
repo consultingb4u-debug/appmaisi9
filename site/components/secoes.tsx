@@ -1,10 +1,10 @@
 import clsx from "clsx";
-import type { LucideIcon } from "lucide-react";
 import { Award, ChevronDown, Clock, CodeXml, Puzzle, Users } from "lucide-react";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { Botao, CaixaIcone, LinkSeta, Sobretitulo } from "@/components/ui";
 import { credenciais, ctaWhatsapp } from "@/conteudo/empresa";
+import type { Diferencial } from "@/conteudo/tipos";
 
 const iconesCredenciais = [Award, Clock, Users, CodeXml, Puzzle];
 
@@ -82,7 +82,7 @@ export function HeroPagina({
 
 export function CtaFinal({
   titulo = "Vamos conversar sobre os desafios da sua operação?",
-  descricao = "Conte o que você precisa — sustentação do Protheus, um projeto de evolução ou a gestão do seu armazém. Um especialista da MAIS i9 retorna para entender o seu cenário.",
+  descricao = "Conte o que você precisa: sustentação do Protheus, um projeto de evolução ou a gestão do seu armazém. Um especialista da MAIS i9 retorna para entender o seu cenário.",
   rotulo = "Falar com a MAIS i9",
   href = ctaWhatsapp("geral"),
   atalhos = true,
@@ -173,42 +173,35 @@ export function PerguntasFrequentes({ itens }: { itens: { pergunta: string; resp
   );
 }
 
-export type ItemMosaico = { titulo: string; texto: string; icone?: LucideIcon };
-
-/** Colunas (de 4) de cada item que sobra depois do destaque e dos quatro ao lado dele. */
-const colunasSobra: Record<number, string[]> = {
-  1: ["lg:col-span-4"],
-  2: ["lg:col-span-2", "lg:col-span-2"],
-  3: ["lg:col-span-2", "", ""],
+/** Colunas (de 12) dos itens da última linha incompleta, para fechar sem buracos. */
+const colunasUltimaLinha: Record<number, string> = {
+  1: "lg:col-span-12",
+  2: "lg:col-span-6",
+  3: "lg:col-span-4",
 };
 
 /**
- * Mosaico de diferenciais: o primeiro em destaque (2×2, fundo escuro), quatro ao lado
- * e os que sobram esticados para fechar a última linha sem buracos.
+ * Mosaico de diferenciais: o primeiro em destaque (largura de dois, fundo escuro) ao lado
+ * de dois cartões; os demais seguem em linhas de quatro, e a última linha estica para fechar.
  */
-export function Mosaico({ itens }: { itens: ItemMosaico[] }) {
-  const sobra = colunasSobra[itens.length - 5] ?? [];
+export function Mosaico({ itens }: { itens: Diferencial[] }) {
+  const restantes = Math.max(0, itens.length - 3);
+  const ultima = colunasUltimaLinha[restantes % 4];
+  const inicioUltima = itens.length - (restantes % 4);
   return (
-    <ul className="revelar-grupo grid gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:gap-5">
+    <ul className="revelar-grupo grid gap-4 sm:grid-cols-2 lg:grid-cols-12 lg:gap-5">
       {itens.map(({ titulo, texto, icone: Icone }, i) => {
-        const colunas = i >= 5 ? (sobra[i - 5] ?? "") : "";
-        const largo = colunas !== "";
-        return i === 0 ? (
-          <li key={titulo} className="revelar sm:col-span-2 lg:row-span-2">
-            <div className="grade-tecnica relative flex h-full min-h-80 flex-col overflow-hidden rounded-3xl bg-navy-950 p-8 text-white sm:p-10">
-              <div aria-hidden className="pointer-events-none absolute -top-28 -right-28 size-80 rounded-full bg-azul-500/25 blur-3xl" />
-              {Icone ? (
-                <CaixaIcone claro className="relative size-14">
-                  <Icone className="size-6" strokeWidth={1.75} />
-                </CaixaIcone>
-              ) : (
-                <span aria-hidden className="relative block h-1 w-12 rounded-full bg-destaque" />
-              )}
-              <h3 className="relative mt-auto pt-14 text-2xl leading-tight font-bold sm:text-3xl">{titulo}</h3>
-              <p className="relative mt-3 max-w-md text-[16px] leading-relaxed text-ardosia-200">{texto}</p>
-            </div>
-          </li>
-        ) : (
+        if (i === 0) {
+          return (
+            <li key={titulo} className="revelar sm:col-span-2 lg:col-span-6">
+              <Destaque item={itens[0]} />
+            </li>
+          );
+        }
+        const colunas = ultima && i >= inicioUltima ? ultima : "lg:col-span-3";
+        // Cartão largo (meia linha ou linha inteira): ícone ao lado do texto.
+        const largo = colunas === "lg:col-span-12" || colunas === "lg:col-span-6";
+        return (
           <li key={titulo} className={clsx("revelar", colunas)}>
             <div className={clsx("cartao cartao-interativo flex h-full flex-col p-7", largo && "lg:flex-row lg:items-start lg:gap-6")}>
               {Icone ? (
@@ -227,5 +220,50 @@ export function Mosaico({ itens }: { itens: ItemMosaico[] }) {
         );
       })}
     </ul>
+  );
+}
+
+/** Cartão em destaque do mosaico: título e texto no alto, focos ou etiquetas na base. */
+function Destaque({ item }: { item: Diferencial }) {
+  const { titulo, texto, icone: Icone, focos, etiquetas } = item;
+  return (
+    <div className="relative flex h-full flex-col overflow-hidden rounded-3xl bg-linear-to-br from-navy-800 via-navy-900 to-navy-950 p-8 text-white shadow-[0_24px_60px_-30px_rgb(10_26_48/0.7)] sm:p-10">
+      <div aria-hidden className="pointer-events-none absolute -top-32 -right-24 size-80 rounded-full bg-azul-500/20 blur-3xl" />
+      <div className="relative flex items-center gap-4">
+        {Icone ? (
+          <CaixaIcone claro>
+            <Icone className="size-5" strokeWidth={1.75} />
+          </CaixaIcone>
+        ) : (
+          <span aria-hidden className="block h-1 w-10 rounded-full bg-destaque" />
+        )}
+        <h3 className="text-2xl leading-tight font-bold sm:text-[1.75rem]">{titulo}</h3>
+      </div>
+      <p className="relative mt-4 max-w-md text-[16px] leading-relaxed text-ardosia-200">{texto}</p>
+      {focos && (
+        <ul className="relative mt-auto grid gap-3 pt-7 sm:grid-cols-2">
+          {focos.map(({ titulo: foco, texto: detalhe, icone: IconeFoco }) => (
+            <li key={foco} className="flex items-center gap-4 rounded-2xl bg-white/[0.06] p-4 ring-1 ring-white/10">
+              <span aria-hidden className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-destaque/15 text-destaque">
+                <IconeFoco className="size-5" strokeWidth={1.75} />
+              </span>
+              <div>
+                <p className="font-semibold text-white">{foco}</p>
+                <p className="mt-0.5 text-sm text-ardosia-300">{detalhe}</p>
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
+      {etiquetas && (
+        <ul className="relative mt-auto flex flex-wrap gap-2 pt-7">
+          {etiquetas.map((e) => (
+            <li key={e} className="rounded-full bg-white/[0.07] px-3.5 py-1.5 text-sm text-ardosia-100 ring-1 ring-white/12">
+              {e}
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
   );
 }

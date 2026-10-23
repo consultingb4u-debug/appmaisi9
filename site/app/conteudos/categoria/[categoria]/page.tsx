@@ -20,7 +20,7 @@ export async function generateMetadata({ params }: PageProps<"/conteudos/categor
   const categoria = buscarCategoria((await params).categoria);
   if (!categoria) return {};
   return metadadosPagina({
-    titulo: `${categoria.nome} — Conteúdos`,
+    titulo: `${categoria.nome} | Conteúdos`,
     descricao: `Artigos da MAIS i9 sobre ${categoria.nome.toLowerCase()}: ${categoria.descricao}`,
     caminho: `/conteudos/categoria/${categoria.id}`,
   });

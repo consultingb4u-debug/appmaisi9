@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { formatarTelefone, telefoneValido } from "@/lib/telefone";
 import { opcoesServico } from "@/conteudo/consultoria";
 import { opcoesAssunto } from "@/conteudo/formularios";
 import { opcoesErp, opcoesUsuarios } from "@/conteudo/wms";
@@ -14,8 +15,6 @@ export const rotuloTipoLead: Record<TipoLead, string> = {
 
 type Opcao = { valor: string; rotulo: string };
 
-const digitos = (t: string) => t.replace(/\D/g, "");
-const telefoneValido = (t: string) => digitos(t).length >= 10 && digitos(t).length <= 13;
 
 const opcao = (opcoes: Opcao[], mensagem: string) =>
   z.string({ error: mensagem }).refine((v) => opcoes.some((o) => o.valor === v), mensagem);
@@ -36,12 +35,14 @@ const telefone = z
   .string({ error: "Informe o telefone com DDD." })
   .trim()
   .max(30, "Telefone inválido.")
-  .refine(telefoneValido, "Informe o telefone com DDD.");
+  .refine(telefoneValido, "Informe um telefone válido com DDD.")
+  .transform(formatarTelefone);
 const telefoneOpcional = z
   .string()
   .trim()
   .max(30, "Telefone inválido.")
-  .refine((t) => t === "" || telefoneValido(t), "Informe o telefone com DDD.")
+  .refine((t) => t === "" || telefoneValido(t), "Informe um telefone válido com DDD.")
+  .transform(formatarTelefone)
   .optional();
 const textoLivre = z.string().trim().max(3000, "Use até 3.000 caracteres.").optional();
 const consentimento = z.literal("on", {

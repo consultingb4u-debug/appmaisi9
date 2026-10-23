@@ -51,7 +51,7 @@ export default function PoliticaPrivacidade() {
             <Topico titulo="1. Quem é o controlador dos dados">
               <p>
                 Os dados pessoais enviados por este site são tratados por {controlador}, inscrita no CNPJ sob o nº {cnpj} (“MAIS
-                i9”), na condição de controladora, nos termos da Lei nº 13.709/2018 (Lei Geral de Proteção de Dados — LGPD).
+                i9”), na condição de controladora, nos termos da Lei nº 13.709/2018 (Lei Geral de Proteção de Dados, LGPD).
               </p>
             </Topico>
 
@@ -122,7 +122,7 @@ export default function PoliticaPrivacidade() {
             <Topico titulo="9. Encarregado pelo tratamento de dados">
               <p>
                 Para exercer seus direitos ou tirar dúvidas sobre esta política, fale com o encarregado:{" "}
-                {encarregado.nome ?? <Pendente>nome do encarregado</Pendente>} —{" "}
+                {encarregado.nome ?? <Pendente>nome do encarregado</Pendente>}, pelo e-mail{" "}
                 {encarregado.email ? <a href={`mailto:${encarregado.email}`}>{encarregado.email}</a> : <Pendente>e-mail do encarregado</Pendente>}.
               </p>
             </Topico>

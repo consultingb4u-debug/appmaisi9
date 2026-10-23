@@ -94,7 +94,7 @@ const visoes = [
     id: "torre-expedicao",
     rotulo: "Torre Controle de Expedição",
     titulo: "A expedição acompanhada em uma única tela",
-    texto: "Os pedidos vindos do ERP aparecem por etapa — pendentes, em separação e em expedição — com o status de cada um e atualização automática.",
+    texto: "Os pedidos vindos do ERP aparecem por etapa (pendentes, em separação e em expedição), com o status de cada um e atualização automática.",
     itens: ["Pedidos por etapa, do pendente à expedição", "Status do pedido no ERP em cada cartão", "Atualização automática da tela"],
     tela: (
       <MolduraNavegador titulo="MAIS i9 WMS · Torre Controle de Expedição">

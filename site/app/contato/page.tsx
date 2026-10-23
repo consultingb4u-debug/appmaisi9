@@ -42,7 +42,7 @@ export default function Contato() {
         trilha={caminhoTrilha}
         sobretitulo="Contato"
         titulo="Fale com a MAIS i9."
-        descricao="Conte o que você precisa. Sua mensagem é direcionada ao especialista certo — Consultoria Protheus ou MAIS i9 WMS."
+        descricao="Conte o que você precisa. Sua mensagem é direcionada ao especialista certo: Consultoria Protheus ou MAIS i9 WMS."
       />
 
       <Secao>

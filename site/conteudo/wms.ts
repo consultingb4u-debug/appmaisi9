@@ -87,7 +87,7 @@ export const baseOperacional: Modulo[] = [
       "Consumos não produtivos",
       "Gestão de EPIs com assinatura digital",
     ],
-    beneficio: "Controle e visibilidade do que está armazenado — e onde.",
+    beneficio: "Controle e visibilidade do que está armazenado e de onde está.",
     icone: Warehouse,
   },
   {
@@ -220,7 +220,7 @@ export const modulosComplementares: Modulo[] = [
   },
 ];
 
-/** "O impacto na operação" — material comercial do WMS. */
+/** "O impacto na operação", do material comercial do WMS. */
 export const impactoWms: { titulo: string; texto: string; icone: LucideIcon }[] = [
   { titulo: "Estoque confiável", texto: "Acuracidade e rastreabilidade das movimentações.", icone: ShieldCheck },
   { titulo: "Mais produtividade", texto: "Automação das atividades operacionais e redução de retrabalho.", icone: TrendingUp },
@@ -339,7 +339,7 @@ export const faqWms: { pergunta: string; resposta: string }[] = [
   {
     pergunta: "Quais equipamentos são necessários?",
     resposta:
-      "O App Operador funciona em smartphones e coletores compatíveis — é possível usar dispositivos Android já disponíveis na operação. Impressoras de etiquetas e demais equipamentos são definidos conforme os processos implantados.",
+      "O App Operador funciona em smartphones e coletores compatíveis, inclusive dispositivos Android já disponíveis na operação. Impressoras de etiquetas e demais equipamentos são definidos conforme os processos implantados.",
   },
   {
     pergunta: "O que o suporte da assinatura cobre?",
@@ -424,7 +424,7 @@ export const telasReais: Record<ChaveTela, TelaReal | null> = {
     largura: 1862,
     altura: 584,
     descricao:
-      "Torre Controle de Expedição do MAIS i9 WMS: pedidos do ERP por etapa — pendentes, separação e expedição —, com status no ERP e atualização automática.",
+      "Torre Controle de Expedição do MAIS i9 WMS: pedidos do ERP por etapa (pendentes, separação e expedição), com status no ERP e atualização automática.",
   },
   appMotorista: null,
 };

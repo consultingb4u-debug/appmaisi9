@@ -295,7 +295,7 @@ export function MockRecebimento() {
     { cod: "000482", desc: "Item exemplo cx 12 un.", esp: 24, conf: 24, lote: "L2611", val: "11/2027" },
     { cod: "000517", desc: "Item exemplo fardo 6 un.", esp: 40, conf: 40, lote: "L2598", val: "08/2027" },
     { cod: "000533", desc: "Item exemplo unidade", esp: 120, conf: 116, lote: "L2604", val: "02/2028" },
-    { cod: "000561", desc: "Item exemplo cx 24 un.", esp: 18, conf: null, lote: "—", val: "—" },
+    { cod: "000561", desc: "Item exemplo cx 24 un.", esp: 18, conf: null, lote: "-", val: "-" },
   ];
   return (
     <div className="@container flex bg-[#f6f8fb] text-left" aria-hidden>
@@ -335,7 +335,7 @@ export function MockRecebimento() {
                     <p className="hidden text-[9px] text-ardosia-400 @md:block">{it.desc}</p>
                   </td>
                   <td className="px-2 py-2 text-right">{it.esp}</td>
-                  <td className="px-2 py-2 text-right font-semibold text-navy-900">{it.conf ?? "—"}</td>
+                  <td className="px-2 py-2 text-right font-semibold text-navy-900">{it.conf ?? "-"}</td>
                   <td className="hidden px-2 py-2 @md:table-cell">{it.lote}</td>
                   <td className="hidden px-2 py-2 @lg:table-cell">{it.val}</td>
                   <td className="px-3 py-2 text-right">

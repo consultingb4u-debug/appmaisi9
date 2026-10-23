@@ -170,7 +170,7 @@ export function ListaCheck({ itens, claro = false, className }: { itens: readonl
 
 /**
  * Informação institucional ainda não fornecida. Aparece de forma visível para ser
- * preenchida antes da publicação — nunca substituir por dado inventado.
+ * preenchida antes da publicação. Nunca substituir por dado inventado.
  */
 export function Pendente({ children, claro = false }: { children: ReactNode; claro?: boolean }) {
   return (

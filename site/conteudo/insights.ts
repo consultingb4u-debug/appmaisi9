@@ -88,7 +88,7 @@ export const artigos: Artigo[] = [
     slug: "rastreabilidade-no-armazem-lotes-validade-enderecamento",
     titulo: "Rastreabilidade no armazém: lotes, validade e endereçamento na prática",
     resumo:
-      "Como lotes, datas de validade e endereços formam a base da rastreabilidade — e por que controles manuais deixam de ser suficientes.",
+      "Como lotes, datas de validade e endereços formam a base da rastreabilidade e por que controles manuais deixam de ser suficientes.",
     categoria: "gestao-de-armazens",
     publicadoEm: "2025-09-23",
     autor: "Equipe MAIS i9",

@@ -13,7 +13,7 @@ export type Lead = {
     empresa: string;
     email: string;
     telefone: string | null;
-    /** E-mail de provedor gratuito (não corporativo) — útil para qualificação. */
+    /** E-mail de provedor gratuito (não corporativo), útil para qualificação. */
     emailGratuito: boolean;
   };
   campos: { chave: string; rotulo: string; valor: string; texto: string }[];
@@ -104,7 +104,7 @@ export function protocolo(lead: Lead): string {
 
 export function emailDoLead(lead: Lead): { assunto: string; texto: string } {
   const linhas = [
-    `${lead.tipoRotulo} — recebido pelo site em ${new Date(lead.recebidoEm).toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo" })}`,
+    `${lead.tipoRotulo}, recebido pelo site em ${new Date(lead.recebidoEm).toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo" })}`,
     `Protocolo: ${protocolo(lead)}`,
     "",
     `Nome: ${lead.contato.nome}`,
@@ -124,7 +124,7 @@ export function emailDoLead(lead: Lead): { assunto: string; texto: string } {
   if (utm.length) linhas.push(`UTM: ${utm.map(([k, v]) => `${k}=${v}`).join(" · ")}`);
   if (lead.origem.referencia) linhas.push(`Referência: ${lead.origem.referencia}`);
   return {
-    assunto: `[Site MAIS i9] ${lead.tipoRotulo} — ${lead.contato.empresa} (${lead.contato.nome}) · ${protocolo(lead)}`,
+    assunto: `[Site MAIS i9] ${lead.tipoRotulo}: ${lead.contato.empresa} (${lead.contato.nome}) · ${protocolo(lead)}`,
     texto: linhas.join("\n"),
   };
 }

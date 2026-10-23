@@ -69,7 +69,7 @@ export function Campo({
     const el = e.currentTarget;
     let bruto = el.value;
     let cursor = el.selectionStart ?? bruto.length;
-    // Apagar só um separador — "(", ")", espaço ou "-" — não muda os dígitos: apaga também o dígito anterior.
+    // Apagar só um separador ("(", ")", espaço ou "-") não muda os dígitos: apaga também o dígito anterior.
     const apagou = (e.nativeEvent as InputEvent).inputType === "deleteContentBackward";
     if (apagou && digitosTelefone(bruto) === digitosTelefone(anterior.current)) {
       const antes = bruto.slice(0, cursor).replace(/\d(?=\D*$)/, "");

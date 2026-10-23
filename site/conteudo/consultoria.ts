@@ -16,6 +16,8 @@ import {
   Users,
   Workflow,
 } from "lucide-react";
+import { empresa } from "@/conteudo/empresa";
+import type { Diferencial } from "@/conteudo/tipos";
 
 /*
  * Conteúdo da MAIS i9 Consultoria Protheus, a partir da apresentação comercial
@@ -120,7 +122,7 @@ export type ServicoId = (typeof servicosConsultoria)[number]["id"];
 
 /** Serviço especializado complementar, contratado à parte. */
 export const servicoDba = {
-  titulo: "Administração de Bancos de Dados — Oracle e SQL Server",
+  titulo: "Administração de Bancos de Dados Oracle e SQL Server",
   resumo:
     "Estabilidade, segurança e desempenho da camada de banco de dados que sustenta o TOTVS Protheus. Contratação pontual ou contínua, à parte dos demais modelos.",
   itens: [
@@ -140,7 +142,7 @@ export const opcoesServico: { valor: string; rotulo: string }[] = [
   { valor: "evolutivo", rotulo: "Modelo Evolutivo (suporte + sustentação)" },
   ...servicosConsultoria.map((s) => ({ valor: s.id, rotulo: s.titulo })),
   { valor: "dba", rotulo: "DBA Oracle / SQL Server" },
-  { valor: "nao-sei", rotulo: "Ainda não sei — quero orientação" },
+  { valor: "nao-sei", rotulo: "Ainda não sei, quero orientação" },
 ];
 
 export const desafiosProtheus: { titulo: string; texto: string; icone: LucideIcon }[] = [
@@ -166,7 +168,7 @@ export const desafiosProtheus: { titulo: string; texto: string; icone: LucideIco
   },
   {
     titulo: "Atualizações e adequações adiadas",
-    texto: "Mudanças de versão, adequações legais e fiscais — como a Reforma Tributária — postergadas pelo receio de impactar a operação.",
+    texto: "Mudanças de versão, adequações legais e fiscais, como a Reforma Tributária, postergadas pelo receio de impactar a operação.",
     icone: Layers,
   },
   {
@@ -176,7 +178,7 @@ export const desafiosProtheus: { titulo: string; texto: string; icone: LucideIco
   },
 ];
 
-/** "O que sua empresa ganha" — material comercial da consultoria. */
+/** "O que sua empresa ganha", do material comercial da consultoria. */
 export const ganhosConsultoria: { titulo: string; texto: string; icone: LucideIcon }[] = [
   {
     titulo: "Continuidade operacional",
@@ -200,10 +202,11 @@ export const ganhosConsultoria: { titulo: string; texto: string; icone: LucideIc
   },
 ];
 
-export const diferenciaisConsultoria: { titulo: string; texto: string }[] = [
+export const diferenciaisConsultoria: Diferencial[] = [
   {
     titulo: "Especialistas funcionais e técnicos",
-    texto: "Equipe com experiência em Backoffice, Reforma Tributária, GPE e Medicina, Qualidade, Manufatura, TAF, PMS e infraestrutura Protheus.",
+    texto: "Equipe com experiência nas principais áreas do Protheus, do backoffice à infraestrutura.",
+    etiquetas: empresa.especialidadesEquipe,
   },
   {
     titulo: "Governança de demandas",
@@ -393,7 +396,7 @@ export const faqConsultoria: { pergunta: string; resposta: string }[] = [
   {
     pergunta: "A MAIS i9 atende bancos de dados Oracle e SQL Server?",
     resposta:
-      "Sim. Há serviços especializados de DBA para Oracle e Microsoft SQL Server — diagnóstico de desempenho, manutenção, backup e recuperação, apoio em migrações — contratados de forma pontual ou contínua.",
+      "Sim. Há serviços especializados de DBA para Oracle e Microsoft SQL Server (diagnóstico de desempenho, manutenção, backup e recuperação, apoio em migrações), contratados de forma pontual ou contínua.",
   },
   {
     pergunta: "Os valores estão disponíveis no site?",

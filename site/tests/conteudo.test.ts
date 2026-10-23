@@ -64,6 +64,21 @@ describe("conteúdo do site", () => {
   });
 });
 
+describe("pontuação do site", () => {
+  // Regra do cliente: o travessão (—) não é usado; vírgula, dois-pontos ou parênteses no lugar.
+  const arquivos = (dir: string): string[] =>
+    readdirSync(path.join(raiz, dir), { withFileTypes: true }).flatMap((e) =>
+      e.isDirectory() ? arquivos(path.join(dir, e.name)) : /\.(tsx?|mdx)$/.test(e.name) ? [path.join(dir, e.name)] : [],
+    );
+
+  it("nenhum texto usa travessão", () => {
+    const comTravessao = ["conteudo", "app", "components", "lib"]
+      .flatMap(arquivos)
+      .filter((arquivo) => readFileSync(path.join(raiz, arquivo), "utf8").includes("\u2014"));
+    expect(comTravessao).toEqual([]);
+  });
+});
+
 describe("sem valores nem preços no site", () => {
   // Regra do cliente: propostas e apresentações trazem preços, mas o site não publica valores.
   const arquivos = (dir: string): string[] =>

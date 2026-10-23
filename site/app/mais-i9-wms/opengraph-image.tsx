@@ -1,6 +1,6 @@
 import { imagemOg, tamanhoOg } from "@/lib/og";
 
-export const alt = "MAIS i9 WMS — gestão de armazéns";
+export const alt = "MAIS i9 WMS: gestão de armazéns";
 export const size = tamanhoOg;
 export const contentType = "image/png";
 

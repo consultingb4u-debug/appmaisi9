@@ -9,7 +9,7 @@
 export type ArquivoLogo = {
   /** Caminho do arquivo em `public/` (ex.: "/marca/logo-maisi9.svg"). */
   src: string;
-  /** Dimensões originais do arquivo, em pixels — usadas só para preservar a proporção. */
+  /** Dimensões originais do arquivo, em pixels, usadas só para preservar a proporção. */
   largura: number;
   altura: number;
 };
@@ -62,7 +62,7 @@ export type Empresa = {
 export const empresa: Empresa = {
   nome: "MAIS i9",
   descricao:
-    "Empresa brasileira de tecnologia com mais de 20 anos de experiência em TOTVS Protheus — suporte, sustentação, governança, projetos e integrações — e criadora do MAIS i9 WMS, solução própria de gestão de armazéns no modelo SaaS.",
+    "Empresa brasileira de tecnologia com mais de 20 anos de experiência em TOTVS Protheus (suporte, sustentação, governança, projetos e integrações) e criadora do MAIS i9 WMS, solução própria de gestão de armazéns no modelo SaaS.",
   logo: {
     positivo: { src: "/marca/logo-maisi9.png", largura: 1527, altura: 493 },
     negativo: { src: "/marca/logo-maisi9-negativo.png", largura: 1527, altura: 493 },
@@ -97,7 +97,7 @@ export const empresa: Empresa = {
   missao:
     "Mais do que tecnologia, entregamos confiança: nossa missão é garantir estabilidade, performance e inovação para que cada cliente MAIS i9 possa trilhar seu caminho de crescimento com resultados concretos.",
   experienciaEquipe:
-    "Especialistas funcionais e técnicos em TOTVS Protheus, com fábrica de software (ADVPL/TLPP, APIs e integrações), administração de bancos de dados Oracle e SQL Server e experiência em operações logísticas — base do desenvolvimento do MAIS i9 WMS.",
+    "Especialistas funcionais e técnicos em TOTVS Protheus, com fábrica de software (ADVPL/TLPP, APIs e integrações), administração de bancos de dados Oracle e SQL Server e experiência em operações logísticas, base do desenvolvimento do MAIS i9 WMS.",
   segmentosAtendidos: "Atendemos todos os segmentos, inclusive com localizações no exterior.",
   certificacoes: [],
 };

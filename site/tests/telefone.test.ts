@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { digitosTelefone, formatarTelefone, posicaoAposDigitos } from "@/lib/telefone";
+import { digitosTelefone, formatarTelefone, posicaoAposDigitos, telefoneValido } from "@/lib/telefone";
 
 describe("máscara de telefone", () => {
   it("formata fixo e celular com DDD", () => {
@@ -31,5 +31,16 @@ describe("máscara de telefone", () => {
     expect(posicaoAposDigitos("(47) 3440-2120", 2)).toBe(3);
     expect(posicaoAposDigitos("(47) 3440-2120", 6)).toBe(9);
     expect(posicaoAposDigitos("(47) 3440-2120", 10)).toBe(14);
+  });
+
+  it("valida fixo e celular com DDD", () => {
+    expect(telefoneValido("(47) 3440-2120")).toBe(true);
+    expect(telefoneValido("(47) 99999-8888")).toBe(true);
+    expect(telefoneValido("+55 47 99999-8888")).toBe(true);
+    expect(telefoneValido("(47) 3440-212")).toBe(false); // incompleto
+    expect(telefoneValido("(47) 89999-8888")).toBe(false); // celular sem o 9
+    expect(telefoneValido("(01) 3440-2120")).toBe(false); // DDD inválido
+    expect(telefoneValido("3440-2120")).toBe(false); // sem DDD
+    expect(telefoneValido("47 99999-88887777")).toBe(false); // dígitos demais
   });
 });

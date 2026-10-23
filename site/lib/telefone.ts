@@ -2,10 +2,13 @@
  * Máscara de telefone brasileiro com DDD: (47) 3440-2120 (fixo) ou (47) 99999-9999 (celular).
  * Aceita colar com +55 ou zero à frente; o que passa de 11 dígitos é descartado.
  */
+function normalizar(valor: string): string {
+  const d = valor.replace(/\D/g, "").replace(/^0+/, "");
+  return d.length > 11 && d.startsWith("55") ? d.slice(2) : d;
+}
+
 export function digitosTelefone(valor: string): string {
-  let d = valor.replace(/\D/g, "").replace(/^0+/, "");
-  if (d.length > 11 && d.startsWith("55")) d = d.slice(2);
-  return d.slice(0, 11);
+  return normalizar(valor).slice(0, 11);
 }
 
 export function formatarTelefone(valor: string): string {
@@ -28,4 +31,15 @@ export function posicaoAposDigitos(formatado: string, digitos: number): number {
     if (/\d/.test(formatado[i]) && ++vistos === digitos) return i + 1;
   }
   return formatado.length;
+}
+
+/**
+ * Telefone brasileiro válido: DDD (11 a 99) + 8 dígitos de fixo (começando de 2 a 8)
+ * ou 9 dígitos de celular (começando com 9).
+ */
+export function telefoneValido(valor: string): boolean {
+  const d = normalizar(valor);
+  if (d.length === 10) return /^[1-9]{2}[2-8]/.test(d);
+  if (d.length === 11) return /^[1-9]{2}9/.test(d);
+  return false;
 }

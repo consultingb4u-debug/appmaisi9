@@ -6,7 +6,7 @@ import { empresa, type ArquivoLogo } from "@/conteudo/empresa";
 /**
  * Logotipo oficial da MAIS i9, exibido exatamente como fornecido: só a altura é definida
  * e a largura acompanha a proporção original. Sem o arquivo configurado em
- * `conteudo/empresa.ts`, mostra apenas o nome da empresa em texto simples — não é
+ * `conteudo/empresa.ts`, mostra apenas o nome da empresa em texto simples, que não é
  * uma versão do logotipo e deve ser substituído pelo arquivo oficial.
  */
 export function Marca({ fundo = "claro", altura = 36, className }: { fundo?: "claro" | "escuro"; altura?: number; className?: string }) {
@@ -15,7 +15,7 @@ export function Marca({ fundo = "claro", altura = 36, className }: { fundo?: "cl
   const precisaPlaca = fundo === "escuro" && !negativo && !!positivo;
 
   return (
-    <Link href="/" aria-label={`${empresa.nome} — página inicial`} className={clsx("inline-flex shrink-0 items-center", className)}>
+    <Link href="/" aria-label={`${empresa.nome}: página inicial`} className={clsx("inline-flex shrink-0 items-center", className)}>
       {arquivo ? (
         <span className={clsx(precisaPlaca && "rounded-md bg-white px-3 py-2")}>
           <LogoArquivo arquivo={arquivo} altura={altura} />

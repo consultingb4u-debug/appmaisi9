@@ -25,7 +25,7 @@ import { idOrganizacao, perguntasFrequentes, trilha } from "@/lib/jsonld";
 import { metadadosPagina, urlAbsoluta } from "@/lib/site";
 
 export const metadata = metadadosPagina({
-  titulo: "MAIS i9 WMS — Gestão de Armazéns SaaS",
+  titulo: "MAIS i9 WMS: Gestão de Armazéns SaaS",
   descricao:
     "MAIS i9 WMS: plataforma SaaS de gestão de armazéns com recebimento, armazenagem, expedição, App Operador e indicadores, conectada ao TOTVS Protheus pelo Addon MAIS i9 (API). Agende uma demonstração.",
   caminho: "/mais-i9-wms",
@@ -140,7 +140,7 @@ export default function MaisI9Wms() {
           centro
           sobretitulo="Como funciona"
           titulo="O ERP planeja. O WMS conduz a execução física."
-          descricao="As informações do ERP orientam o trabalho no armazém, e cada etapa executada volta para o ERP — sem redigitação."
+          descricao="As informações do ERP orientam o trabalho no armazém, e cada etapa executada volta para o ERP, sem redigitação."
         />
         <div className="mt-16">
           <FluxoOperacao />

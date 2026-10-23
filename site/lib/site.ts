@@ -10,9 +10,9 @@ export const urlSite = new URL(process.env.NEXT_PUBLIC_SITE_URL || "http://local
  */
 export const siteIndexavel = process.env.SITE_INDEXAVEL === "true";
 
-export const tituloPadrao = "MAIS i9 — Consultoria TOTVS Protheus e MAIS i9 WMS";
+export const tituloPadrao = "MAIS i9 | Consultoria TOTVS Protheus e MAIS i9 WMS";
 export const descricaoPadrao =
-  "Consultoria especializada em TOTVS Protheus — sustentação, suporte, projetos e desenvolvimento — e o MAIS i9 WMS, solução própria de gestão de armazéns no modelo SaaS.";
+  "Consultoria especializada em TOTVS Protheus (sustentação, suporte, projetos e desenvolvimento) e o MAIS i9 WMS, solução própria de gestão de armazéns no modelo SaaS.";
 
 export function urlAbsoluta(caminho: string): string {
   return new URL(caminho, urlSite).toString();

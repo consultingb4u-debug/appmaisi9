@@ -1,7 +1,7 @@
 import { ArrowDown, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { CardArtigo } from "@/components/conteudos";
-import { Credenciais, CtaFinal, Jornada } from "@/components/secoes";
+import { Credenciais, CtaFinal, Jornada, Mosaico } from "@/components/secoes";
 import { Botao, CabecalhoSecao, CaixaIcone, LinkSeta, ListaCheck, Secao, Sobretitulo } from "@/components/ui";
 import { PainelGovernanca } from "@/components/visuais/painel-governanca";
 import { NotaIlustracao, VitrineHero } from "@/components/wms";
@@ -17,7 +17,7 @@ export default function Inicio() {
       <section className="grade-tecnica relative overflow-hidden bg-navy-950 text-white">
         <div aria-hidden className="pointer-events-none absolute -top-48 -right-24 size-[720px] rounded-full bg-azul-500/12 blur-3xl" />
         <div className="container-site relative grid items-center gap-12 py-16 sm:py-20 lg:grid-cols-12 lg:gap-14 lg:py-24">
-          <div className="lg:col-span-5">
+          <div className="entrada lg:col-span-5">
             <Sobretitulo claro>Tecnologia, consultoria e soluções para gestão empresarial</Sobretitulo>
             <h1 className="mt-6 text-[2.5rem] leading-[1.05] font-bold tracking-tight sm:text-5xl lg:text-[3.25rem]">
               Tecnologia e expertise para transformar a gestão do seu negócio.
@@ -33,7 +33,7 @@ export default function Inicio() {
             </p>
           </div>
 
-          <ul className="grid gap-4 sm:grid-cols-2 lg:col-span-7">
+          <ul className="entrada-visual grid gap-4 sm:grid-cols-2 lg:col-span-7">
             {ofertasInicio.map((o) => (
               <li key={o.id}>
                 <Link
@@ -145,29 +145,13 @@ export default function Inicio() {
 
       {/* Por que escolher */}
       <Secao id="por-que">
-        <div className="grid gap-14 lg:grid-cols-12">
-          <div className="lg:col-span-4">
-            <div className="lg:sticky lg:top-28">
-              <CabecalhoSecao
-                sobretitulo="Por que a MAIS i9"
-                titulo="Uma parceira especializada, não apenas uma fornecedora"
-                descricao="Conhecimento técnico, visão de processos e tecnologia própria para cuidar do que sustenta a sua operação."
-              />
-            </div>
-          </div>
-          <ul className="grid gap-x-10 gap-y-10 sm:grid-cols-2 lg:col-span-8">
-            {diferenciaisInicio.map(({ titulo, texto, icone: Icone }) => (
-              <li key={titulo} className="revelar flex gap-5">
-                <CaixaIcone>
-                  <Icone className="size-5" strokeWidth={1.75} />
-                </CaixaIcone>
-                <div>
-                  <h3 className="text-lg font-semibold text-navy-950">{titulo}</h3>
-                  <p className="mt-1.5 text-[15px] leading-relaxed text-ardosia-600">{texto}</p>
-                </div>
-              </li>
-            ))}
-          </ul>
+        <CabecalhoSecao
+          sobretitulo="Por que a MAIS i9"
+          titulo="Uma parceira especializada, não apenas uma fornecedora"
+          descricao="Conhecimento técnico, visão de processos e tecnologia própria para cuidar do que sustenta a sua operação."
+        />
+        <div className="mt-14">
+          <Mosaico itens={diferenciaisInicio} />
         </div>
       </Secao>
 

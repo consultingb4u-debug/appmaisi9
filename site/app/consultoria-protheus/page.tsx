@@ -2,7 +2,7 @@ import clsx from "clsx";
 import { ArrowRight, Check, Mail, MessageCircle, Phone, Ticket, Video } from "lucide-react";
 import type { ReactNode } from "react";
 import { FormularioConsultoria } from "@/components/formularios/formularios";
-import { Credenciais, HeroPagina, PerguntasFrequentes } from "@/components/secoes";
+import { Credenciais, HeroPagina, Mosaico, PerguntasFrequentes } from "@/components/secoes";
 import { Botao, CabecalhoSecao, CaixaIcone, JsonLd, LinkDestino, Secao, Sobretitulo } from "@/components/ui";
 import { PainelGovernanca } from "@/components/visuais/painel-governanca";
 import {
@@ -232,14 +232,8 @@ export default function ConsultoriaProtheus() {
           titulo="Por que a MAIS i9 no seu Protheus"
           descricao="Uma forma de trabalhar que combina profundidade técnica, gestão e proximidade."
         />
-        <div className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {diferenciaisConsultoria.map((d) => (
-            <div key={d.titulo} className="revelar rounded-2xl bg-white p-7 ring-1 ring-ardosia-200">
-              <span aria-hidden className="block h-0.5 w-8 bg-destaque" />
-              <h3 className="mt-5 text-lg font-semibold text-navy-950">{d.titulo}</h3>
-              <p className="mt-2 text-[15px] leading-relaxed text-ardosia-600">{d.texto}</p>
-            </div>
-          ))}
+        <div className="mt-14">
+          <Mosaico itens={diferenciaisConsultoria} />
         </div>
       </Secao>
 

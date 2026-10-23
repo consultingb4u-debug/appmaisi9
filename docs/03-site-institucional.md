@@ -61,7 +61,8 @@ Consultoria Protheus ou do MAIS i9 WMS. Conteúdo em `conteudo/inicio.ts`.
 4. **MAIS i9 WMS** (produto): “Gestão Inteligente de Armazéns”, o que o produto entrega (incluindo a conexão ao
    Protheus pelo Addon MAIS i9, via API), vitrine do painel e do App Operador e CTAs para a página do produto e
    para agendar demonstração.
-5. **Por que a MAIS i9**: os 7 diferenciais do briefing.
+5. **Por que a MAIS i9**: os 7 diferenciais do briefing em mosaico (um em destaque, quatro ao lado e dois largos),
+   o mesmo componente (`Mosaico`) usado nos diferenciais da Consultoria.
 6. **Como geramos valor**: jornada Entender → Planejar → Implementar → Sustentar → Evoluir.
 7. **Conteúdos**: três artigos mais recentes.
 8. **CTA final**: “Vamos conversar sobre os desafios da sua operação?” → “Falar com a MAIS i9”, com atalhos
@@ -120,7 +121,7 @@ integração e “diversas integrações disponíveis”, sem listar cada uma; A
 | SEO | Metadados e canônica por página, Open Graph/Twitter com imagem gerada por página, `sitemap.xml`, `robots.txt`, dados estruturados (Organization, WebSite, Service, SoftwareApplication, FAQPage, BreadcrumbList, BlogPosting), URLs amigáveis em português |
 | Indexação | Bloqueada por padrão (`SITE_INDEXAVEL`) para ambientes de teste; liberar só na publicação oficial |
 | Acessibilidade | Link “pular para o conteúdo”, landmarks, trilhas de navegação, foco visível, abas WAI-ARIA, FAQ com `<details>`, erros de formulário ligados aos campos e anunciados, contraste AA |
-| Formulários | Server Action com Zod, campo-armadilha, tempo mínimo e limite por IP; entrega por webhook (CRM) e/ou SMTP; consentimento LGPD registrado com a versão da política; UTMs e página de origem enviadas ao CRM |
+| Formulários | Máscara de telefone com DDD (fixo e celular, aceita colar com +55); Server Action com Zod, campo-armadilha, tempo mínimo e limite por IP; entrega por webhook (CRM) e/ou SMTP; consentimento LGPD registrado com a versão da política; UTMs e página de origem enviadas ao CRM |
 | Segurança | Cabeçalhos `X-Frame-Options`, `nosniff`, `Referrer-Policy`, `Permissions-Policy`; JSON-LD escapado |
 | Qualidade | `npm run lint`, `typecheck`, `test` (Vitest: validação, montagem e entrega dos leads, limitador, consistência do conteúdo) e `build`, também na CI |
 
@@ -142,7 +143,8 @@ algum valor em reais entrar no conteúdo. Também ficaram de fora os números ge
 case. A página de cases foi removida a pedido da MAIS i9; o site não publica resultados de clientes.
 
 **Marca e materiais**
-- [ ] Logotipo em SVG e a versão para fundo escuro (branca), usada no rodapé e na imagem de compartilhamento
+- [x] Versão branca do logotipo (fundo escuro), usada no rodapé (`site/public/marca/logo-maisi9-negativo.png`)
+- [ ] Logotipo em SVG (opcional: melhora a nitidez em telas de alta resolução)
 - [x] Telas reais do MAIS i9 WMS: dashboard de controle de lotes (sem as linhas de valor em reais) e duas telas do
   App Operador (menu de tarefas e consulta por produto), em `site/public/wms/`
 - [x] Telas operacionais: portal de aplicações do WMS (módulos por processo)

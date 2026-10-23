@@ -1,8 +1,9 @@
 import clsx from "clsx";
+import type { LucideIcon } from "lucide-react";
 import { Award, ChevronDown, Clock, CodeXml, Puzzle, Users } from "lucide-react";
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { Botao, LinkSeta, Sobretitulo } from "@/components/ui";
+import { Botao, CaixaIcone, LinkSeta, Sobretitulo } from "@/components/ui";
 import { credenciais, ctaWhatsapp } from "@/conteudo/empresa";
 
 const iconesCredenciais = [Award, Clock, Users, CodeXml, Puzzle];
@@ -49,7 +50,7 @@ export function HeroPagina({
     <section className="grade-tecnica relative overflow-hidden bg-navy-950 text-white">
       <div aria-hidden className="pointer-events-none absolute -top-40 right-0 size-[640px] rounded-full bg-azul-500/10 blur-3xl" />
       <div className={clsx("container-site relative py-16 sm:py-20 lg:py-24", visual && "grid items-center gap-14 lg:grid-cols-12")}>
-        <div className={clsx(visual ? "lg:col-span-6" : "max-w-3xl")}>
+        <div className={clsx("entrada", visual ? "lg:col-span-6" : "max-w-3xl")}>
           <nav aria-label="Trilha de navegação" className="mb-8">
             <ol className="flex flex-wrap items-center gap-2 text-sm text-ardosia-300">
               {trilha.map((item, i) => (
@@ -73,7 +74,7 @@ export function HeroPagina({
           <div className="mt-6 max-w-2xl text-lg leading-relaxed text-ardosia-200">{descricao}</div>
           {children && <div className="mt-9 flex flex-col gap-3 sm:flex-row sm:flex-wrap">{children}</div>}
         </div>
-        {visual && <div className="lg:col-span-6">{visual}</div>}
+        {visual && <div className="entrada-visual lg:col-span-6">{visual}</div>}
       </div>
     </section>
   );
@@ -169,5 +170,62 @@ export function PerguntasFrequentes({ itens }: { itens: { pergunta: string; resp
         </details>
       ))}
     </div>
+  );
+}
+
+export type ItemMosaico = { titulo: string; texto: string; icone?: LucideIcon };
+
+/** Colunas (de 4) de cada item que sobra depois do destaque e dos quatro ao lado dele. */
+const colunasSobra: Record<number, string[]> = {
+  1: ["lg:col-span-4"],
+  2: ["lg:col-span-2", "lg:col-span-2"],
+  3: ["lg:col-span-2", "", ""],
+};
+
+/**
+ * Mosaico de diferenciais: o primeiro em destaque (2×2, fundo escuro), quatro ao lado
+ * e os que sobram esticados para fechar a última linha sem buracos.
+ */
+export function Mosaico({ itens }: { itens: ItemMosaico[] }) {
+  const sobra = colunasSobra[itens.length - 5] ?? [];
+  return (
+    <ul className="revelar-grupo grid gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:gap-5">
+      {itens.map(({ titulo, texto, icone: Icone }, i) => {
+        const colunas = i >= 5 ? (sobra[i - 5] ?? "") : "";
+        const largo = colunas !== "";
+        return i === 0 ? (
+          <li key={titulo} className="revelar sm:col-span-2 lg:row-span-2">
+            <div className="grade-tecnica relative flex h-full min-h-80 flex-col overflow-hidden rounded-3xl bg-navy-950 p-8 text-white sm:p-10">
+              <div aria-hidden className="pointer-events-none absolute -top-28 -right-28 size-80 rounded-full bg-azul-500/25 blur-3xl" />
+              {Icone ? (
+                <CaixaIcone claro className="relative size-14">
+                  <Icone className="size-6" strokeWidth={1.75} />
+                </CaixaIcone>
+              ) : (
+                <span aria-hidden className="relative block h-1 w-12 rounded-full bg-destaque" />
+              )}
+              <h3 className="relative mt-auto pt-14 text-2xl leading-tight font-bold sm:text-3xl">{titulo}</h3>
+              <p className="relative mt-3 max-w-md text-[16px] leading-relaxed text-ardosia-200">{texto}</p>
+            </div>
+          </li>
+        ) : (
+          <li key={titulo} className={clsx("revelar", colunas)}>
+            <div className={clsx("cartao cartao-interativo flex h-full flex-col p-7", largo && "lg:flex-row lg:items-start lg:gap-6")}>
+              {Icone ? (
+                <CaixaIcone>
+                  <Icone className="size-5" strokeWidth={1.75} />
+                </CaixaIcone>
+              ) : (
+                <span aria-hidden className="mt-1 block h-1 w-8 shrink-0 rounded-full bg-destaque" />
+              )}
+              <div className={clsx("mt-5", largo && "lg:mt-0")}>
+                <h3 className="text-lg leading-snug font-semibold text-navy-950">{titulo}</h3>
+                <p className="mt-2 text-[15px] leading-relaxed text-ardosia-600">{texto}</p>
+              </div>
+            </div>
+          </li>
+        );
+      })}
+    </ul>
   );
 }

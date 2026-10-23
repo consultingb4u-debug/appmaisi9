@@ -3,7 +3,8 @@
 import clsx from "clsx";
 import { ChevronDown } from "lucide-react";
 import { useSearchParams } from "next/navigation";
-import { createContext, Suspense, useCallback, useContext, useEffect, useRef, type ReactNode } from "react";
+import { createContext, Suspense, useCallback, useContext, useEffect, useRef, type ChangeEvent, type ReactNode } from "react";
+import { digitosTelefone, formatarTelefone, posicaoAposDigitos } from "@/lib/telefone";
 
 type ContextoCampos = { idForm: string; erros: Record<string, string> };
 
@@ -61,6 +62,28 @@ export function Campo({
   className?: string;
 }) {
   const { id, erro, attrs } = useCampo(nome);
+  const anterior = useRef("");
+
+  // Máscara de telefone no próprio campo (não controlado), mantendo o cursor no lugar.
+  function mascararTelefone(e: ChangeEvent<HTMLInputElement>) {
+    const el = e.currentTarget;
+    let bruto = el.value;
+    let cursor = el.selectionStart ?? bruto.length;
+    // Apagar só um separador — "(", ")", espaço ou "-" — não muda os dígitos: apaga também o dígito anterior.
+    const apagou = (e.nativeEvent as InputEvent).inputType === "deleteContentBackward";
+    if (apagou && digitosTelefone(bruto) === digitosTelefone(anterior.current)) {
+      const antes = bruto.slice(0, cursor).replace(/\d(?=\D*$)/, "");
+      bruto = antes + bruto.slice(cursor);
+      cursor = antes.length;
+    }
+    const digitosAntes = bruto.slice(0, cursor).replace(/\D/g, "").length;
+    const formatado = formatarTelefone(bruto);
+    el.value = formatado;
+    const posicao = posicaoAposDigitos(formatado, digitosAntes);
+    el.setSelectionRange(posicao, posicao);
+    anterior.current = formatado;
+  }
+
   return (
     <div className={className}>
       <Rotulo id={id} rotulo={rotulo} opcional={opcional} />
@@ -71,7 +94,8 @@ export function Campo({
         autoComplete={autoComplete}
         placeholder={placeholder}
         inputMode={tipo === "tel" ? "tel" : undefined}
-        maxLength={tipo === "tel" ? 30 : 160}
+        maxLength={tipo === "tel" ? 20 : 160}
+        onChange={tipo === "tel" ? mascararTelefone : undefined}
         className="campo"
       />
       <Erro id={id} erro={erro} />

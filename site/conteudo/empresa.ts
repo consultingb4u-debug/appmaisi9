@@ -65,7 +65,7 @@ export const empresa: Empresa = {
     "Empresa brasileira de tecnologia com mais de 20 anos de experiência em TOTVS Protheus — suporte, sustentação, governança, projetos e integrações — e criadora do MAIS i9 WMS, solução própria de gestão de armazéns no modelo SaaS.",
   logo: {
     positivo: { src: "/marca/logo-maisi9.png", largura: 1527, altura: 493 },
-    negativo: null,
+    negativo: { src: "/marca/logo-maisi9-negativo.png", largura: 1527, altura: 493 },
   },
   razaoSocial: null,
   cnpj: null,

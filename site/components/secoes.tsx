@@ -1,10 +1,9 @@
 import clsx from "clsx";
-import { Award, ChevronDown, Clock, CodeXml, ImageOff, Puzzle, Quote, Users } from "lucide-react";
+import { Award, ChevronDown, Clock, CodeXml, Puzzle, Users } from "lucide-react";
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { Botao, CabecalhoSecao, LinkSeta, Secao, Sobretitulo } from "@/components/ui";
-import { cases, clientes, depoimentos, logosClientes, tiposCase, type TipoCase } from "@/conteudo/cases";
-import { credenciais } from "@/conteudo/empresa";
+import { Botao, LinkSeta, Sobretitulo } from "@/components/ui";
+import { credenciais, ctaWhatsapp } from "@/conteudo/empresa";
 
 const iconesCredenciais = [Award, Clock, Users, CodeXml, Puzzle];
 
@@ -84,7 +83,7 @@ export function CtaFinal({
   titulo = "Vamos conversar sobre os desafios da sua operação?",
   descricao = "Conte o que você precisa — sustentação do Protheus, um projeto de evolução ou a gestão do seu armazém. Um especialista da MAIS i9 retorna para entender o seu cenário.",
   rotulo = "Falar com a MAIS i9",
-  href = "/contato",
+  href = ctaWhatsapp("geral"),
   atalhos = true,
 }: {
   titulo?: string;
@@ -108,10 +107,10 @@ export function CtaFinal({
           </div>
           {atalhos && (
           <div className="relative mt-8 flex flex-col items-center justify-center gap-x-8 gap-y-3 sm:flex-row">
-            <LinkSeta href="/consultoria-protheus?servico=diagnostico#formulario" claro>
+            <LinkSeta href={ctaWhatsapp("diagnostico")} claro>
               Solicitar diagnóstico Protheus
             </LinkSeta>
-            <LinkSeta href="/mais-i9-wms#demonstracao" claro>
+            <LinkSeta href={ctaWhatsapp("demonstracaoWms")} claro>
               Agendar demonstração do WMS
             </LinkSeta>
           </div>
@@ -170,177 +169,5 @@ export function PerguntasFrequentes({ itens }: { itens: { pergunta: string; resp
         </details>
       ))}
     </div>
-  );
-}
-
-/**
- * Clientes: logotipos oficiais quando fornecidos; antes disso, os nomes citados nos
- * materiais comerciais; sem nenhum dos dois, espaços reservados.
- */
-export function LogosClientes({ quantidade = 6 }: { quantidade?: number }) {
-  if (logosClientes.length) {
-    return (
-      <ul className="grid grid-cols-2 items-center gap-8 sm:grid-cols-3 lg:grid-cols-6">
-        {logosClientes.map((logo) => (
-          <li key={logo.nome} className="flex justify-center">
-            {/* eslint-disable-next-line @next/next/no-img-element -- logotipos de terceiros exibidos sem alteração */}
-            <img src={logo.src} alt={logo.nome} width={logo.largura} height={logo.altura} className="h-10 w-auto object-contain" />
-          </li>
-        ))}
-      </ul>
-    );
-  }
-  if (clientes.length) {
-    return (
-      <ul aria-label="Clientes" className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-        {clientes.map((nome) => (
-          <li
-            key={nome}
-            className="flex min-h-16 items-center justify-center rounded-xl border border-ardosia-200 bg-white px-4 py-3 text-center font-display text-[15px] font-semibold text-ardosia-600"
-          >
-            {nome}
-          </li>
-        ))}
-      </ul>
-    );
-  }
-  return (
-    <div>
-      <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
-        {Array.from({ length: quantidade }, (_, i) => (
-          <li
-            key={i}
-            className="flex h-20 items-center justify-center gap-2 rounded-xl border border-dashed border-ardosia-300 bg-white text-xs font-medium text-ardosia-500"
-          >
-            <ImageOff aria-hidden className="size-4" />
-            Logo do cliente
-          </li>
-        ))}
-      </ul>
-      <p className="mt-4 text-sm text-ardosia-500">
-        Espaço reservado para logotipos de clientes, publicados somente com autorização.
-      </p>
-    </div>
-  );
-}
-
-/** Cards de cases: publicados (com autorização) ou espaços reservados por tipo. */
-export function CardsCases({ tipos }: { tipos: TipoCase[] }) {
-  const publicados = cases.filter((c) => c.publicado && tipos.includes(c.tipo));
-  if (publicados.length) {
-    return (
-      <div className={clsx("grid gap-6 md:grid-cols-2", publicados.length > 2 && "lg:grid-cols-3")}>
-        {publicados.map((c) => (
-          <article key={c.id} className="revelar flex flex-col rounded-2xl border border-ardosia-200 bg-white p-7">
-            <p className="text-xs font-semibold tracking-wider text-azul-600 uppercase">
-              {tiposCase[c.tipo].frente} · {tiposCase[c.tipo].rotulo}
-            </p>
-            <h3 className="mt-3 text-lg font-semibold text-navy-950">{c.titulo}</h3>
-            {(c.cliente || c.segmento) && (
-              <p className="mt-1 text-sm text-ardosia-500">{[c.cliente, c.segmento].filter(Boolean).join(" · ")}</p>
-            )}
-            <dl className="mt-5 flex flex-1 flex-col gap-4 text-[15px] text-ardosia-700">
-              <div>
-                <dt className="font-semibold text-navy-900">Desafio</dt>
-                <dd className="mt-1">{c.desafio}</dd>
-              </div>
-              <div>
-                <dt className="font-semibold text-navy-900">Solução</dt>
-                <dd className="mt-1">{c.solucao}</dd>
-              </div>
-              {c.resultados.length > 0 && (
-                <div className="mt-auto rounded-xl bg-navy-950 p-4">
-                  <dt className="text-xs font-semibold tracking-wider text-azul-300 uppercase">Resultados</dt>
-                  <dd className="mt-2">
-                    <ul className="flex flex-wrap gap-2">
-                      {c.resultados.map((r) => (
-                        <li key={r} className="rounded-lg bg-white/10 px-3 py-1.5 font-display text-[15px] font-semibold text-white">
-                          {r}
-                        </li>
-                      ))}
-                    </ul>
-                  </dd>
-                </div>
-              )}
-            </dl>
-          </article>
-        ))}
-      </div>
-    );
-  }
-  return (
-    <div className={clsx("grid gap-5 md:grid-cols-2", tipos.length > 2 && "lg:grid-cols-3")}>
-      {tipos.map((tipo) => (
-        <article key={tipo} className="flex flex-col rounded-2xl border border-dashed border-ardosia-300 bg-white p-7">
-          <div className="flex items-center justify-between gap-4">
-            <p className="text-xs font-semibold tracking-wider text-azul-600 uppercase">{tiposCase[tipo].rotulo}</p>
-            <span className="rounded-full bg-fundo px-2.5 py-1 text-[11px] font-medium text-ardosia-500">Em preparação</span>
-          </div>
-          <h3 className="mt-4 text-lg font-semibold text-navy-950">Case · {tiposCase[tipo].frente}</h3>
-          <p className="mt-2 text-[15px] leading-relaxed text-ardosia-600">{tiposCase[tipo].descricao}</p>
-          <ul className="mt-auto flex flex-wrap gap-2 pt-6 text-xs text-ardosia-500">
-            {["Desafio", "Solução", "Resultados"].map((t) => (
-              <li key={t} className="rounded-md border border-ardosia-200 px-2 py-1">
-                {t}
-              </li>
-            ))}
-          </ul>
-        </article>
-      ))}
-    </div>
-  );
-}
-
-export function Depoimentos() {
-  if (depoimentos.length) {
-    return (
-      <div className="grid gap-6 md:grid-cols-2">
-        {depoimentos.map((d) => (
-          <figure key={d.autor} className="rounded-2xl border border-ardosia-200 bg-white p-8">
-            <Quote aria-hidden className="size-7 text-destaque" />
-            <blockquote className="mt-4 text-lg leading-relaxed text-navy-900">“{d.texto}”</blockquote>
-            <figcaption className="mt-6 text-sm text-ardosia-600">
-              <strong className="text-navy-950">{d.autor}</strong> · {d.cargo}, {d.empresa}
-            </figcaption>
-          </figure>
-        ))}
-      </div>
-    );
-  }
-  return (
-    <figure className="rounded-2xl border border-dashed border-ardosia-300 bg-white p-8">
-      <Quote aria-hidden className="size-7 text-ardosia-300" />
-      <blockquote className="mt-4 text-lg leading-relaxed text-ardosia-500">
-        Espaço reservado para depoimentos de clientes, publicados com autorização de quem os concedeu.
-      </blockquote>
-      <figcaption className="mt-6 text-sm text-ardosia-400">Nome · Cargo, Empresa</figcaption>
-    </figure>
-  );
-}
-
-/** Bloco “Clientes e cases” usado na Home. */
-export function SecaoClientesCases() {
-  return (
-    <Secao fundo="cinza" id="clientes">
-      <div className="flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
-        <CabecalhoSecao
-          sobretitulo="Clientes e cases"
-          titulo="Resultados construídos com os nossos clientes"
-          descricao="Sustentação do Protheus, integrações e operações com o MAIS i9 WMS em empresas de diferentes segmentos."
-        />
-        <LinkSeta href="/cases" className="shrink-0">
-          Ver cases e clientes
-        </LinkSeta>
-      </div>
-      <div className="mt-12">
-        <LogosClientes />
-      </div>
-      <div className="mt-12 grid gap-5 lg:grid-cols-3">
-        <div className="lg:col-span-2">
-          <CardsCases tipos={["sustentacao", "wms"]} />
-        </div>
-        <Depoimentos />
-      </div>
-    </Secao>
   );
 }

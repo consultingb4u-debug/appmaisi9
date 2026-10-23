@@ -5,6 +5,7 @@ import { ArrowRight, Menu, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import { LinkDestino } from "@/components/ui";
 import { ctaCabecalho, menuPrincipal } from "@/conteudo/navegacao";
 
 function ativo(pathname: string, href: string) {
@@ -111,13 +112,13 @@ export function MenuMovel() {
               );
             })}
           </ul>
-          <Link
+          <LinkDestino
             href={ctaCabecalho.href}
             className="mt-6 flex items-center justify-center gap-2 rounded-lg bg-destaque px-5 py-3.5 font-semibold text-navy-950"
           >
             {ctaCabecalho.rotulo}
             <ArrowRight aria-hidden className="size-4" />
-          </Link>
+          </LinkDestino>
         </nav>
       </div>
     </div>

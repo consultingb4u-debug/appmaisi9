@@ -26,10 +26,10 @@ npm run dev                    # http://localhost:3000
 
 | Rota | Conteúdo |
 |---|---|
-| `/` | Home: hero, soluções, por que a MAIS i9, jornada de valor, clientes e cases, conteúdos, CTA |
+| `/` | Home institucional: hero com acesso à consultoria e ao WMS, quem somos, consultoria, WMS, por que a MAIS i9, jornada de valor, conteúdos, CTA |
 | `/consultoria-protheus` | Landing da consultoria, com formulário (`#formulario`, aceita `?servico=…`) |
 | `/mais-i9-wms` | Landing do produto, com formulário de demonstração (`#demonstracao`) |
-| `/sobre`, `/cases`, `/contato` | Institucionais (contato aceita `?assunto=…`) |
+| `/sobre`, `/contato` | Institucionais (contato aceita `?assunto=…`) |
 | `/conteudos`, `/conteudos/categoria/[categoria]`, `/conteudos/[slug]` | Insights (artigos em MDX) |
 | `/politica-de-privacidade` | Minuta LGPD (validar com o jurídico) |
 | `/sitemap.xml`, `/robots.txt`, `…/opengraph-image` | SEO técnico |
@@ -40,10 +40,9 @@ Tudo o que é texto institucional fica em `conteudo/` — os componentes não t�
 
 | Arquivo | O que contém |
 |---|---|
-| `conteudo/empresa.ts` | dados institucionais, contatos, WhatsApp, logotipo, encarregado LGPD |
+| `conteudo/empresa.ts` | dados institucionais, contatos, WhatsApp e mensagens das chamadas (`ctaWhatsapp`), logotipo, encarregado LGPD |
 | `conteudo/consultoria.ts` | serviços, desafios, diferenciais, modelos de contratação, metodologia, FAQ |
 | `conteudo/wms.ts` | base operacional, módulos complementares, benefícios, integração, FAQ, telas reais |
-| `conteudo/cases.ts` | cases, depoimentos e logotipos de clientes (só com autorização) |
 | `conteudo/insights.ts` + `conteudo/artigos/*.mdx` | categorias e artigos |
 | `conteudo/navegacao.ts` | menu e rodapé |
 
@@ -83,6 +82,8 @@ As telas reais têm prioridade sobre as ilustrações. Coloque as imagens em `pu
 1. Crie `conteudo/artigos/<slug>.mdx` com o texto em Markdown (sem título — ele vem dos metadados).
 2. Registre `slug`, `titulo`, `resumo`, `categoria`, `publicadoEm`, `autor` e `minutosLeitura` em
    `artigos` (`conteudo/insights.ts`).
+3. Para chamar o WhatsApp da MAIS i9 no texto, use o assunto como link: `[agende uma demonstração](whatsapp:demonstracaoWms)`
+   (assuntos em `mensagensWhatsapp`, `conteudo/empresa.ts`).
 
 Página, listagens, sitemap, imagem de compartilhamento e dados estruturados são gerados a partir do
 registro. O teste `tests/conteudo.test.ts` confere se cada artigo tem arquivo e categoria válida.

@@ -3,6 +3,16 @@ import { ArrowRight, Check } from "lucide-react";
 import Link from "next/link";
 import type { ComponentProps, ReactNode } from "react";
 
+/** Links externos (ex.: WhatsApp) abrem em nova aba. */
+export function propsDestino(href: ComponentProps<typeof Link>["href"]) {
+  return typeof href === "string" && /^https?:/.test(href) ? { target: "_blank", rel: "noopener noreferrer" } : {};
+}
+
+/** `Link` que abre destinos externos (ex.: WhatsApp) em nova aba. */
+export function LinkDestino({ href, ...props }: ComponentProps<typeof Link>) {
+  return <Link href={href} {...propsDestino(href)} {...props} />;
+}
+
 type VarianteBotao = "primario" | "escuro" | "contorno" | "contorno-claro";
 
 const estiloBotao: Record<VarianteBotao, string> = {
@@ -25,6 +35,7 @@ export function Botao({
   return (
     <Link
       href={href}
+      {...propsDestino(href)}
       className={clsx(
         "group inline-flex items-center justify-center gap-2 rounded-lg font-semibold transition-colors",
         tamanho === "lg" ? "px-6 py-3.5 text-[15px]" : "px-4.5 py-2.5 text-sm",
@@ -44,6 +55,7 @@ export function LinkSeta({ href, children, claro = false, className }: { href: s
   return (
     <Link
       href={href}
+      {...propsDestino(href)}
       className={clsx(
         "group inline-flex items-center gap-1.5 text-sm font-semibold",
         claro ? "text-white hover:text-azul-300" : "text-azul-600 hover:text-navy-900",

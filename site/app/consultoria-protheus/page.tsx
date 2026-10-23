@@ -1,10 +1,9 @@
 import clsx from "clsx";
 import { ArrowRight, Check, Mail, MessageCircle, Phone, Ticket, Video } from "lucide-react";
-import Link from "next/link";
 import type { ReactNode } from "react";
 import { FormularioConsultoria } from "@/components/formularios/formularios";
 import { Credenciais, HeroPagina, PerguntasFrequentes } from "@/components/secoes";
-import { Botao, CabecalhoSecao, CaixaIcone, JsonLd, Secao, Sobretitulo } from "@/components/ui";
+import { Botao, CabecalhoSecao, CaixaIcone, JsonLd, LinkDestino, Secao, Sobretitulo } from "@/components/ui";
 import { PainelGovernanca } from "@/components/visuais/painel-governanca";
 import {
   beneficiosConsultoria,
@@ -21,7 +20,7 @@ import {
   servicoDba,
   servicosConsultoria,
 } from "@/conteudo/consultoria";
-import { avisoMarcas, empresa } from "@/conteudo/empresa";
+import { avisoMarcas, ctaProposta, ctaWhatsapp, empresa } from "@/conteudo/empresa";
 import { idOrganizacao, perguntasFrequentes, trilha } from "@/lib/jsonld";
 import { metadadosPagina, urlAbsoluta } from "@/lib/site";
 
@@ -83,10 +82,10 @@ export default function ConsultoriaProtheus() {
         descricao="Apoiamos empresas a extrair o máximo valor do Protheus com estabilidade, governança e evolução contínua do ERP — suporte, sustentação, projetos e fábrica de software com o mesmo time."
         visual={<PainelGovernanca />}
       >
-        <Botao href="#formulario" tamanho="lg" seta>
+        <Botao href={ctaWhatsapp("especialistaProtheus")} tamanho="lg" seta>
           Falar com um especialista Protheus
         </Botao>
-        <Botao href="/consultoria-protheus?servico=diagnostico#formulario" variante="contorno-claro" tamanho="lg">
+        <Botao href={ctaWhatsapp("diagnostico")} variante="contorno-claro" tamanho="lg">
           Solicitar diagnóstico
         </Botao>
       </HeroPagina>
@@ -189,14 +188,14 @@ export default function ConsultoriaProtheus() {
                   </li>
                 ))}
               </ul>
-              <Link
-                href={`/consultoria-protheus?servico=${id}#formulario`}
+              <LinkDestino
+                href={ctaProposta(`${titulo} (TOTVS Protheus)`)}
                 className="group mt-auto inline-flex items-center gap-1.5 pt-7 text-sm font-semibold text-azul-600 hover:text-navy-900"
               >
                 Solicitar proposta
                 <span className="sr-only"> de {titulo}</span>
                 <ArrowRight aria-hidden className="size-4 transition-transform group-hover:translate-x-0.5" />
-              </Link>
+              </LinkDestino>
             </article>
           ))}
         </div>
@@ -207,13 +206,13 @@ export default function ConsultoriaProtheus() {
             <p className="text-xs font-semibold tracking-[0.14em] text-azul-600 uppercase">Serviço especializado complementar</p>
             <h3 className="mt-3 text-2xl font-bold text-navy-950">{servicoDba.titulo}</h3>
             <p className="mt-3 text-[15.5px] leading-relaxed text-ardosia-600">{servicoDba.resumo}</p>
-            <Link
-              href="/consultoria-protheus?servico=dba#formulario"
+            <LinkDestino
+              href={ctaProposta(servicoDba.titulo)}
               className="group mt-6 inline-flex items-center gap-1.5 text-sm font-semibold text-azul-600 hover:text-navy-900"
             >
               Falar sobre DBA
               <ArrowRight aria-hidden className="size-4 transition-transform group-hover:translate-x-0.5" />
-            </Link>
+            </LinkDestino>
           </div>
           <ul className="grid gap-3 sm:grid-cols-2 lg:col-span-7">
             {servicoDba.itens.map((item) => (
@@ -282,8 +281,8 @@ export default function ConsultoriaProtheus() {
                   </li>
                 ))}
               </ul>
-              <Link
-                href={`/consultoria-protheus?servico=${m.servico}#formulario`}
+              <LinkDestino
+                href={ctaProposta(`modelo ${m.titulo} de consultoria TOTVS Protheus`)}
                 className={clsx(
                   "group mt-auto inline-flex items-center gap-1.5 pt-6 text-sm font-semibold",
                   m.recomendado ? "text-white hover:text-azul-300" : "text-azul-600 hover:text-navy-900",
@@ -292,7 +291,7 @@ export default function ConsultoriaProtheus() {
                 Solicitar proposta
                 <span className="sr-only"> do modelo {m.titulo}</span>
                 <ArrowRight aria-hidden className="size-4 transition-transform group-hover:translate-x-0.5" />
-              </Link>
+              </LinkDestino>
             </article>
           ))}
         </div>
@@ -360,7 +359,7 @@ export default function ConsultoriaProtheus() {
               </li>
             ))}
           </ul>
-          <Botao href="#formulario" variante="escuro" seta className="shrink-0">
+          <Botao href={ctaWhatsapp("propostaConsultoria")} variante="escuro" seta className="shrink-0">
             Solicitar proposta
           </Botao>
         </div>
@@ -461,9 +460,9 @@ export default function ConsultoriaProtheus() {
             descricao={
               <>
                 Não encontrou o que procurava?{" "}
-                <Link href="#formulario" className="font-semibold text-azul-600 hover:text-navy-900">
+                <LinkDestino href={ctaWhatsapp("especialistaProtheus")} className="font-semibold text-azul-600 hover:text-navy-900">
                   Fale com um especialista
-                </Link>
+                </LinkDestino>
                 .
               </>
             }

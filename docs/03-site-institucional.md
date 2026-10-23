@@ -22,6 +22,9 @@ Princípios que orientaram as decisões:
 4. **WMS é produto, consultoria é serviço**: o WMS nunca aparece como serviço de consultoria nem como
    produto da TOTVS; a MAIS i9 nunca aparece como parte ou representante da TOTVS.
 5. **Nada simulado**: formulários só confirmam envio quando o lead chega de fato ao destino configurado.
+6. **Conversão pelo WhatsApp**: “Falar com um especialista”, “Solicitar diagnóstico”, “Agendar demonstração” e
+   “Solicitar proposta” abrem o WhatsApp da MAIS i9 com uma mensagem inicial do assunto (`ctaWhatsapp` em
+   `site/conteudo/empresa.ts`). Os formulários continuam nas páginas como canal alternativo.
 
 ## 2. Mapa do site
 
@@ -30,7 +33,6 @@ Início (/)
 ├── Consultoria Protheus (/consultoria-protheus)
 ├── MAIS i9 WMS (/mais-i9-wms)
 ├── Sobre Nós (/sobre)
-├── Cases (/cases)
 ├── Conteúdos (/conteudos)
 │   ├── /conteudos/categoria/[categoria]   8 categorias
 │   └── /conteudos/[slug]                  artigos (MDX)
@@ -38,7 +40,7 @@ Início (/)
 └── Política de Privacidade (/politica-de-privacidade)
 ```
 
-**Cabeçalho fixo:** logotipo · Início | Consultoria Protheus | MAIS i9 WMS | Sobre Nós | Cases | Conteúdos | Contato ·
+**Cabeçalho fixo:** logotipo · Início | Consultoria Protheus | MAIS i9 WMS | Sobre Nós | Conteúdos | Contato ·
 botão **“Falar com um especialista”**. Abaixo de 1280 px o menu vira um painel em tela cheia; o CTA permanece visível a
 partir de 640 px e dentro do menu no celular.
 
@@ -61,15 +63,14 @@ Consultoria Protheus ou do MAIS i9 WMS. Conteúdo em `conteudo/inicio.ts`.
    para agendar demonstração.
 5. **Por que a MAIS i9**: os 7 diferenciais do briefing.
 6. **Como geramos valor**: jornada Entender → Planejar → Implementar → Sustentar → Evoluir.
-7. **Clientes e cases**: clientes citados nos materiais e os cases da apresentação.
-8. **Conteúdos**: três artigos mais recentes.
-9. **CTA final**: “Vamos conversar sobre os desafios da sua operação?” → “Falar com a MAIS i9”, com atalhos
+7. **Conteúdos**: três artigos mais recentes.
+8. **CTA final**: “Vamos conversar sobre os desafios da sua operação?” → “Falar com a MAIS i9”, com atalhos
    para diagnóstico Protheus e demonstração do WMS.
 
 ### Consultoria Protheus
 Página do serviço, centrada na especialização em TOTVS Protheus. Hero com painel ilustrativo de governança de
 demandas → **o que sua empresa ganha** → **experiência** (credenciais e especialidades da equipe) → **desafios**
-comuns → **6 serviços** com itens do briefing e “Solicitar proposta” (pré-seleciona o serviço no formulário),
+comuns → **6 serviços** com itens do briefing e “Solicitar proposta” (abre o WhatsApp com o serviço na mensagem),
 mais DBA Oracle e SQL Server → **diferenciais** → **5 modelos de contratação** (sem preços), com matriz e
 condições de atendimento → **metodologia de atendimento**, prioridades e canais → **benefícios** → o papel da
 MAIS i9 → **FAQ** (incluindo “A MAIS i9 faz parte da TOTVS?”) → **formulário** com próximos passos → aviso de marcas.
@@ -86,14 +87,14 @@ integração e APIs para outros ERPs, sem prometer integrações prontas) → **
 **formulário de demonstração**.
 
 ### Institucionais
-- **Sobre**: quem somos, campos editáveis (fundação, sede, equipe, certificações), atuação, visão sobre
-  tecnologia e negócios, compromisso com os clientes, experiência da equipe.
+- **Sobre**: quem somos, missão e credenciais, atuação, visão sobre tecnologia e negócios, compromisso com os
+  clientes, experiência da equipe (especialidades, tipos de projeto e segmentos atendidos).
 - **Cases**: logotipos, cases por frente (implantação, evolução, sustentação, WMS) e depoimentos — estrutura
   pronta, publicada só com autorização (`conteudo/cases.ts`).
 - **Conteúdos**: listagem com filtro por categoria e página de artigo com CTA contextual (consultoria ou WMS).
   Três artigos iniciais, educativos, para revisão da equipe.
-- **Contato**: formulário com assunto de interesse, atalhos por frente, informações institucionais e botão
-  de WhatsApp (aparece só quando houver número oficial).
+- **Contato**: formulário com assunto de interesse, atalhos para Consultoria e WMS, e-mail, telefone, e-mail de
+  chamados e botão de WhatsApp.
 
 ## 4. Identidade visual aplicada
 
@@ -130,23 +131,22 @@ Itens que dependem da MAIS i9 — o site sinaliza cada um em vez de inventar.
 símbolo (favicon), domínio `maisi9.com.br`, e-mail e telefone comerciais, e-mail de chamados, +20 anos de
 experiência, +10.000 horas de projetos, especialidades da equipe, missão, os cinco modelos de contratação e o
 quadro de benefícios, canais e classificação de prioridades, DBA Oracle/SQL Server, funcionalidades reais dos
-módulos do WMS, implantação e contratação do WMS, dois cases (sem identificar o cliente) e a lista de clientes.
+módulos do WMS, implantação e contratação do WMS. Informados depois: sede em Joinville/SC, WhatsApp (47) 3440-2120
+e segmentos atendidos.
 
 **Regra de conteúdo:** o site não publica valores nem preços (valor/hora, setup, assinatura, ganhos em R$) nem
 quantidades de pacotes comerciais (horas mensais, usuários incluídos). O teste `tests/conteudo.test.ts` falha se
 algum valor em reais entrar no conteúdo. Também ficaram de fora os números genéricos do folheto do WMS
 (“−40% de perdas”, “95%+ de acuracidade”, “−70% no tempo de inventário”, “ROI em até 6 meses”), que não vêm de um
-case; os resultados publicados são apenas os dos cases da apresentação.
+case. A página de cases foi removida a pedido da MAIS i9; o site não publica resultados de clientes.
 
 **Marca e materiais**
 - [ ] Logotipo em SVG e a versão para fundo escuro (branca), usada no rodapé e na imagem de compartilhamento
-- [ ] Logotipos oficiais dos clientes e confirmação de que cada um autoriza a exibição no site
 - [ ] Telas reais do MAIS i9 WMS (dashboard, App Operador, telas operacionais, indicadores, App Motorista)
 
 **Dados institucionais** (`site/conteudo/empresa.ts`)
-- [ ] Razão social, CNPJ, endereço, cidade/UF
-- [ ] Número oficial de WhatsApp, horário de atendimento, LinkedIn
-- [ ] Ano de fundação, tamanho da equipe, segmentos atendidos, certificações (se houver)
+- [ ] Razão social e CNPJ (usados na Política de Privacidade e no rodapé)
+- [ ] LinkedIn
 - [ ] Confirmar o papel de `suite.maisi9.com.br` (citado no folheto do WMS)
 
 **Comercial e jurídico**

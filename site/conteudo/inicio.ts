@@ -1,5 +1,6 @@
 import type { LucideIcon } from "lucide-react";
 import { BadgeCheck, Building2, Cpu, Handshake, Headset, Lightbulb, Target, Warehouse, Workflow } from "lucide-react";
+import { ctaWhatsapp } from "@/conteudo/empresa";
 
 /*
  * Conteúdo da página inicial: apresentação institucional da MAIS i9 e de seus
@@ -46,7 +47,7 @@ export const consultoriaInicio: Oferta = {
     "Fábrica de software ADVPL/TLPP e DBA Oracle e SQL Server",
   ],
   cta: { rotulo: "Conhecer a Consultoria Protheus", href: "/consultoria-protheus" },
-  ctaSecundario: { rotulo: "Falar com um especialista Protheus", href: "/consultoria-protheus#formulario" },
+  ctaSecundario: { rotulo: "Falar com um especialista Protheus", href: ctaWhatsapp("especialistaProtheus") },
   icone: Headset,
 };
 
@@ -66,7 +67,7 @@ export const wmsInicio: Oferta = {
     "Conexão ao TOTVS Protheus pelo Addon MAIS i9, via API",
   ],
   cta: { rotulo: "Explorar o MAIS i9 WMS", href: "/mais-i9-wms" },
-  ctaSecundario: { rotulo: "Agendar demonstração", href: "/mais-i9-wms#demonstracao" },
+  ctaSecundario: { rotulo: "Agendar demonstração", href: ctaWhatsapp("demonstracaoWms") },
   icone: Warehouse,
 };
 

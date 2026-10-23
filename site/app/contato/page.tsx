@@ -1,9 +1,9 @@
-import { Building2, Clock, Headset, Mail, MapPin, MessageCircle, Phone } from "lucide-react";
+import { Headset, Mail, MessageCircle, Phone } from "lucide-react";
 import type { ReactNode } from "react";
 import { FormularioContato } from "@/components/formularios/formularios";
 import { HeroPagina } from "@/components/secoes";
 import { CabecalhoSecao, JsonLd, LinkSeta, Pendente, Secao } from "@/components/ui";
-import { empresa, linkWhatsapp } from "@/conteudo/empresa";
+import { ctaWhatsapp, empresa, linkWhatsapp } from "@/conteudo/empresa";
 import { trilha } from "@/lib/jsonld";
 import { metadadosPagina } from "@/lib/site";
 
@@ -42,7 +42,7 @@ export default function Contato() {
         trilha={caminhoTrilha}
         sobretitulo="Contato"
         titulo="Fale com a MAIS i9."
-        descricao="Conte o que você precisa. Sua mensagem é direcionada ao especialista da frente certa — Consultoria Protheus ou MAIS i9 WMS."
+        descricao="Conte o que você precisa. Sua mensagem é direcionada ao especialista certo — Consultoria Protheus ou MAIS i9 WMS."
       />
 
       <Secao>
@@ -59,14 +59,14 @@ export default function Contato() {
               <div className="rounded-2xl border border-ardosia-200 p-6">
                 <p className="text-xs font-semibold tracking-[0.14em] text-azul-600 uppercase">Consultoria Protheus</p>
                 <p className="mt-2 text-[15px] text-ardosia-600">Sustentação, suporte, projetos, desenvolvimento e diagnóstico.</p>
-                <LinkSeta href="/consultoria-protheus#formulario" className="mt-4">
+                <LinkSeta href={ctaWhatsapp("especialistaProtheus")} className="mt-4">
                   Falar com um especialista Protheus
                 </LinkSeta>
               </div>
               <div className="rounded-2xl border border-ardosia-200 p-6">
                 <p className="text-xs font-semibold tracking-[0.14em] text-azul-600 uppercase">MAIS i9 WMS</p>
                 <p className="mt-2 text-[15px] text-ardosia-600">Conheça a plataforma aplicada à sua operação logística.</p>
-                <LinkSeta href="/mais-i9-wms#demonstracao" className="mt-4">
+                <LinkSeta href={ctaWhatsapp("demonstracaoWms")} className="mt-4">
                   Agendar demonstração
                 </LinkSeta>
               </div>
@@ -100,16 +100,6 @@ export default function Contato() {
                     </a>
                   </Linha>
                 )}
-                <Linha icone={<Clock className="size-5" />} rotulo="Horário de atendimento">
-                  {empresa.horarioAtendimento ?? <Pendente>horário de atendimento</Pendente>}
-                </Linha>
-                <Linha icone={<MapPin className="size-5" />} rotulo="Endereço">
-                  {empresa.endereco ?? <Pendente>endereço</Pendente>}
-                </Linha>
-                <Linha icone={<Building2 className="size-5" />} rotulo="Razão social e CNPJ">
-                  {empresa.razaoSocial ?? <Pendente>razão social</Pendente>} ·{" "}
-                  {empresa.cnpj ? `CNPJ ${empresa.cnpj}` : <Pendente>CNPJ</Pendente>}
-                </Linha>
               </dl>
               {whatsapp ? (
                 <a

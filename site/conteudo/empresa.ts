@@ -54,7 +54,8 @@ export type Empresa = {
   missao: string | null;
   /** Resumo da experiência da equipe (áreas, segmentos, tempo de atuação). */
   experienciaEquipe: string | null;
-  segmentosAtendidos: string[];
+  /** Segmentos atendidos, como informado pela MAIS i9. */
+  segmentosAtendidos: string | null;
   certificacoes: string[];
 };
 
@@ -69,13 +70,13 @@ export const empresa: Empresa = {
   razaoSocial: null,
   cnpj: null,
   anoFundacao: null,
-  sede: null,
+  sede: "Joinville/SC",
   endereco: null,
   emailComercial: "contato@maisi9.com.br",
   telefoneComercial: "(47) 3440-2120",
   emailChamados: "chamados@maisi9.com.br",
   siteWms: "https://suite.maisi9.com.br",
-  whatsapp: null,
+  whatsapp: "554734402120",
   horarioAtendimento: null,
   linkedin: null,
   encarregadoDados: { nome: null, email: null },
@@ -83,7 +84,8 @@ export const empresa: Empresa = {
   experiencia: "Mais de 20 anos",
   horasProjetos: "Mais de 10.000 horas",
   especialidadesEquipe: [
-    "Backoffice e Reforma Tributária",
+    "Backoffice",
+    "Reforma Tributária",
     "GPE e Medicina",
     "Qualidade",
     "Manufatura",
@@ -96,7 +98,7 @@ export const empresa: Empresa = {
     "Mais do que tecnologia, entregamos confiança: nossa missão é garantir estabilidade, performance e inovação para que cada cliente MAIS i9 possa trilhar seu caminho de crescimento com resultados concretos.",
   experienciaEquipe:
     "Especialistas funcionais e técnicos em TOTVS Protheus, com fábrica de software (ADVPL/TLPP, APIs e integrações), administração de bancos de dados Oracle e SQL Server e experiência em operações logísticas — base do desenvolvimento do MAIS i9 WMS.",
-  segmentosAtendidos: [],
+  segmentosAtendidos: "Atendemos todos os segmentos, inclusive com localizações no exterior.",
   certificacoes: [],
 };
 
@@ -116,4 +118,31 @@ export function linkWhatsapp(mensagem?: string): string | null {
   if (!empresa.whatsapp) return null;
   const texto = mensagem ? `?text=${encodeURIComponent(mensagem)}` : "";
   return `https://wa.me/${empresa.whatsapp}${texto}`;
+}
+
+/** Mensagens iniciais das conversas de WhatsApp abertas pelas chamadas do site. */
+export const mensagensWhatsapp = {
+  geral: "Olá! Vim pelo site da MAIS i9 e gostaria de falar com um especialista.",
+  especialistaProtheus: "Olá! Vim pelo site da MAIS i9 e gostaria de falar com um especialista em TOTVS Protheus.",
+  diagnostico: "Olá! Vim pelo site da MAIS i9 e gostaria de solicitar um diagnóstico do meu ambiente TOTVS Protheus.",
+  demonstracaoWms: "Olá! Vim pelo site da MAIS i9 e gostaria de agendar uma demonstração do MAIS i9 WMS.",
+  especialistaWms: "Olá! Vim pelo site da MAIS i9 e gostaria de falar com um especialista sobre o MAIS i9 WMS.",
+  propostaConsultoria: "Olá! Vim pelo site da MAIS i9 e gostaria de solicitar uma proposta de consultoria TOTVS Protheus.",
+};
+
+export type AssuntoWhatsapp = keyof typeof mensagensWhatsapp;
+
+/**
+ * Destino das chamadas de conversão ("Falar com um especialista", "Solicitar diagnóstico",
+ * "Agendar demonstração"…): conversa no WhatsApp da MAIS i9 com a mensagem do assunto.
+ * Sem número oficial, cai na página de contato.
+ */
+export function ctaWhatsapp(assunto: AssuntoWhatsapp | { mensagem: string }): string {
+  const mensagem = typeof assunto === "string" ? mensagensWhatsapp[assunto] : assunto.mensagem;
+  return linkWhatsapp(mensagem) ?? "/contato";
+}
+
+/** Chamada "Solicitar proposta" de um serviço ou modelo (ex.: "Sustentação (TOTVS Protheus)"). */
+export function ctaProposta(objeto: string): string {
+  return ctaWhatsapp({ mensagem: `Olá! Vim pelo site da MAIS i9 e gostaria de solicitar uma proposta: ${objeto}.` });
 }

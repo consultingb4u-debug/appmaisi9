@@ -1,8 +1,8 @@
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
-import { cases } from "@/conteudo/cases";
 import { opcoesServico, servicosConsultoria } from "@/conteudo/consultoria";
+import { ctaWhatsapp, empresa, mensagensWhatsapp } from "@/conteudo/empresa";
 import { artigos, categorias, formatarData } from "@/conteudo/insights";
 import { baseOperacional, modulosComplementares } from "@/conteudo/wms";
 import { paginasInstitucionais } from "@/lib/rotas";
@@ -37,10 +37,10 @@ describe("conteúdo do site", () => {
     for (const s of servicosConsultoria) expect(opcoesServico.some((o) => o.valor === s.id)).toBe(true);
   });
 
-  it("cases publicados trazem título, desafio e solução", () => {
-    for (const c of cases.filter((x) => x.publicado)) {
-      expect(c.titulo && c.desafio && c.solucao).toBeTruthy();
-    }
+  it("chamadas de conversão abrem o WhatsApp da MAIS i9 com a mensagem do assunto", () => {
+    const url = new URL(ctaWhatsapp("demonstracaoWms"));
+    expect(url.origin + url.pathname).toBe(`https://wa.me/${empresa.whatsapp}`);
+    expect(url.searchParams.get("text")).toBe(mensagensWhatsapp.demonstracaoWms);
   });
 
   it("formata datas de publicação em português", () => {

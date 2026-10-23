@@ -203,7 +203,7 @@ export const ganhosConsultoria: { titulo: string; texto: string; icone: LucideIc
 export const diferenciaisConsultoria: { titulo: string; texto: string }[] = [
   {
     titulo: "Especialistas funcionais e técnicos",
-    texto: "Equipe com experiência em Backoffice e Reforma Tributária, GPE e Medicina, Qualidade, Manufatura, TAF, PMS e infraestrutura Protheus.",
+    texto: "Equipe com experiência em Backoffice, Reforma Tributária, GPE e Medicina, Qualidade, Manufatura, TAF, PMS e infraestrutura Protheus.",
   },
   {
     titulo: "Governança de demandas",

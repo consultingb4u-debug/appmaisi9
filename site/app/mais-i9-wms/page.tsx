@@ -1,10 +1,9 @@
 import { ArrowLeftRight, Check, Cloud, Database, Plug, ScanBarcode, Warehouse } from "lucide-react";
-import Link from "next/link";
 import { FormularioDemoWms } from "@/components/formularios/formularios";
 import { HeroPagina, PerguntasFrequentes } from "@/components/secoes";
-import { Botao, CabecalhoSecao, CaixaIcone, JsonLd, Secao, Sobretitulo } from "@/components/ui";
+import { Botao, CabecalhoSecao, CaixaIcone, JsonLd, LinkDestino, Secao, Sobretitulo } from "@/components/ui";
 import { Aplicativos, BaseOperacional, FluxoOperacao, NotaIlustracao, VisaoProduto, VitrineHero } from "@/components/wms";
-import { avisoMarcas, empresa } from "@/conteudo/empresa";
+import { avisoMarcas, ctaWhatsapp, empresa } from "@/conteudo/empresa";
 import {
   baseOperacional,
   beneficiosWms,
@@ -59,7 +58,7 @@ export default function MaisI9Wms() {
         descricao="Conheça o MAIS i9 WMS: uma plataforma completa para gestão de armazéns, conectando pessoas, processos e sistemas em uma operação mais inteligente."
         visual={<VitrineHero />}
       >
-        <Botao href="#demonstracao" tamanho="lg" seta>
+        <Botao href={ctaWhatsapp("demonstracaoWms")} tamanho="lg" seta>
           Agendar demonstração
         </Botao>
         <Botao href="#funcionalidades" variante="contorno-claro" tamanho="lg">
@@ -386,9 +385,9 @@ export default function MaisI9Wms() {
             descricao={
               <>
                 Quer ver o produto funcionando?{" "}
-                <Link href="#demonstracao" className="font-semibold text-azul-600 hover:text-navy-900">
+                <LinkDestino href={ctaWhatsapp("demonstracaoWms")} className="font-semibold text-azul-600 hover:text-navy-900">
                   Agende uma demonstração
-                </Link>
+                </LinkDestino>
                 .
               </>
             }

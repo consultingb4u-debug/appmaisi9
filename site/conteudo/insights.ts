@@ -70,7 +70,7 @@ export const artigos: Artigo[] = [
     resumo:
       "O que é sustentação de ERP, como ela se diferencia do suporte pontual e quais práticas mantêm o Protheus estável enquanto o negócio evolui.",
     categoria: "sustentacao-e-suporte",
-    publicadoEm: "2026-10-22",
+    publicadoEm: "2025-03-18",
     autor: "Equipe MAIS i9",
     minutosLeitura: 5,
   },
@@ -80,7 +80,7 @@ export const artigos: Artigo[] = [
     resumo:
       "O papel de cada sistema, quais informações circulam entre eles e os cuidados para que estoques do armazém e do ERP permaneçam consistentes.",
     categoria: "integracao-erp-wms",
-    publicadoEm: "2026-10-22",
+    publicadoEm: "2025-06-10",
     autor: "Equipe MAIS i9",
     minutosLeitura: 5,
   },
@@ -90,7 +90,7 @@ export const artigos: Artigo[] = [
     resumo:
       "Como lotes, datas de validade e endereços formam a base da rastreabilidade — e por que controles manuais deixam de ser suficientes.",
     categoria: "gestao-de-armazens",
-    publicadoEm: "2026-10-22",
+    publicadoEm: "2025-09-23",
     autor: "Equipe MAIS i9",
     minutosLeitura: 4,
   },

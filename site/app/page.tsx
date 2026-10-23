@@ -1,7 +1,7 @@
 import { ArrowDown, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { CardArtigo } from "@/components/conteudos";
-import { Credenciais, CtaFinal, Jornada, SecaoClientesCases } from "@/components/secoes";
+import { Credenciais, CtaFinal, Jornada } from "@/components/secoes";
 import { Botao, CabecalhoSecao, CaixaIcone, LinkSeta, ListaCheck, Secao, Sobretitulo } from "@/components/ui";
 import { PainelGovernanca } from "@/components/visuais/painel-governanca";
 import { NotaIlustracao, VitrineHero } from "@/components/wms";
@@ -184,8 +184,6 @@ export default function Inicio() {
           <Jornada />
         </div>
       </Secao>
-
-      <SecaoClientesCases />
 
       {/* Conteúdos */}
       <Secao id="conteudos">

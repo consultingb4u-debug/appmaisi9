@@ -1,8 +1,8 @@
 import { Mail, MapPin, MessageCircle, Phone } from "lucide-react";
 import Link from "next/link";
 import { Marca } from "@/components/marca";
-import { Botao, Pendente } from "@/components/ui";
-import { avisoMarcas, empresa, linkWhatsapp } from "@/conteudo/empresa";
+import { Botao, LinkDestino, Pendente } from "@/components/ui";
+import { avisoMarcas, ctaWhatsapp, empresa, linkWhatsapp } from "@/conteudo/empresa";
 import { rodape } from "@/conteudo/navegacao";
 
 export function Rodape() {
@@ -19,7 +19,7 @@ export function Rodape() {
               Tecnologia, consultoria e soluções para gestão empresarial: consultoria especializada em TOTVS Protheus e o
               MAIS i9 WMS, solução própria para gestão de armazéns.
             </p>
-            <Botao href="/contato" seta className="mt-7">
+            <Botao href={ctaWhatsapp("geral")} seta className="mt-7">
               Falar com um especialista
             </Botao>
           </div>
@@ -31,9 +31,9 @@ export function Rodape() {
                 <ul className="mt-4 space-y-3">
                   {grupo.itens.map((item) => (
                     <li key={item.href}>
-                      <Link href={item.href} className="text-sm text-ardosia-300 transition-colors hover:text-white">
+                      <LinkDestino href={item.href} className="text-sm text-ardosia-300 transition-colors hover:text-white">
                         {item.rotulo}
-                      </Link>
+                      </LinkDestino>
                     </li>
                   ))}
                 </ul>
@@ -66,7 +66,7 @@ export function Rodape() {
               </li>
               <li className="flex gap-3">
                 <MapPin aria-hidden className="mt-0.5 size-4 shrink-0 text-azul-300" />
-                {empresa.endereco ?? <Pendente claro>endereço</Pendente>}
+                {empresa.endereco ?? empresa.sede ?? <Pendente claro>endereço</Pendente>}
               </li>
               {whatsapp && (
                 <li className="flex gap-3">

@@ -1,6 +1,5 @@
 import { ArrowRight, Eye, Handshake, Lock, RefreshCw, ShieldCheck } from "lucide-react";
 import Link from "next/link";
-import type { ReactNode } from "react";
 import { Credenciais, CtaFinal, HeroPagina } from "@/components/secoes";
 import { CabecalhoSecao, CaixaIcone, JsonLd, Pendente, Secao, Sobretitulo } from "@/components/ui";
 import { empresa } from "@/conteudo/empresa";
@@ -47,18 +46,6 @@ const compromissos = [
 ];
 
 export default function Sobre() {
-  const fatos: { rotulo: string; valor: ReactNode }[] = [
-    { rotulo: "Experiência", valor: empresa.experiencia ?? <Pendente>tempo de experiência</Pendente> },
-    { rotulo: "Projetos entregues", valor: empresa.horasProjetos ?? <Pendente>volume de projetos</Pendente> },
-    { rotulo: "Fundação", valor: empresa.anoFundacao ?? <Pendente>ano de fundação</Pendente> },
-    { rotulo: "Sede", valor: empresa.sede ?? <Pendente>cidade/UF</Pendente> },
-    { rotulo: "Equipe", valor: empresa.tamanhoEquipe ?? <Pendente>tamanho da equipe</Pendente> },
-    {
-      rotulo: "Certificações",
-      valor: empresa.certificacoes.length ? empresa.certificacoes.join(" · ") : <Pendente>certificações, se houver</Pendente>,
-    },
-  ];
-
   return (
     <>
       <JsonLd dados={trilha(caminhoTrilha)} />
@@ -71,10 +58,12 @@ export default function Sobre() {
 
       {/* Quem somos */}
       <Secao>
-        <div className="grid gap-12 lg:grid-cols-12 lg:gap-16">
-          <div className="lg:col-span-7">
+        <div className="grid gap-10 lg:grid-cols-12 lg:gap-16">
+          <div className="lg:col-span-5">
             <CabecalhoSecao sobretitulo="Quem somos" titulo="Uma empresa brasileira de tecnologia para gestão empresarial" />
-            <div className="mt-6 space-y-5 text-lg leading-relaxed text-ardosia-600">
+          </div>
+          <div className="lg:col-span-7 lg:pt-9">
+            <div className="space-y-5 text-lg leading-relaxed text-ardosia-600">
               <p>
                 A MAIS i9 é uma <strong className="font-semibold text-navy-900">consultoria especializada em TOTVS Protheus</strong>,
                 com mais de 20 anos de experiência e uma equipe de especialistas funcionais e técnicos. Atuamos com suporte,
@@ -91,16 +80,6 @@ export default function Sobre() {
               </p>
             </div>
           </div>
-          <aside className="lg:col-span-5">
-            <dl className="divide-y divide-ardosia-200 rounded-2xl border border-ardosia-200 bg-fundo px-6">
-              {fatos.map((f) => (
-                <div key={f.rotulo} className="flex flex-col gap-1 py-5 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
-                  <dt className="text-sm font-medium text-ardosia-600">{f.rotulo}</dt>
-                  <dd className="text-[15px] font-semibold text-navy-950 sm:text-right">{f.valor}</dd>
-                </div>
-              ))}
-            </dl>
-          </aside>
         </div>
       </Secao>
 
@@ -221,19 +200,7 @@ export default function Sobre() {
             ))}
             <div>
               <p className="text-sm font-semibold text-navy-900">Segmentos atendidos</p>
-              <div className="mt-2">
-                {empresa.segmentosAtendidos.length ? (
-                  <ul className="flex flex-wrap gap-2">
-                    {empresa.segmentosAtendidos.map((s) => (
-                      <li key={s} className="rounded-full bg-fundo px-3 py-1 text-sm text-navy-900 ring-1 ring-ardosia-200">
-                        {s}
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <Pendente>segmentos atendidos</Pendente>
-                )}
-              </div>
+              <p className="mt-2">{empresa.segmentosAtendidos ?? <Pendente>segmentos atendidos</Pendente>}</p>
             </div>
           </div>
         </div>

@@ -18,6 +18,11 @@ export function organizacao() {
         },
       }
     : {};
+  // Sede no formato "Cidade/UF".
+  const [cidade, uf] = empresa.sede?.split("/") ?? [];
+  const endereco = cidade
+    ? { "@type": "PostalAddress", addressLocality: cidade, ...(uf ? { addressRegion: uf } : {}), addressCountry: "BR" }
+    : null;
   return {
     "@context": "https://schema.org",
     "@type": "Organization",
@@ -29,6 +34,7 @@ export function organizacao() {
     ...(empresa.logo.positivo ? { logo: urlAbsoluta(empresa.logo.positivo.src) } : {}),
     ...(empresa.anoFundacao ? { foundingDate: String(empresa.anoFundacao) } : {}),
     ...(empresa.linkedin ? { sameAs: [empresa.linkedin] } : {}),
+    ...(endereco ? { address: endereco } : {}),
     ...contato,
   };
 }

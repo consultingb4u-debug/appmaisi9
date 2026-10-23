@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { CardArtigo } from "@/components/conteudos";
 import { HeroPagina } from "@/components/secoes";
 import { Botao, JsonLd } from "@/components/ui";
-import { empresa } from "@/conteudo/empresa";
+import { ctaWhatsapp, empresa } from "@/conteudo/empresa";
 import { artigos, artigosOrdenados, buscarArtigo, categorias, formatarData } from "@/conteudo/insights";
 import { idOrganizacao, trilha } from "@/lib/jsonld";
 import { metadadosPagina, urlAbsoluta } from "@/lib/site";
@@ -29,19 +29,19 @@ const chamadas = {
     titulo: "Seu Protheus precisa de atenção?",
     texto: "Converse com um especialista e entenda como está o seu ambiente.",
     rotulo: "Solicitar diagnóstico",
-    href: "/consultoria-protheus?servico=diagnostico#formulario",
+    href: ctaWhatsapp("diagnostico"),
   },
   wms: {
     titulo: "Quer ver o MAIS i9 WMS na prática?",
     texto: "Mostramos o WMS aplicado aos processos da sua operação.",
     rotulo: "Agendar demonstração",
-    href: "/mais-i9-wms#demonstracao",
+    href: ctaWhatsapp("demonstracaoWms"),
   },
   geral: {
     titulo: "Vamos conversar sobre a sua operação?",
     texto: "Consultoria Protheus e gestão de armazéns com a MAIS i9.",
     rotulo: "Falar com a MAIS i9",
-    href: "/contato",
+    href: ctaWhatsapp("geral"),
   },
 };
 

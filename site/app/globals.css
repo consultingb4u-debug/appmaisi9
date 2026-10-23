@@ -73,7 +73,7 @@
   h3,
   h4 {
     font-family: var(--font-display);
-    letter-spacing: -0.02em;
+    letter-spacing: -0.025em;
     text-wrap: balance;
   }
   p {
@@ -99,12 +99,18 @@
     @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8;
   }
 
-  /* Fundo técnico discreto para seções escuras. */
+  /* Fundo das seções escuras: brilhos suaves e grade técnica que se dissolve nas bordas. */
   .grade-tecnica {
     background-image:
-      linear-gradient(to right, rgb(255 255 255 / 0.045) 1px, transparent 1px),
-      linear-gradient(to bottom, rgb(255 255 255 / 0.045) 1px, transparent 1px);
-    background-size: 48px 48px;
+      radial-gradient(60% 55% at 88% 0%, rgb(43 123 191 / 0.2), transparent 70%),
+      radial-gradient(ellipse 75% 70% at 50% 45%, transparent 35%, var(--color-navy-950) 90%),
+      linear-gradient(to right, rgb(255 255 255 / 0.04) 1px, transparent 1px),
+      linear-gradient(to bottom, rgb(255 255 255 / 0.04) 1px, transparent 1px);
+    background-size:
+      100% 100%,
+      100% 100%,
+      56px 56px,
+      56px 56px;
   }
   .grade-tecnica-clara {
     background-image:
@@ -113,9 +119,18 @@
     background-size: 48px 48px;
   }
 
+  /* Cartão claro: borda suave e sombra em camadas. */
+  .cartao {
+    @apply rounded-3xl border border-ardosia-100 bg-white shadow-[0_1px_2px_rgb(10_26_48/0.04),0_14px_36px_-18px_rgb(10_26_48/0.18)];
+  }
+  /* Cartão clicável: sobe levemente e reforça a sombra. */
+  .cartao-interativo {
+    @apply transition duration-300 hover:-translate-y-0.5 hover:border-ardosia-200 hover:shadow-[0_2px_4px_rgb(10_26_48/0.05),0_24px_48px_-20px_rgb(10_26_48/0.28)];
+  }
+
   /* Campos de formulário */
   .campo {
-    @apply w-full min-w-0 rounded-lg border border-ardosia-200 bg-white px-3.5 py-2.5 text-[15px] text-navy-950 shadow-xs transition outline-none placeholder:text-ardosia-400 focus:border-azul-500 focus:ring-3 focus:ring-azul-500/15 disabled:bg-fundo aria-invalid:border-critico aria-invalid:ring-critico/10;
+    @apply w-full min-w-0 rounded-xl border border-ardosia-200 bg-white px-3.5 py-2.5 text-[15px] text-navy-950 shadow-xs transition outline-none placeholder:text-ardosia-400 focus:border-azul-500 focus:ring-3 focus:ring-azul-500/15 disabled:bg-fundo aria-invalid:border-critico aria-invalid:ring-critico/10;
   }
   .rotulo {
     @apply mb-1.5 block text-sm font-medium text-navy-900;

@@ -5,8 +5,8 @@ import { MenuMovel, NavegacaoDesktop } from "./navegacao";
 
 export function Cabecalho() {
   return (
-    // Fundo sólido, sem backdrop-filter: o filtro criaria um contêiner para o menu móvel (position: fixed).
-    <header className="sticky top-0 z-50 border-b border-ardosia-100 bg-white">
+    // O desfoque fica no ::before: backdrop-filter no próprio header viraria contêiner do menu móvel (position: fixed).
+    <header className="sticky top-0 z-50 border-b border-ardosia-100/80 before:absolute before:inset-0 before:-z-10 before:bg-white/90 before:backdrop-blur-xl before:backdrop-saturate-150">
       <div className="container-site flex h-[72px] items-center justify-between gap-6">
         <Marca altura={46} />
         <NavegacaoDesktop />

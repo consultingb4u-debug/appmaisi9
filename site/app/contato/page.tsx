@@ -49,21 +49,21 @@ export default function Contato() {
         <div className="grid gap-12 lg:grid-cols-12 lg:gap-16">
           <div className="lg:col-span-7">
             <CabecalhoSecao sobretitulo="Formulário comercial" titulo="Envie sua mensagem" />
-            <div className="mt-8 rounded-3xl border border-ardosia-200 bg-white p-6 shadow-xl shadow-navy-950/5 sm:p-10">
+            <div className="mt-8 cartao p-6 sm:p-10">
               <FormularioContato />
             </div>
           </div>
 
           <aside className="space-y-6 lg:col-span-5">
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
-              <div className="rounded-2xl border border-ardosia-200 p-6">
+              <div className="cartao p-6">
                 <p className="text-xs font-semibold tracking-[0.14em] text-azul-600 uppercase">Consultoria Protheus</p>
                 <p className="mt-2 text-[15px] text-ardosia-600">Sustentação, suporte, projetos, desenvolvimento e diagnóstico.</p>
                 <LinkSeta href={ctaWhatsapp("especialistaProtheus")} className="mt-4">
                   Falar com um especialista Protheus
                 </LinkSeta>
               </div>
-              <div className="rounded-2xl border border-ardosia-200 p-6">
+              <div className="cartao p-6">
                 <p className="text-xs font-semibold tracking-[0.14em] text-azul-600 uppercase">MAIS i9 WMS</p>
                 <p className="mt-2 text-[15px] text-ardosia-600">Conheça a plataforma aplicada à sua operação logística.</p>
                 <LinkSeta href={ctaWhatsapp("demonstracaoWms")} className="mt-4">
@@ -106,7 +106,7 @@ export default function Contato() {
                   href={whatsapp}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="mt-4 flex items-center justify-center gap-2 rounded-lg bg-[#1f7a4d] px-5 py-3 font-semibold text-white hover:bg-[#186640]"
+                  className="mt-4 flex items-center justify-center gap-2 rounded-full bg-[#1f7a4d] px-5 py-3 font-semibold text-white hover:bg-[#186640]"
                 >
                   <MessageCircle aria-hidden className="size-5" />
                   Conversar pelo WhatsApp

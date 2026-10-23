@@ -114,7 +114,7 @@ export function MenuMovel() {
           </ul>
           <LinkDestino
             href={ctaCabecalho.href}
-            className="mt-6 flex items-center justify-center gap-2 rounded-lg bg-destaque px-5 py-3.5 font-semibold text-navy-950"
+            className="mt-6 flex items-center justify-center gap-2 rounded-full bg-destaque px-5 py-3.5 font-semibold text-navy-950"
           >
             {ctaCabecalho.rotulo}
             <ArrowRight aria-hidden className="size-4" />

@@ -131,7 +131,7 @@ function Formulario({ tipo, rotuloEnviar, aposEnvio, alternativa, children, aoRe
         <button
           type="submit"
           disabled={pendente}
-          className="flex w-full items-center justify-center gap-2 rounded-lg bg-destaque px-6 py-3.5 text-[15px] font-semibold text-navy-950 shadow-sm shadow-destaque/20 transition-colors hover:bg-[#f59b45] disabled:cursor-wait disabled:opacity-70"
+          className="flex w-full items-center justify-center gap-2 rounded-full bg-destaque px-6 py-3.5 text-[15px] font-semibold text-navy-950 shadow-sm shadow-destaque/20 transition-colors hover:bg-[#f59b45] disabled:cursor-wait disabled:opacity-70"
         >
           {pendente && <LoaderCircle aria-hidden className="size-4 animate-spin" />}
           {pendente ? "Enviando…" : rotuloEnviar}

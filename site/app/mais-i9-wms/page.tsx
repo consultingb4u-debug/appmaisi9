@@ -115,7 +115,7 @@ export default function MaisI9Wms() {
         />
         <ul className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {impactoWms.map(({ titulo, texto, icone: Icone }) => (
-            <li key={titulo} className="revelar rounded-2xl border border-ardosia-200 bg-white p-7">
+            <li key={titulo} className="revelar cartao p-7">
               <span aria-hidden className="flex size-12 items-center justify-center rounded-full bg-destaque-claro text-destaque-escuro">
                 <Icone className="size-6" strokeWidth={1.75} />
               </span>
@@ -186,7 +186,7 @@ export default function MaisI9Wms() {
         />
         <div className="mt-14 grid gap-6 md:grid-cols-2">
           {modulosComplementares.map((m) => (
-            <article key={m.id} className="revelar flex flex-col rounded-2xl border border-ardosia-200 bg-white p-7 sm:p-8">
+            <article key={m.id} className="revelar flex flex-col cartao p-7 sm:p-8">
               <div className="flex items-start gap-5">
                 <CaixaIcone>
                   <m.icone className="size-5" strokeWidth={1.75} />
@@ -292,7 +292,7 @@ export default function MaisI9Wms() {
         />
         <ul className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {diferenciaisWms.map(({ titulo, texto, icone: Icone }) => (
-            <li key={titulo} className="revelar flex gap-5 rounded-2xl border border-ardosia-200 bg-white p-7">
+            <li key={titulo} className="revelar flex gap-5 cartao p-7">
               <CaixaIcone>
                 <Icone className="size-5" strokeWidth={1.75} />
               </CaixaIcone>
@@ -435,7 +435,7 @@ export default function MaisI9Wms() {
               )}
             </p>
           </div>
-          <div className="rounded-3xl border border-ardosia-200 bg-white p-6 shadow-xl shadow-navy-950/5 sm:p-10 lg:col-span-7">
+          <div className="cartao p-6 sm:p-10 lg:col-span-7">
             <FormularioDemoWms />
           </div>
         </div>

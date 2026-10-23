@@ -38,7 +38,7 @@ export default function Inicio() {
               <li key={o.id}>
                 <Link
                   href={o.cta.href}
-                  className="group flex h-full flex-col rounded-2xl bg-white/[0.05] p-6 ring-1 ring-white/12 transition hover:bg-white/[0.08] hover:ring-white/30 sm:p-7"
+                  className="group flex h-full flex-col rounded-3xl bg-linear-to-b from-white/[0.09] to-white/[0.02] p-6 ring-1 ring-white/12 transition duration-300 hover:-translate-y-0.5 hover:ring-white/30 hover:shadow-[0_24px_60px_-24px_rgb(43_123_191/0.55)] sm:p-7"
                 >
                   <div className="flex items-center gap-3">
                     <CaixaIcone claro>

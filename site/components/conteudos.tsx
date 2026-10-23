@@ -6,7 +6,7 @@ import { categorias, formatarData, type Artigo, type CategoriaId } from "@/conte
 export function CardArtigo({ artigo }: { artigo: Artigo }) {
   const categoria = categorias[artigo.categoria];
   return (
-    <article className="revelar group relative flex flex-col rounded-2xl border border-ardosia-200 bg-white p-7 transition-shadow hover:shadow-lg hover:shadow-navy-950/5">
+    <article className="revelar group relative flex flex-col cartao p-7 cartao-interativo">
       <div className="flex items-center gap-3 text-xs">
         <Link
           href={`/conteudos/categoria/${artigo.categoria}`}

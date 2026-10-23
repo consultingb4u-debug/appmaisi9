@@ -124,7 +124,7 @@ export default function Sobre() {
             <Link
               key={c.href}
               href={c.href}
-              className="group revelar flex flex-col rounded-2xl border border-ardosia-200 bg-white p-8 transition-shadow hover:shadow-lg hover:shadow-navy-950/5"
+              className="group revelar flex flex-col cartao p-8 cartao-interativo"
             >
               <p className="text-xs font-semibold tracking-[0.14em] text-azul-600 uppercase">{c.rotulo}</p>
               <h3 className="mt-3 text-2xl font-bold text-navy-950">{c.titulo}</h3>

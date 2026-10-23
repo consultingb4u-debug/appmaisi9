@@ -105,7 +105,7 @@ export default function ConsultoriaProtheus() {
           </div>
           <ul className="grid gap-5 sm:grid-cols-2 lg:col-span-7">
             {ganhosConsultoria.map(({ titulo, texto, icone: Icone }) => (
-              <li key={titulo} className="revelar rounded-2xl border border-ardosia-200 bg-white p-7">
+              <li key={titulo} className="revelar cartao p-7">
                 <CaixaIcone>
                   <Icone className="size-5" strokeWidth={1.75} />
                 </CaixaIcone>
@@ -156,7 +156,7 @@ export default function ConsultoriaProtheus() {
         />
         <div className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {desafiosProtheus.map(({ titulo, texto, icone: Icone }) => (
-            <div key={titulo} className="revelar rounded-2xl border border-ardosia-200 bg-white p-7">
+            <div key={titulo} className="revelar cartao p-7">
               <Icone aria-hidden className="size-6 text-destaque-escuro" strokeWidth={1.75} />
               <h3 className="mt-5 text-lg font-semibold text-navy-950">{titulo}</h3>
               <p className="mt-2 text-[15px] leading-relaxed text-ardosia-600">{texto}</p>
@@ -174,7 +174,7 @@ export default function ConsultoriaProtheus() {
         />
         <div className="mt-14 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {servicosConsultoria.map(({ id, titulo, resumo, itens, icone: Icone }) => (
-            <article key={id} id={`servico-${id}`} className="revelar flex flex-col rounded-2xl border border-ardosia-200 bg-white p-7">
+            <article key={id} id={`servico-${id}`} className="revelar flex flex-col cartao p-7">
               <CaixaIcone>
                 <Icone className="size-5" strokeWidth={1.75} />
               </CaixaIcone>
@@ -503,7 +503,7 @@ export default function ConsultoriaProtheus() {
               Já é cliente? Abra um chamado pelo e-mail <strong className="font-semibold text-navy-900">{empresa.emailChamados}</strong>.
             </p>
           </div>
-          <div className="rounded-3xl border border-ardosia-200 bg-white p-6 shadow-xl shadow-navy-950/5 sm:p-10 lg:col-span-7">
+          <div className="cartao p-6 sm:p-10 lg:col-span-7">
             <FormularioConsultoria />
           </div>
         </div>

@@ -16,7 +16,9 @@ done
 pasta=pacote-hostinger
 rm -rf "$pasta" site-maisi9-hostinger.zip
 mkdir -p "$pasta"
-cp -R out "$pasta/public_html"
-cp hostinger/contato-config.php hostinger/LEIA-ME.txt "$pasta/"
+# O site vai num zip próprio, com os arquivos na raiz: enviado para public_html e extraído lá mesmo,
+# leva todas as pastas (inclusive _next e o .htaccess oculto).
+(cd out && zip -qr "../$pasta/ENVIAR-PARA-public_html.zip" .)
+cp hostinger/contato-config.php hostinger/diagnostico.php hostinger/LEIA-ME.txt "$pasta/"
 (cd "$pasta" && zip -qr ../site-maisi9-hostinger.zip .)
 echo "Pacote: $(pwd)/site-maisi9-hostinger.zip"

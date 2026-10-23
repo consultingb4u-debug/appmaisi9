@@ -111,8 +111,10 @@ servidor, fora do repositório: SMTP autenticado (recomendado) ou `mail()` do se
 - `NEXT_PUBLIC_SITE_URL` e `SITE_INDEXAVEL` são lidos **no build**. Por padrão o site não é indexado
   (`robots.txt` bloqueia e as páginas saem com `noindex`); use `SITE_INDEXAVEL=true` só na publicação
   oficial, depois de resolver as pendências.
-- **Hostinger:** `npm run pacote:hostinger` gera `site-maisi9-hostinger.zip` com `public_html/` (site +
-  `contato.php` + `.htaccess`), `contato-config.php` e o passo a passo (`hostinger/LEIA-ME.txt`). O
+- **Hostinger:** `npm run pacote:hostinger` gera `site-maisi9-hostinger.zip` com
+  `ENVIAR-PARA-public_html.zip` (site + `contato.php` + `.htaccess`, para extrair dentro de
+  `public_html`), `contato-config.php`, `diagnostico.php` (confere a publicação; apagar depois) e o
+  passo a passo (`hostinger/LEIA-ME.txt`). O
   pacote sai com `NEXT_PUBLIC_SITE_URL=https://www.maisi9.com.br` e `SITE_INDEXAVEL=true`; para uma
   homologação, gere com `SITE_INDEXAVEL=false npm run pacote:hostinger`.
 - O `.htaccess` força HTTPS, aplica os cabeçalhos de segurança, o cache e a página 404, e bloqueia o

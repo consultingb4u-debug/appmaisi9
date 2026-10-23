@@ -361,61 +361,91 @@ export function MockRecebimento() {
   );
 }
 
-export function MockIndicadores() {
-  const serie = [42, 48, 45, 57, 61, 55, 68, 72, 66, 74, 79, 76];
-  const max = 90;
-  const pontos = serie.map((v, i) => `${(i / (serie.length - 1)) * 100},${100 - (v / max) * 100}`).join(" ");
+const colunasTorre = [
+  {
+    titulo: "Pendentes",
+    resumo: "2 pendentes",
+    grupos: [
+      {
+        nome: "Pendente",
+        andamento: false,
+        pedidos: [
+          { ov: "PV-0103", cliente: "Cliente 01", status: "Pendente", itens: "4 itens" },
+          { ov: "PV-0104", cliente: "Cliente 02", status: "Pendente", itens: "2 itens" },
+        ],
+      },
+    ],
+  },
+  {
+    titulo: "Separação",
+    resumo: "1 pendente · 1 em andamento",
+    grupos: [
+      { nome: "Pendente", andamento: false, pedidos: [{ ov: "PV-0101", cliente: "Cliente 03", status: "Liberado", itens: "6 itens" }] },
+      { nome: "Em andamento", andamento: true, pedidos: [{ ov: "PV-0099", cliente: "Cliente 04", status: "Em separação", itens: "3 itens" }] },
+    ],
+  },
+  {
+    titulo: "Expedição",
+    resumo: "1 pendente · 1 em andamento",
+    grupos: [
+      { nome: "Aguardando NF", andamento: false, pedidos: [{ ov: "PV-0097", cliente: "Cliente 05", status: "Picking concluído", itens: "1 item" }] },
+      { nome: "Em andamento", andamento: true, pedidos: [{ ov: "PV-0095", cliente: "Cliente 06", status: "Em carregamento", itens: "5 itens" }] },
+    ],
+  },
+];
+
+/** Torre de controle da expedição: pedidos por etapa, como no monitor do MAIS i9 WMS. */
+export function MockTorreExpedicao() {
   return (
     <div className="@container flex bg-[#f6f8fb] text-left" aria-hidden>
-      <BarraLateral ativo="Indicadores" />
+      <BarraLateral ativo="Expedição" />
       <div className="min-w-0 flex-1 space-y-3 p-3.5 @lg:p-4">
-        <Topo titulo="Indicadores gerenciais" subtitulo="Últimas 12 semanas · armazém principal" />
-        <div className="grid grid-cols-2 gap-2.5 @lg:grid-cols-4">
-          {[
-            ["Pedidos expedidos", "4.812", "no período"],
-            ["Itens recebidos", "12.640", "no período"],
-            ["Inventários concluídos", "18", "contagens por endereço"],
-            ["Lotes a vencer (90 dias)", "27", "acompanhar giro"],
-          ].map(([r, v, d]) => (
-            <div key={r} className="rounded-lg bg-white p-2.5 ring-1 ring-ardosia-100">
-              <p className="text-[9.5px] leading-tight text-ardosia-500">{r}</p>
-              <p className="mt-1.5 font-display text-lg font-bold text-navy-950">{v}</p>
-              <p className="text-[9px] text-ardosia-400">{d}</p>
+        <Topo titulo="Torre Controle de Expedição" subtitulo="Atualização automática a cada 60 s" />
+        <div className="grid grid-cols-3 gap-2">
+          {colunasTorre.map((coluna) => (
+            <div key={coluna.titulo} className="min-w-0 rounded-lg bg-white p-2 ring-1 ring-ardosia-100">
+              <div className="flex items-center justify-between gap-1">
+                <p className="truncate text-[10.5px] font-semibold text-navy-900">{coluna.titulo}</p>
+                <span className="flex size-4 shrink-0 items-center justify-center rounded-full bg-navy-800 text-[8px] font-bold text-white">
+                  {coluna.grupos.reduce((n, g) => n + g.pedidos.length, 0)}
+                </span>
+              </div>
+              <p className="truncate text-[8.5px] text-ardosia-500">{coluna.resumo}</p>
+              <div className="mt-2 space-y-2">
+                {coluna.grupos.map((grupo) => (
+                  <div key={grupo.nome} className={clsx("rounded-md ring-1", grupo.andamento ? "ring-navy-700" : "ring-destaque")}>
+                    <p
+                      className={clsx(
+                        "truncate rounded-t-md px-1.5 py-0.5 text-[8.5px] font-semibold text-white",
+                        grupo.andamento ? "bg-navy-700" : "bg-destaque",
+                      )}
+                    >
+                      {grupo.nome}
+                    </p>
+                    <div className="space-y-1.5 p-1.5">
+                      {grupo.pedidos.map((pedido) => (
+                        <div key={pedido.ov} className="rounded bg-destaque-claro p-1.5 ring-1 ring-destaque/40">
+                          <p className="truncate text-[9px] font-semibold text-navy-950">OV ERP: {pedido.ov}</p>
+                          <p className="truncate text-[8px] text-ardosia-600">{pedido.cliente}</p>
+                          <div className="mt-1 flex items-center justify-between gap-1">
+                            <span
+                              className={clsx(
+                                "min-w-0 truncate rounded-full px-1.5 py-0.5 text-[8.5px] font-semibold",
+                                grupo.andamento ? "bg-azul-100 text-azul-600" : "bg-white/80 text-[#8a4a0e]",
+                              )}
+                            >
+                              {pedido.status}
+                            </span>
+                            <span className="hidden text-[8px] text-ardosia-500 @lg:inline">{pedido.itens}</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           ))}
-        </div>
-        <div className="grid gap-2.5 @lg:grid-cols-5">
-          <div className="rounded-lg bg-white p-3 ring-1 ring-ardosia-100 @lg:col-span-3">
-            <p className="text-[10.5px] font-semibold text-navy-900">Pedidos expedidos por semana</p>
-            <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="mt-3 h-24 w-full overflow-visible">
-              {[25, 50, 75].map((y) => (
-                <line key={y} x1={0} x2={100} y1={y} y2={y} stroke="#e3e9f0" strokeWidth={0.6} vectorEffect="non-scaling-stroke" />
-              ))}
-              <polyline points={`0,100 ${pontos} 100,100`} fill="#2b7bbf" fillOpacity={0.08} stroke="none" />
-              <polyline points={pontos} fill="none" stroke="#2b7bbf" strokeWidth={2} vectorEffect="non-scaling-stroke" />
-            </svg>
-          </div>
-          <div className="rounded-lg bg-white p-3 ring-1 ring-ardosia-100 @lg:col-span-2">
-            <p className="text-[10.5px] font-semibold text-navy-900">Tarefas por etapa</p>
-            <div className="mt-3 space-y-2">
-              {[
-                ["Recebimento", 28],
-                ["Armazenagem", 34],
-                ["Separação", 24],
-                ["Expedição", 14],
-              ].map(([e, p]) => (
-                <div key={e} className="text-[9.5px] text-ardosia-600">
-                  <div className="flex justify-between">
-                    <span>{e}</span>
-                    <span>{p}%</span>
-                  </div>
-                  <span className="mt-1 block h-1.5 rounded-full bg-ardosia-100">
-                    <span style={{ width: `${Number(p) * 2.5}%` }} className="block h-full rounded-full bg-navy-700" />
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
         </div>
       </div>
     </div>

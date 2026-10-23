@@ -78,12 +78,12 @@ MAIS i9 → **FAQ** (incluindo “A MAIS i9 faz parte da TOTVS?”) → **formul
 ### MAIS i9 WMS (página de produto)
 Página do produto: o que ele é, o que faz e o que entrega. Hero com o painel web e o App Operador → faixa de
 credenciais (Addon MAIS i9 para o Protheus, APIs, App Operador, SaaS)
-→ **Visão do produto** em abas (Dashboard web, App Operador, Telas operacionais, Indicadores gerenciais) →
+→ **Visão do produto** em abas (Dashboard, App Operador, Telas operacionais, Torre Controle de Expedição) →
 **10 benefícios** → **Como funciona**: ERP → Recebimento → Armazenagem → Movimentação → Expedição, com o
 que vai do ERP para o armazém e o que volta → **Base operacional**: os 7 componentes em cards interativos
 (abas acessíveis por teclado) → **4 módulos complementares** e a nota “todos fazem parte do produto padrão;
-implantação dimensionada” → **Conexão com o TOTVS Protheus** pelo **Addon MAIS i9, via API** (pontos de
-integração e APIs para outros ERPs, sem prometer integrações prontas) → **Aplicativos** (App Operador e App Motorista, separados) → FAQ →
+implantação dimensionada” → **Conexão com o TOTVS Protheus** pelo **Addon MAIS i9, via API** (os dois sentidos da
+integração e “diversas integrações disponíveis”, sem listar cada uma; APIs para outros ERPs) → **Aplicativos** (App Operador e App Motorista, separados) → FAQ →
 **formulário de demonstração**.
 
 ### Institucionais
@@ -144,8 +144,10 @@ case. A página de cases foi removida a pedido da MAIS i9; o site não publica r
 - [ ] Logotipo em SVG e a versão para fundo escuro (branca), usada no rodapé e na imagem de compartilhamento
 - [x] Telas reais do MAIS i9 WMS: dashboard de controle de lotes (sem as linhas de valor em reais) e duas telas do
   App Operador (menu de tarefas e consulta por produto), em `site/public/wms/`
-- [ ] Telas reais ainda pendentes: telas operacionais (conferência), indicadores e App Motorista. O “Dashboard de
-  Localização” enviado não foi usado: tem valores negativos e em reais, gráficos vazios e a captura cortada à direita
+- [x] Telas operacionais: portal de aplicações do WMS (módulos por processo)
+- [ ] Telas reais ainda pendentes: Torre Controle de Expedição (monitor de expedição; enquanto isso, ilustração) e
+  App Motorista. O “Dashboard de Localização” enviado não foi usado: tem valores negativos e em reais, gráficos
+  vazios e a captura cortada à direita
 - [ ] Recaptura da consulta por produto com quantidade dentro da capacidade (a tela atual mostra 5.785 para
   capacidade de 2.620)
 

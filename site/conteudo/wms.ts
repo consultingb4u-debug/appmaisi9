@@ -49,6 +49,13 @@ export const introducaoWms =
 export const conexaoProtheus = {
   nome: "Addon MAIS i9",
   resumo: "O MAIS i9 WMS se conecta ao TOTVS Protheus por meio do Addon MAIS i9, via API.",
+  /** Os dois sentidos da integração, sem listar cada integração (são muitas e variam por operação). */
+  sentidos: [
+    { rotulo: "Protheus → WMS", texto: "O que é planejado na gestão chega ao armazém, sem redigitação." },
+    { rotulo: "WMS → Protheus", texto: "O que é executado no armazém volta ao ERP, com menos lançamentos manuais." },
+  ],
+  integracoes:
+    "Diversas integrações disponíveis entre o Protheus e o MAIS i9 WMS, ativadas conforme os processos e os módulos utilizados pela sua operação.",
 };
 
 export const baseOperacional: Modulo[] = [
@@ -266,15 +273,15 @@ export const etapasFluxo: { titulo: string; texto: string; icone: LucideIcon }[]
 export const pontosIntegracao: { titulo: string; texto: string }[] = [
   {
     titulo: "Addon MAIS i9, via API",
-    texto: "Documentos fiscais, XML, pedidos e notas do Protheus chegam ao WMS pelo Addon MAIS i9, sem redigitação.",
+    texto: "As informações do Protheus chegam ao WMS pelo Addon MAIS i9, sem redigitação.",
   },
   {
     titulo: "Menos lançamentos manuais",
-    texto: "O que é executado no armazém retorna ao ERP — inclusive apontamentos de produção —, reduzindo digitação e retrabalho.",
+    texto: "O que é executado no armazém retorna ao ERP, reduzindo digitação e retrabalho.",
   },
   {
     titulo: "Processos sincronizados",
-    texto: "Mapeamento de armazéns ERP/WMS e processos coordenados entre planejamento e execução física.",
+    texto: "Planejamento no ERP e execução física no armazém avançando de forma coordenada.",
   },
   {
     titulo: "Rastreabilidade",
@@ -369,7 +376,7 @@ export const opcoesUsuarios = [
  */
 export type TelaReal = { src: string; largura: number; altura: number; descricao: string };
 
-export type ChaveTela = "dashboard" | "appOperador" | "appOperadorConsulta" | "operacional" | "indicadores" | "appMotorista";
+export type ChaveTela = "dashboard" | "appOperador" | "appOperadorConsulta" | "operacional" | "torreExpedicao" | "appMotorista";
 
 export const telasReais: Record<ChaveTela, TelaReal | null> = {
   dashboard: {
@@ -392,7 +399,13 @@ export const telasReais: Record<ChaveTela, TelaReal | null> = {
     altura: 802,
     descricao: "Consulta por produto no App Operador do MAIS i9 WMS: localização, capacidade, quantidade atual e reservas.",
   },
-  operacional: null,
-  indicadores: null,
+  operacional: {
+    src: "/wms/portal-aplicacoes-wms.png",
+    largura: 1866,
+    altura: 882,
+    descricao:
+      "Portal do MAIS i9 WMS com os módulos organizados por processo: configuração, recebimento, expedição, produção, movimentação, inventário, viagens e dashboards.",
+  },
+  torreExpedicao: null,
   appMotorista: null,
 };

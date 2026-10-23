@@ -1,3 +1,4 @@
+import clsx from "clsx";
 import { ArrowLeftRight, Check, Cloud, Database, Plug, ScanBarcode, Warehouse } from "lucide-react";
 import { FormularioDemoWms } from "@/components/formularios/formularios";
 import { HeroPagina, PerguntasFrequentes } from "@/components/secoes";
@@ -7,6 +8,7 @@ import { avisoMarcas, ctaWhatsapp, empresa } from "@/conteudo/empresa";
 import {
   baseOperacional,
   beneficiosWms,
+  conexaoProtheus,
   diferenciaisWms,
   etapasImplantacao,
   faqWms,
@@ -95,7 +97,7 @@ export default function MaisI9Wms() {
           <VisaoProduto />
         </div>
         <div className="mt-8 text-center">
-          <NotaIlustracao telas={["dashboard", "appOperador", "operacional", "indicadores"]} />
+          <NotaIlustracao telas={["dashboard", "appOperador", "operacional", "torreExpedicao"]} />
         </div>
       </Secao>
 
@@ -252,23 +254,17 @@ export default function MaisI9Wms() {
                 </div>
               </div>
               <div className="mt-6 grid gap-3 sm:grid-cols-2">
-                <div className="rounded-xl bg-navy-900/70 p-4 ring-1 ring-white/5">
-                  <p className="text-xs font-semibold text-azul-300">Protheus → WMS</p>
-                  <ul className="mt-2 space-y-1 text-sm text-ardosia-200">
-                    <li>Documentos fiscais e XML</li>
-                    <li>Pedidos e notas fiscais</li>
-                    <li>Cadastros</li>
-                  </ul>
-                </div>
-                <div className="rounded-xl bg-navy-900/70 p-4 ring-1 ring-white/5">
-                  <p className="text-xs font-semibold text-destaque">WMS → Protheus</p>
-                  <ul className="mt-2 space-y-1 text-sm text-ardosia-200">
-                    <li>Confirmações das operações</li>
-                    <li>Movimentações de estoque</li>
-                    <li>Apontamentos de produção</li>
-                  </ul>
-                </div>
+                {conexaoProtheus.sentidos.map((sentido, i) => (
+                  <div key={sentido.rotulo} className="rounded-xl bg-navy-900/70 p-4 ring-1 ring-white/5">
+                    <p className={clsx("text-xs font-semibold", i === 0 ? "text-azul-300" : "text-destaque")}>{sentido.rotulo}</p>
+                    <p className="mt-2 text-sm leading-relaxed text-ardosia-200">{sentido.texto}</p>
+                  </div>
+                ))}
               </div>
+              <p className="mt-3 flex gap-3 rounded-xl bg-destaque/10 p-4 text-sm leading-relaxed text-ardosia-100 ring-1 ring-destaque/30">
+                <ArrowLeftRight aria-hidden className="mt-0.5 size-4 shrink-0 text-destaque" />
+                {conexaoProtheus.integracoes}
+              </p>
               <div className="mt-6 flex gap-4 rounded-xl border border-dashed border-white/20 p-4">
                 <Plug aria-hidden className="mt-0.5 size-5 shrink-0 text-azul-300" strokeWidth={1.75} />
                 <p className="text-sm leading-relaxed text-ardosia-200">

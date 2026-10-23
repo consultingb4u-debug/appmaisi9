@@ -5,7 +5,7 @@ import {
   MockAppMotorista,
   MockAppOperador,
   MockDashboard,
-  MockIndicadores,
+  MockTorreExpedicao,
   MockRecebimento,
   MolduraCelular,
   MolduraNavegador,
@@ -48,7 +48,7 @@ export function VitrineHero() {
 const visoes = [
   {
     id: "dashboard",
-    rotulo: "Dashboard web",
+    rotulo: "Dashboard",
     titulo: "Lotes e validades sob controle",
     texto: "Lotes aptos, críticos e em alerta, vencimentos por faixa de dias e a estratégia FIFO/FEFO acompanhados em um painel único.",
     itens: ["Lotes críticos e em alerta em destaque", "Vencimentos por faixa de dias", "Distribuição por estratégia FIFO/FEFO"],
@@ -79,11 +79,11 @@ const visoes = [
   {
     id: "operacional",
     rotulo: "Telas operacionais",
-    titulo: "Conferência com controle de cada item",
-    texto: "Na conferência de recebimento, o esperado é comparado ao conferido, com registro de lote, validade e divergências.",
-    itens: ["Documentos fiscais e XML vindos do ERP", "Lote e validade registrados na entrada", "Divergências identificadas antes da armazenagem"],
+    titulo: "Todos os processos do armazém em um portal",
+    texto: "Recebimento, expedição, produção, movimentação, inventário, viagens e dashboards organizados por processo, ao lado da configuração do WMS.",
+    itens: ["Módulos organizados por processo", "Cadastros e configuração no mesmo portal", "Acesso web, sem instalação"],
     tela: (
-      <MolduraNavegador titulo="MAIS i9 WMS · Conferência de recebimento">
+      <MolduraNavegador titulo="MAIS i9 WMS · Aplicações">
         <TelaOuIlustracao real={telasReais.operacional}>
           <MockRecebimento />
         </TelaOuIlustracao>
@@ -91,15 +91,15 @@ const visoes = [
     ),
   },
   {
-    id: "indicadores",
-    rotulo: "Indicadores gerenciais",
-    titulo: "Informação para a gestão decidir",
-    texto: "Volumes, evolução e distribuição das tarefas por etapa para acompanhar a operação logística ao longo do tempo.",
-    itens: ["Evolução de recebimentos e expedições", "Acompanhamento de lotes e validades", "Visão consolidada para a gestão"],
+    id: "torre-expedicao",
+    rotulo: "Torre Controle de Expedição",
+    titulo: "A expedição acompanhada em uma única tela",
+    texto: "Os pedidos vindos do ERP aparecem por etapa — pendentes, em separação e em expedição — com o status de cada um e atualização automática.",
+    itens: ["Pedidos por etapa, do pendente à expedição", "Status do pedido no ERP em cada cartão", "Atualização automática da tela"],
     tela: (
-      <MolduraNavegador titulo="MAIS i9 WMS · Indicadores">
-        <TelaOuIlustracao real={telasReais.indicadores}>
-          <MockIndicadores />
+      <MolduraNavegador titulo="MAIS i9 WMS · Torre Controle de Expedição">
+        <TelaOuIlustracao real={telasReais.torreExpedicao}>
+          <MockTorreExpedicao />
         </TelaOuIlustracao>
       </MolduraNavegador>
     ),

@@ -1,26 +1,29 @@
-# Site institucional e comercial — MAIS i9
+# Site institucional e comercial | MAIS i9
 
 Site público da MAIS i9 (Consultoria Protheus + MAIS i9 WMS). Projeto Next.js independente do sistema
-interno que está na raiz do repositório: tem dependências, CI e deploy próprios.
+interno que está na raiz do repositório: tem dependências, CI e deploy próprios. O build gera um site
+**100% estático** (`out/`) que roda em hospedagem comum (Hostinger), com os formulários enviados por
+`public/contato.php`.
 
 - Arquitetura, experiência, identidade visual e pendências: [`../docs/03-site-institucional.md`](../docs/03-site-institucional.md)
 
 ## Rodar localmente
 
-Pré-requisito: Node 22+.
+Pré-requisitos: Node 22+ e, para testar os formulários, PHP 8.1+.
 
 ```bash
 cd site
 npm install
-cp .env.example .env.local     # opcional: destino dos leads (ver abaixo)
-npm run dev                    # http://localhost:3000
+npm run dev                    # http://localhost:3000 (formulários não enviam: não há PHP)
 ```
 
 | Comando | O que faz |
 |---|---|
 | `npm run dev` | servidor de desenvolvimento |
-| `npm run build` / `npm start` | build de produção e servidor |
-| `npm run lint` / `npm run typecheck` / `npm test` | verificações (as mesmas da CI) |
+| `npm run build` | site estático em `out/` |
+| `php -S localhost:8080 -t out` | serve o build com o `contato.php` funcionando (sem `contato-config.php`, usa `mail()`) |
+| `npm run pacote:hostinger` | gera `site-maisi9-hostinger.zip` para publicar (ver abaixo) |
+| `npm run lint` / `npm run typecheck` / `npm test` | verificações (as mesmas da CI; os testes do PHP rodam se houver PHP) |
 
 ## Páginas
 
@@ -36,7 +39,7 @@ npm run dev                    # http://localhost:3000
 
 ## Onde editar o conteúdo
 
-Tudo o que é texto institucional fica em `conteudo/` — os componentes não têm dados fixos.
+Tudo o que é texto institucional fica em `conteudo/`; os componentes não têm dados fixos.
 
 | Arquivo | O que contém |
 |---|---|
@@ -79,7 +82,7 @@ As telas reais têm prioridade sobre as ilustrações. Coloque as imagens em `pu
 
 ### Publicar um artigo
 
-1. Crie `conteudo/artigos/<slug>.mdx` com o texto em Markdown (sem título — ele vem dos metadados).
+1. Crie `conteudo/artigos/<slug>.mdx` com o texto em Markdown (sem título: ele vem dos metadados).
 2. Registre `slug`, `titulo`, `resumo`, `categoria`, `publicadoEm`, `autor` e `minutosLeitura` em
    `artigos` (`conteudo/insights.ts`).
 3. Para chamar o WhatsApp da MAIS i9 no texto, use o assunto como link: `[agende uma demonstração](whatsapp:demonstracaoWms)`
@@ -90,29 +93,32 @@ registro. O teste `tests/conteudo.test.ts` confere se cada artigo tem arquivo e 
 
 ## Formulários e leads
 
-Três formulários (consultoria, demonstração do WMS e contato) enviam para a Server Action
-`lib/leads/acao.ts`, que valida com Zod (`lib/leads/esquemas.ts`), aplica proteção contra robôs
-(campo-armadilha, tempo mínimo e limite por IP) e entrega o lead nos canais configurados:
+Três formulários (consultoria, demonstração do WMS e contato) validam no navegador com as regras de
+`lib/leads/esquemas.ts` (Zod) e enviam para `public/contato.php`, que:
 
-| Variável | Canal |
-|---|---|
-| `LEADS_WEBHOOK_URL` (+ `LEADS_WEBHOOK_TOKEN`) | `POST` com o lead em JSON — CRM, n8n, Make, Zapier, planilha… |
-| `LEADS_EMAIL_PARA` + `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM` | e-mail para a equipe comercial, com “responder para” o visitante |
+- valida de novo no servidor, com as mesmas mensagens (um teste compara as duas validações);
+- lê rótulos e opções de `contato-opcoes.json`, gerado no build a partir de `conteudo/`;
+- aplica proteção contra robôs (campo-armadilha, tempo mínimo e 5 envios a cada 10 minutos por IP);
+- envia o e-mail para a equipe comercial, com “responder para” o visitante, protocolo, registro do
+  consentimento (versão da política) e origem (página, referência e UTMs);
+- só confirma o envio se o e-mail foi aceito; caso contrário, avisa que a mensagem **não foi enviada**.
 
-- O envio só é confirmado ao visitante se **ao menos um canal aceitar**. Sem canal configurado, o
-  formulário avisa que a mensagem **não foi enviada** — nada é simulado.
-- O JSON do lead (`versao: 1`) traz contato, campos com rótulos legíveis, mensagem, registro do
-  consentimento (com a versão da política) e origem (página, referência e UTMs da sessão). O formato
-  está em `lib/leads/montar.ts`.
+O destino e o envio ficam em `contato-config.php` (modelo em `hostinger/contato-config.php`), no
+servidor, fora do repositório: SMTP autenticado (recomendado) ou `mail()` do servidor.
 
 ## SEO, indexação e publicação
 
 - `NEXT_PUBLIC_SITE_URL` e `SITE_INDEXAVEL` são lidos **no build**. Por padrão o site não é indexado
   (`robots.txt` bloqueia e as páginas saem com `noindex`); use `SITE_INDEXAVEL=true` só na publicação
   oficial, depois de resolver as pendências.
-- Docker: `docker build --build-arg NEXT_PUBLIC_SITE_URL=https://… --build-arg SITE_INDEXAVEL=true -t maisi9-site .`
-  e `docker run -p 3000:3000 --env-file .env maisi9-site` (variáveis dos leads em tempo de execução).
-- Qualquer plataforma Node (Vercel, Azure App Service, Render…) também serve: diretório raiz `site/`.
+- **Hostinger:** `npm run pacote:hostinger` gera `site-maisi9-hostinger.zip` com `public_html/` (site +
+  `contato.php` + `.htaccess`), `contato-config.php` e o passo a passo (`hostinger/LEIA-ME.txt`). O
+  pacote sai com `NEXT_PUBLIC_SITE_URL=https://www.maisi9.com.br` e `SITE_INDEXAVEL=true`; para uma
+  homologação, gere com `SITE_INDEXAVEL=false npm run pacote:hostinger`.
+- O `.htaccess` força HTTPS, aplica os cabeçalhos de segurança, o cache e a página 404, e bloqueia o
+  acesso web ao `contato-config.php`.
+- Qualquer hospedagem estática com PHP serve; sem PHP, o site funciona e os formulários avisam que não
+  enviaram.
 
 ## Estrutura
 
@@ -120,7 +126,10 @@ Três formulários (consultoria, demonstração do WMS e contato) enviam para a 
 app/                 páginas, metadados, sitemap, robots e imagens Open Graph
 components/          UI (ui.tsx, secoes.tsx, abas.tsx), layout, formulários, WMS e visuais
 conteudo/            textos e dados editáveis (+ artigos MDX)
-lib/leads/           validação, montagem, entrega e Server Action dos formulários
+lib/leads/           validação dos formulários (mesmas regras do contato.php) e leitura da resposta
+public/contato.php   recebe os formulários e envia o e-mail (PHP)
+hostinger/           modelo do contato-config.php e instruções de publicação
+scripts/             geração do pacote para a Hostinger
 lib/                 SEO (site.ts, jsonld.ts, og.tsx) e lista de rotas
 tests/               testes (Vitest)
 ```

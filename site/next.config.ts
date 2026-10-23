@@ -2,26 +2,17 @@ import type { NextConfig } from "next";
 import createMDX from "@next/mdx";
 
 const nextConfig: NextConfig = {
-  // Servidor Node autocontido para a imagem Docker.
-  output: "standalone",
+  // Site 100% estático (HTML/CSS/JS em `out/`) para hospedagem comum, como a Hostinger.
+  // O envio dos formulários fica com `public/contato.php`; os cabeçalhos de segurança, em `public/.htaccess`.
+  output: "export",
+  // /sobre vira /sobre/index.html: funciona em Apache/LiteSpeed sem regras de reescrita.
+  trailingSlash: true,
+  // Sem servidor Node, as imagens vão como estão (já otimizadas em `public/`).
+  images: { unoptimized: true },
   // O site é um projeto independente dentro do repositório do sistema interno.
   turbopack: { root: import.meta.dirname },
-  outputFileTracingRoot: import.meta.dirname,
   pageExtensions: ["ts", "tsx", "mdx"],
   poweredByHeader: false,
-  async headers() {
-    return [
-      {
-        source: "/:path*",
-        headers: [
-          { key: "X-Content-Type-Options", value: "nosniff" },
-          { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
-          { key: "X-Frame-Options", value: "DENY" },
-          { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
-        ],
-      },
-    ];
-  },
 };
 
 const withMDX = createMDX({});

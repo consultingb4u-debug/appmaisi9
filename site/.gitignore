@@ -16,3 +16,7 @@ next-env.d.ts
 *.pem
 npm-debug.log*
 .vercel
+
+# pacote para a Hostinger (gerado por npm run pacote:hostinger)
+/pacote-hostinger/
+/site-maisi9-hostinger.zip

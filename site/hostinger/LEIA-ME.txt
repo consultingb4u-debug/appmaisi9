@@ -1,0 +1,69 @@
+SITE MAIS i9: COMO PUBLICAR NA HOSTINGER
+=========================================
+
+O pacote tem:
+
+  public_html/          o site completo (páginas em HTML + contato.php, que envia os formulários)
+  contato-config.php    configuração do envio de e-mail (destino, remetente e senha)
+  LEIA-ME.txt           este arquivo
+
+Requisitos: hospedagem com PHP 8.1 ou mais novo (padrão da Hostinger) e o domínio
+apontado para ela.
+
+
+1. FAÇA UM BACKUP DO SITE ATUAL
+-------------------------------
+hPanel > Arquivos > Backups (ou baixe a pasta public_html pelo Gerenciador de Arquivos).
+
+
+2. ENVIE O SITE
+---------------
+hPanel > Arquivos > Gerenciador de Arquivos > abra a pasta public_html do domínio.
+
+  a) Apague o conteúdo antigo de public_html (depois do backup).
+  b) Envie TODO o conteúdo da pasta public_html deste pacote para dentro de public_html.
+     Dica: envie o .zip e use "Extrair" no próprio Gerenciador de Arquivos.
+  c) Confira que o arquivo .htaccess foi junto (é um arquivo oculto; no Gerenciador,
+     ative "Mostrar arquivos ocultos" se não aparecer).
+
+O site precisa ficar na raiz do domínio (www.maisi9.com.br/), e não numa subpasta.
+
+
+3. CONFIGURE O E-MAIL DOS FORMULÁRIOS
+-------------------------------------
+Os três formulários (Consultoria, Demonstração do WMS e Contato) enviam para
+contato@maisi9.com.br.
+
+  a) Abra contato-config.php e preencha a senha da caixa contato@maisi9.com.br
+     no campo 'senha'. Se o e-mail não for da Hostinger, ajuste o 'host' (há exemplos
+     no próprio arquivo para Google Workspace e Microsoft 365).
+  b) Envie contato-config.php para a pasta ACIMA de public_html (a pasta do domínio,
+     ao lado de public_html). Assim a senha não fica dentro do site e não é apagada
+     quando o site for atualizado.
+
+     Se não conseguir acessar essa pasta, pode colocá-lo dentro de public_html: o
+     .htaccess bloqueia o acesso a ele pela internet.
+
+Sem a senha preenchida, o site usa a função de envio do próprio servidor (mail()).
+Funciona, mas os e-mails têm mais chance de cair no spam. Com a senha (SMTP), a
+entrega é mais confiável.
+
+
+4. TESTE
+--------
+  a) Abra https://www.maisi9.com.br e navegue pelas páginas.
+  b) Envie o formulário da página Contato com seus dados. Deve aparecer
+     "Recebemos sua solicitação" com um protocolo, e o e-mail deve chegar em
+     contato@maisi9.com.br. Ao responder o e-mail, a resposta vai para quem preencheu.
+  c) Se aparecer "Não conseguimos enviar sua mensagem agora", confira a senha e o
+     servidor SMTP em contato-config.php. O motivo fica registrado no log de erros
+     do PHP (hPanel > Avançado > Logs de erro, ou o arquivo error_log na pasta).
+
+Proteções incluídas: campo invisível e tempo mínimo contra robôs, limite de 5 envios
+a cada 10 minutos por conexão e validação de todos os campos no servidor.
+
+
+5. ATUALIZAÇÕES FUTURAS
+-----------------------
+Para publicar uma nova versão, substitua o conteúdo de public_html pelo novo pacote.
+O contato-config.php, se estiver fora de public_html, continua valendo.

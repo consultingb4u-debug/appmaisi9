@@ -1,5 +1,6 @@
 import { imagemOg, tamanhoOg } from "@/lib/og";
 
+export const dynamic = "force-static";
 export const alt = "MAIS i9 WMS: gestão de armazéns";
 export const size = tamanhoOg;
 export const contentType = "image/png";

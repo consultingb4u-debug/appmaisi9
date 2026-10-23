@@ -116,12 +116,12 @@ integração e “diversas integrações disponíveis”, sem listar cada uma; A
 |---|---|
 | Stack | Next.js 16 (App Router, Server Components, Server Actions), React 19, TypeScript, Tailwind CSS 4, Zod, MDX — mesma base do sistema interno |
 | Isolamento | Projeto em `site/`, com `package.json`, CI e deploy próprios; não compartilha banco nem login com o sistema interno |
-| Renderização | Todas as páginas geradas estaticamente; JavaScript só no menu móvel, nas abas e nos formulários |
+| Renderização | Export estático (`output: "export"`): HTML, CSS e JS em `out/`, publicado na Hostinger; JavaScript só no menu móvel, nas abas, no teaser e nos formulários |
 | Conteúdo | Separado do código em `conteudo/` (tipado). Artigos em MDX com registro de metadados — pronto para migrar para um CMS headless no futuro |
 | SEO | Metadados e canônica por página, Open Graph/Twitter com imagem gerada por página, `sitemap.xml`, `robots.txt`, dados estruturados (Organization, WebSite, Service, SoftwareApplication, FAQPage, BreadcrumbList, BlogPosting), URLs amigáveis em português |
 | Indexação | Bloqueada por padrão (`SITE_INDEXAVEL`) para ambientes de teste; liberar só na publicação oficial |
 | Acessibilidade | Link “pular para o conteúdo”, landmarks, trilhas de navegação, foco visível, abas WAI-ARIA, FAQ com `<details>`, erros de formulário ligados aos campos e anunciados, contraste AA |
-| Formulários | Máscara de telefone com DDD (fixo e celular, aceita colar com +55); Server Action com Zod, campo-armadilha, tempo mínimo e limite por IP; entrega por webhook (CRM) e/ou SMTP; consentimento LGPD registrado com a versão da política; UTMs e página de origem enviadas ao CRM |
+| Formulários | Máscara de telefone com DDD (fixo e celular, aceita colar com +55); validação no navegador (Zod) e de novo no `contato.php` com as mesmas mensagens; campo-armadilha, tempo mínimo e limite por IP; e-mail para contato@maisi9.com.br por SMTP autenticado ou `mail()`; consentimento LGPD registrado com a versão da política; UTMs e página de origem no e-mail |
 | Segurança | Cabeçalhos `X-Frame-Options`, `nosniff`, `Referrer-Policy`, `Permissions-Policy`; JSON-LD escapado |
 | Qualidade | `npm run lint`, `typecheck`, `test` (Vitest: validação, montagem e entrega dos leads, limitador, consistência do conteúdo) e `build`, também na CI |
 
@@ -164,7 +164,7 @@ case. A página de cases foi removida a pedido da MAIS i9; o site não publica r
 - [ ] Confirmar o papel de `suite.maisi9.com.br` (citado no folheto do WMS)
 
 **Comercial e jurídico**
-- [ ] Destino dos leads: URL do CRM/automação (webhook) e/ou e-mail + SMTP
+- [ ] Senha SMTP da caixa contato@maisi9.com.br no `contato-config.php` do servidor (sem ela, o envio usa `mail()`)
 - [ ] Revisão jurídica da Política de Privacidade (encarregado, fornecedores, prazo de retenção) e do aviso de marcas
 
 **Validação de conteúdo**

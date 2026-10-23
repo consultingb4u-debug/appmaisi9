@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Pacote gerado para a Hostinger (cópia do out/).
+    "pacote-hostinger/**",
   ]),
 ]);
 

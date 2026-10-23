@@ -2,11 +2,10 @@
 
 import { CircleCheck, LoaderCircle, TriangleAlert } from "lucide-react";
 import Link from "next/link";
-import { startTransition, useActionState, useEffect, useId, useRef, useState, type FormEvent, type ReactNode } from "react";
+import { useEffect, useId, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { textoComunicacoes, textoConsentimento } from "@/conteudo/formularios";
-import { enviarLead } from "@/lib/leads/acao";
-import type { TipoLead } from "@/lib/leads/esquemas";
-import { estadoInicial } from "@/lib/leads/estado";
+import { validarLead, type TipoLead } from "@/lib/leads/esquemas";
+import { enderecoEnvio, estadoInicial, lerResposta, type EstadoFormulario } from "@/lib/leads/estado";
 import { CampoCaixa, ContextoFormulario } from "./campos";
 import { lerOrigemNavegador } from "./origem";
 
@@ -28,7 +27,8 @@ export function FormularioLead(props: Props) {
 
 function Formulario({ tipo, rotuloEnviar, aposEnvio, alternativa, children, aoReiniciar }: Props & { aoReiniciar: () => void }) {
   const idForm = useId().replace(/:/g, "");
-  const [estado, acao, pendente] = useActionState(enviarLead, estadoInicial);
+  const [estado, setEstado] = useState<EstadoFormulario>(estadoInicial);
+  const [pendente, setPendente] = useState(false);
   const form = useRef<HTMLFormElement>(null);
   const aviso = useRef<HTMLDivElement>(null);
 
@@ -44,18 +44,35 @@ function Formulario({ tipo, rotuloEnviar, aposEnvio, alternativa, children, aoRe
     else if (estado.status !== "inicial") aviso.current?.focus();
   }, [estado]);
 
-  function aoEnviar(e: FormEvent<HTMLFormElement>) {
-    // Envia sem o reset automático do React, preservando o que foi digitado se houver erro.
-    // Origem e início entram no envio aqui, e não em campos ocultos: o React restaura
-    // o valor padrão de inputs ocultos a cada renderização.
+  async function aoEnviar(e: FormEvent<HTMLFormElement>) {
+    // Envia por fetch, preservando o que foi digitado se houver erro. Sem JavaScript,
+    // o formulário vai direto para o PHP (atributos action/method).
     e.preventDefault();
+    if (pendente) return;
     const dados = new FormData(e.currentTarget);
     const origem = lerOrigemNavegador();
     dados.set("inicio", String(inicio.current));
     dados.set("origemPagina", window.location.pathname);
     dados.set("origemReferencia", origem.referencia);
     for (const [k, v] of Object.entries(origem.utm)) dados.set(k, v);
-    startTransition(() => acao(dados));
+
+    // Mesmas regras do servidor, para apontar os erros sem esperar a resposta.
+    const validacao = validarLead(tipo, Object.fromEntries(dados.entries()));
+    if (!validacao.ok) {
+      setEstado({ status: "invalido", erros: validacao.erros });
+      return;
+    }
+
+    setPendente(true);
+    try {
+      const resposta = await fetch(enderecoEnvio, { method: "POST", body: dados, headers: { Accept: "application/json" } });
+      const ehJson = resposta.headers.get("content-type")?.includes("application/json");
+      setEstado(ehJson ? lerResposta(await resposta.json()) : { status: "nao-configurado" });
+    } catch {
+      setEstado({ status: "falha", mensagem: "Não conseguimos enviar sua mensagem. Verifique sua conexão e tente novamente." });
+    } finally {
+      setPendente(false);
+    }
   }
 
   if (estado.status === "enviado") {
@@ -76,7 +93,7 @@ function Formulario({ tipo, rotuloEnviar, aposEnvio, alternativa, children, aoRe
 
   return (
     <ContextoFormulario value={{ idForm, erros: estado.status === "invalido" ? estado.erros : {} }}>
-      <form ref={form} action={acao} onSubmit={aoEnviar} noValidate className="space-y-5">
+      <form ref={form} action={enderecoEnvio} method="post" onSubmit={aoEnviar} noValidate className="space-y-5">
         <input type="hidden" name="tipo" value={tipo} />
         {/* Armadilha para robôs: invisível para pessoas e leitores de tela. */}
         <div aria-hidden className="absolute -left-[9999px] h-px w-px overflow-hidden">
@@ -114,11 +131,11 @@ function Formulario({ tipo, rotuloEnviar, aposEnvio, alternativa, children, aoRe
               ) : (
                 <>
                   <p className="font-medium">
-                    O envio de formulários ainda não foi configurado neste ambiente. Sua mensagem <strong>não foi enviada</strong>.
+                    O envio de formulários não está disponível neste endereço. Sua mensagem <strong>não foi enviada</strong>.
                   </p>
                   {process.env.NODE_ENV === "development" && (
                     <p className="text-ardosia-600">
-                      Configure LEADS_WEBHOOK_URL ou LEADS_EMAIL_PARA + SMTP_* (veja site/README.md).
+                      O envio usa o contato.php: teste com <code>npm run build</code> e <code>php -S localhost:8080 -t out</code>.
                     </p>
                   )}
                 </>

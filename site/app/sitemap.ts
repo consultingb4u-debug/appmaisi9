@@ -3,6 +3,8 @@ import { artigos, categorias } from "@/conteudo/insights";
 import { paginasInstitucionais } from "@/lib/rotas";
 import { urlAbsoluta } from "@/lib/site";
 
+export const dynamic = "force-static";
+
 export default function sitemap(): MetadataRoute.Sitemap {
   return [
     ...paginasInstitucionais.map((p) => ({ url: urlAbsoluta(p.caminho), priority: p.prioridade })),
